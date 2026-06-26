@@ -69,105 +69,51 @@
 
   /* ===== Header ===== */
   header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 28px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--border);
   }
   .brand h1 {
     font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
-    font-size: 34px;
-    font-weight: 500;
-    letter-spacing: -.02em;
-    line-height: 1;
+    font-size: 34px; font-weight: 500; letter-spacing: -.02em; line-height: 1;
   }
-  .brand .sub {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: .18em;
-    color: var(--text-mute);
-    margin-top: 6px;
-  }
+  .brand .sub { font-size: 11px; text-transform: uppercase; letter-spacing: .18em; color: var(--text-mute); margin-top: 6px; }
   .header-actions { display: flex; gap: 8px; align-items: center; }
   .icon-btn {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    width: 38px; height: 38px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 16px;
-    display: grid; place-items: center;
-    transition: all .2s;
-    flex-shrink: 0;
+    background: var(--surface); border: 1px solid var(--border); color: var(--text);
+    width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 16px;
+    display: grid; place-items: center; transition: all .2s; flex-shrink: 0;
   }
   .icon-btn:hover { border-color: var(--text-dim); }
   .theme-toggle:hover { transform: rotate(15deg); }
 
   /* ===== Tabs ===== */
   .tabs {
-    display: flex;
-    gap: 4px;
-    background: var(--surface);
-    padding: 4px;
-    border-radius: var(--radius);
-    margin-bottom: 24px;
-    border: 1px solid var(--border);
-    overflow-x: auto;
-    scrollbar-width: none;
+    display: flex; gap: 4px; background: var(--surface); padding: 4px;
+    border-radius: var(--radius); margin-bottom: 24px; border: 1px solid var(--border);
+    overflow-x: auto; scrollbar-width: none;
   }
   .tabs::-webkit-scrollbar { display: none; }
   .tab {
-    flex: 1;
-    min-width: max-content;
-    padding: 9px 14px;
-    background: transparent;
-    border: none;
-    color: var(--text-dim);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    border-radius: 10px;
-    transition: all .2s;
-    font-family: inherit;
-    letter-spacing: -.005em;
+    flex: 1; min-width: max-content; padding: 9px 14px; background: transparent; border: none;
+    color: var(--text-dim); font-size: 13px; font-weight: 500; cursor: pointer;
+    border-radius: 10px; transition: all .2s; font-family: inherit; letter-spacing: -.005em;
   }
   .tab.active { background: var(--bg); color: var(--text); box-shadow: var(--shadow); }
-
   .view { display: none; animation: fadeIn .3s ease; }
   .view.active { display: block; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
   /* ===== Streak cards ===== */
-  .streaks {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 14px;
-    margin-bottom: 24px;
-  }
+  .streaks { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-bottom: 24px; }
   .streak-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 22px;
-    position: relative;
-    overflow: hidden;
-    transition: transform .2s, box-shadow .2s;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 22px; position: relative; overflow: hidden; transition: transform .2s, box-shadow .2s;
   }
   .streak-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
-  .streak-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--card-color, var(--accent));
-  }
+  .streak-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--card-color, var(--accent)); }
   .streak-card[data-cat="drugs"] { --card-color: #7a5cb5; }
   .streak-card[data-cat="alcohol"] { --card-color: var(--warm); }
   .streak-card[data-cat="nicotine"] { --card-color: var(--accent); }
-
   .streak-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
   .streak-label { font-size: 11px; text-transform: uppercase; letter-spacing: .15em; color: var(--text-mute); font-weight: 600; }
   .streak-icon { font-size: 18px; opacity: .6; }
@@ -186,7 +132,7 @@
   .set-btn { background: var(--card-color, var(--accent)); color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; font-family: inherit; transition: opacity .2s; }
   .set-btn:hover { opacity: .88; }
 
-  /* ===== Money saved ===== */
+  /* ===== Money card ===== */
   .money-card {
     background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
     border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px;
@@ -201,7 +147,7 @@
   .money-row { display: grid; grid-template-columns: 90px 1fr 1fr; gap: 8px; align-items: center; font-size: 13px; }
   .money-row .name { color: var(--text-dim); font-size: 12px; text-transform: uppercase; letter-spacing: .1em; }
 
-  /* ===== Forms ===== */
+  /* ===== Cards / forms ===== */
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; margin-bottom: 20px; }
   .card h2 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 500; margin-bottom: 16px; letter-spacing: -.01em; }
   .card h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .15em; color: var(--text-mute); margin-bottom: 12px; font-weight: 600; }
@@ -212,13 +158,12 @@
   input[type="datetime-local"] { min-height: 44px; line-height: 1.2; }
   .btn, .set-btn, .tab, .mood-btn, .intensity-btn, .quick-chip, .icon-btn { min-height: 38px; }
   .btn, .set-btn { min-height: 44px; }
-  .form-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
   .btn { background: var(--text); color: var(--bg); border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; font-family: inherit; transition: opacity .2s, transform .1s; }
   .btn:hover { opacity: .85; }
   .btn:active { transform: scale(.98); }
   .btn-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
 
-  /* ===== Mood scale ===== */
+  /* ===== Mood ===== */
   .mood-scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 12px; }
   .mood-btn { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 4px; cursor: pointer; font-size: 22px; transition: all .15s; }
   .mood-btn:hover { transform: translateY(-2px); }
@@ -228,6 +173,30 @@
   .intensity-row { display: flex; gap: 6px; }
   .intensity-btn { flex: 1; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 10px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-dim); font-family: inherit; transition: all .15s; }
   .intensity-btn.selected { background: var(--warm-soft); border-color: var(--warm); color: var(--warm); }
+
+  /* ===== Trigger chips ===== */
+  .trigger-chips-wrap { margin-bottom: 10px; }
+  .trigger-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; min-height: 0; }
+  .trigger-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    color: var(--text-dim); padding: 5px 10px; border-radius: 16px;
+    font-size: 12px; cursor: pointer; font-family: inherit; transition: all .15s;
+    user-select: none;
+  }
+  .trigger-chip:hover { border-color: var(--text-dim); color: var(--text); }
+  .trigger-chip.selected { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 500; }
+  .trigger-chip-hint { font-size: 12px; color: var(--text-mute); margin-bottom: 6px; font-style: italic; }
+
+  /* new trigger input row */
+  .trigger-new-row { display: flex; gap: 8px; }
+  .trigger-new-row input { flex: 1; }
+  .trigger-add-btn {
+    background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+    padding: 0 14px; border-radius: var(--radius-sm); cursor: pointer; font-size: 13px;
+    font-family: inherit; white-space: nowrap; transition: all .15s; flex-shrink: 0;
+  }
+  .trigger-add-btn:hover { border-color: var(--accent); color: var(--accent); }
 
   /* ===== Log entries ===== */
   .log-list { display: grid; gap: 8px; }
@@ -245,118 +214,82 @@
   .chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; height: 280px; position: relative; }
   .chart-wrap canvas { max-height: 240px !important; }
 
-  /* ===== Document library ===== */
+  /* ===== Documents ===== */
   .doc-upload-area {
-    border: 2px dashed var(--border);
-    border-radius: var(--radius);
-    padding: 36px 24px;
-    text-align: center;
-    cursor: pointer;
-    transition: all .2s;
-    margin-bottom: 20px;
-    background: var(--surface-2);
+    border: 2px dashed var(--border); border-radius: var(--radius); padding: 36px 24px;
+    text-align: center; cursor: pointer; transition: all .2s; margin-bottom: 20px; background: var(--surface-2);
   }
-  .doc-upload-area:hover, .doc-upload-area.drag-over {
-    border-color: var(--accent);
-    background: var(--accent-soft);
-  }
+  .doc-upload-area:hover, .doc-upload-area.drag-over { border-color: var(--accent); background: var(--accent-soft); }
   .doc-upload-icon { font-size: 32px; margin-bottom: 10px; opacity: .6; }
   .doc-upload-area p { font-size: 14px; color: var(--text-dim); margin-bottom: 4px; }
   .doc-upload-area small { font-size: 12px; color: var(--text-mute); }
   .doc-grid { display: grid; gap: 10px; }
-  .doc-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    transition: box-shadow .2s;
-  }
+  .doc-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; align-items: center; gap: 12px; transition: box-shadow .2s; }
   .doc-item:hover { box-shadow: var(--shadow); }
   .doc-icon { font-size: 28px; flex-shrink: 0; }
   .doc-info { flex: 1; min-width: 0; }
   .doc-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .doc-meta { font-size: 11px; color: var(--text-mute); margin-top: 2px; text-transform: uppercase; letter-spacing: .08em; }
   .doc-actions { display: flex; gap: 6px; flex-shrink: 0; }
-  .doc-btn {
-    background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
-    font-size: 11px; padding: 5px 10px; border-radius: 6px; cursor: pointer;
-    font-family: inherit; transition: all .15s; white-space: nowrap;
-  }
+  .doc-btn { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim); font-size: 11px; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-family: inherit; transition: all .15s; white-space: nowrap; }
   .doc-btn:hover { color: var(--text); border-color: var(--text-dim); }
   .doc-btn.danger:hover { color: var(--warm); border-color: var(--warm); }
 
-  /* ===== PDF Viewer modal ===== */
+  /* ===== PDF viewer ===== */
   .pdf-modal-bg {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,.75);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    display: none;
-    flex-direction: column;
-    z-index: 200;
+    position: fixed; inset: 0; background: rgba(0,0,0,.75); backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px); display: none; flex-direction: column; z-index: 200;
     padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
              max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
   }
   .pdf-modal-bg.open { display: flex; animation: fadeIn .2s; }
-  .pdf-modal-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 14px; background: var(--surface); border-radius: var(--radius) var(--radius) 0 0;
-    border-bottom: 1px solid var(--border); flex-shrink: 0;
-  }
+  .pdf-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--surface); border-radius: var(--radius) var(--radius) 0 0; border-bottom: 1px solid var(--border); flex-shrink: 0; }
   .pdf-modal-header .doc-name { font-size: 14px; font-weight: 500; max-width: 70vw; }
   .pdf-close { background: transparent; border: none; font-size: 20px; cursor: pointer; color: var(--text-dim); padding: 4px 8px; line-height: 1; }
   .pdf-close:hover { color: var(--text); }
   .pdf-frame-wrap { flex: 1; background: var(--surface); border-radius: 0 0 var(--radius) var(--radius); overflow: hidden; }
   .pdf-frame-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
 
-  /* ===== Settings modal ===== */
+  /* ===== Modals ===== */
   .modal-bg {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,.5);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    display: none;
-    align-items: center; justify-content: center;
+    position: fixed; inset: 0; background: rgba(0,0,0,.5); backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center;
     z-index: 100;
     padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
              max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
   }
   .modal-bg.open { display: flex; animation: fadeIn .2s; }
-  .modal { background: var(--surface); border-radius: var(--radius); padding: 24px; max-width: 420px; width: 100%; border: 1px solid var(--border); }
+  .modal { background: var(--surface); border-radius: var(--radius); padding: 24px; max-width: 420px; width: 100%; border: 1px solid var(--border); max-height: 90vh; overflow-y: auto; }
   .modal h3 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 500; margin-bottom: 14px; text-transform: none; letter-spacing: -.01em; color: var(--text); }
   .modal-section { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
   .modal-section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .modal-section-label { font-size: 12px; text-transform: uppercase; letter-spacing: .15em; color: var(--text-mute); font-weight: 600; margin-bottom: 10px; }
   .modal-section p { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.5; }
 
-  /* ===== Toast ===== */
-  .toast {
-    position: fixed;
-    bottom: calc(24px + env(safe-area-inset-bottom));
-    left: 50%;
-    transform: translateX(-50%) translateY(120px);
-    background: var(--text);
-    color: var(--bg);
-    padding: 10px 20px;
-    border-radius: 30px;
-    font-size: 14px;
-    font-weight: 500;
-    transition: transform .3s ease;
-    z-index: 300;
-    box-shadow: var(--shadow);
-    pointer-events: none;
+  /* Trigger management in settings */
+  .trigger-manage-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; min-height: 24px; }
+  .trigger-manage-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    color: var(--text-dim); padding: 4px 10px; border-radius: 16px; font-size: 12px;
   }
+  .trigger-manage-chip button {
+    background: transparent; border: none; color: var(--text-mute);
+    cursor: pointer; font-size: 13px; line-height: 1; padding: 0;
+  }
+  .trigger-manage-chip button:hover { color: var(--warm); }
+  .trigger-manage-empty { font-size: 12px; color: var(--text-mute); font-style: italic; }
+
+  /* ===== Toast ===== */
+  .toast { position: fixed; bottom: calc(24px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%) translateY(120px); background: var(--text); color: var(--bg); padding: 10px 20px; border-radius: 30px; font-size: 14px; font-weight: 500; transition: transform .3s ease; z-index: 300; box-shadow: var(--shadow); pointer-events: none; }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
-  /* Quick chips */
+  /* Quick chips (substance category) */
   .quick-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
   .quick-chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim); padding: 6px 12px; border-radius: 16px; font-size: 12px; cursor: pointer; font-family: inherit; transition: all .15s; }
   .quick-chip:hover { border-color: var(--text-dim); color: var(--text); }
   .quick-chip.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 
-  /* Size warning */
   .size-warn { background: var(--warm-soft); border: 1px solid var(--warm); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; color: var(--warm); margin-bottom: 14px; display: none; }
   .size-warn.show { display: block; }
 
@@ -393,7 +326,7 @@
     <button class="tab" data-view="documents">Documents</button>
   </div>
 
-  <!-- ============ DASHBOARD ============ -->
+  <!-- DASHBOARD -->
   <section class="view active" id="view-dashboard">
     <div class="streaks" id="streaksGrid"></div>
     <div class="money-card">
@@ -413,7 +346,7 @@
     </div>
   </section>
 
-  <!-- ============ CHECK-IN ============ -->
+  <!-- CHECK-IN -->
   <section class="view" id="view-checkin">
     <div class="card">
       <h2>Daily check-in</h2>
@@ -427,9 +360,7 @@
       </div>
       <label style="margin-top:12px">Notes (optional)</label>
       <textarea id="checkinNotes" placeholder="Anything on your mind — wins, struggles, gratitude..."></textarea>
-      <div class="btn-row">
-        <button class="btn" id="saveCheckin">Save check-in</button>
-      </div>
+      <div class="btn-row"><button class="btn" id="saveCheckin">Save check-in</button></div>
     </div>
     <div class="card">
       <h3>Recent check-ins</h3>
@@ -437,16 +368,18 @@
     </div>
   </section>
 
-  <!-- ============ CRAVINGS ============ -->
+  <!-- CRAVINGS -->
   <section class="view" id="view-cravings">
     <div class="card">
       <h2>Log a craving</h2>
+
       <label>Category</label>
       <div class="quick-row" id="cravingCats">
         <button class="quick-chip" data-cat="drugs">Drugs</button>
         <button class="quick-chip" data-cat="alcohol">Alcohol</button>
         <button class="quick-chip" data-cat="nicotine">Nicotine</button>
       </div>
+
       <label>Intensity (1 = mild, 5 = intense)</label>
       <div class="intensity-row" id="intensityRow">
         <button class="intensity-btn" data-int="1">1</button>
@@ -455,13 +388,21 @@
         <button class="intensity-btn" data-int="4">4</button>
         <button class="intensity-btn" data-int="5">5</button>
       </div>
+
       <label style="margin-top:12px">Trigger</label>
-      <input type="text" id="cravingTrigger" placeholder="e.g. stress, social, boredom, after coffee...">
+      <div class="trigger-chips-wrap">
+        <div class="trigger-chips" id="triggerChips"></div>
+        <div class="trigger-chip-hint" id="triggerChipHint" style="display:none">Tap a trigger to select it, or type a new one below</div>
+        <div class="trigger-new-row">
+          <input type="text" id="cravingTrigger" placeholder="Type a new trigger and press Add…">
+          <button class="trigger-add-btn" id="triggerAddBtn">Add</button>
+        </div>
+      </div>
+
       <label style="margin-top:12px">Notes (optional)</label>
       <textarea id="cravingNotes" placeholder="What helped? What did you do instead?"></textarea>
-      <div class="btn-row">
-        <button class="btn" id="saveCraving">Log craving</button>
-      </div>
+
+      <div class="btn-row"><button class="btn" id="saveCraving">Log craving</button></div>
     </div>
     <div class="card">
       <h3>Recent cravings</h3>
@@ -469,7 +410,7 @@
     </div>
   </section>
 
-  <!-- ============ CHARTS ============ -->
+  <!-- CHARTS -->
   <section class="view" id="view-charts">
     <div class="card" style="padding:18px;">
       <h3>Mood — last 30 days</h3>
@@ -481,7 +422,7 @@
     </div>
   </section>
 
-  <!-- ============ DOCUMENTS ============ -->
+  <!-- DOCUMENTS -->
   <section class="view" id="view-documents">
     <div class="card">
       <h2>Document library</h2>
@@ -499,7 +440,7 @@
 
 </div>
 
-<!-- ===== Streak / date modal ===== -->
+<!-- Streak date modal -->
 <div class="modal-bg" id="modalBg">
   <div class="modal">
     <h3 id="modalTitle">Set start date</h3>
@@ -512,14 +453,20 @@
   </div>
 </div>
 
-<!-- ===== Settings modal ===== -->
+<!-- Settings modal -->
 <div class="modal-bg" id="settingsModalBg">
   <div class="modal">
     <h3>Settings</h3>
 
     <div class="modal-section">
-      <div style="font-size:12px; text-transform:uppercase; letter-spacing:.15em; color:var(--text-mute); font-weight:600; margin-bottom:10px;">Export &amp; import</div>
-      <p>Back up all your data as a JSON file, or restore from a previous backup. Your documents are included.</p>
+      <div class="modal-section-label">Trigger library</div>
+      <p>These are your saved triggers. Remove any you no longer need.</p>
+      <div class="trigger-manage-list" id="triggerManageList"></div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-label">Export &amp; import</div>
+      <p>Back up all your data as a JSON file, or restore from a previous backup. Documents are included.</p>
       <div class="btn-row" style="margin-top:0;">
         <button class="btn" id="exportBtn">Export JSON</button>
         <button class="btn" id="importBtn" style="background:var(--surface-2); color:var(--text); border:1px solid var(--border)">Import JSON</button>
@@ -528,9 +475,9 @@
     </div>
 
     <div class="modal-section">
-      <div style="font-size:12px; text-transform:uppercase; letter-spacing:.15em; color:var(--text-mute); font-weight:600; margin-bottom:10px;">Danger zone</div>
+      <div class="modal-section-label">Danger zone</div>
       <p>Permanently erase all data including documents. This cannot be undone.</p>
-      <button class="btn" id="resetBtn" style="background:var(--warm); color:white; margin-top:0;">Reset everything</button>
+      <button class="btn" id="resetBtn" style="background:var(--warm); color:white;">Reset everything</button>
     </div>
 
     <div class="btn-row" style="margin-top:4px;">
@@ -539,7 +486,7 @@
   </div>
 </div>
 
-<!-- ===== PDF viewer ===== -->
+<!-- PDF viewer -->
 <div class="pdf-modal-bg" id="pdfModalBg">
   <div class="pdf-modal-header">
     <div class="doc-name" id="pdfModalTitle">Document</div>
@@ -561,10 +508,11 @@ const CATS = [
 ];
 
 const defaultState = {
-  starts: { drugs: null, alcohol: null, nicotine: null },
-  costs:  { drugs: { amount: 0, unit: 'day' }, alcohol: { amount: 0, unit: 'day' }, nicotine: { amount: 0, unit: 'day' } },
-  checkins: [],
-  cravings: [],
+  starts:    { drugs: null, alcohol: null, nicotine: null },
+  costs:     { drugs: { amount: 0, unit: 'day' }, alcohol: { amount: 0, unit: 'day' }, nicotine: { amount: 0, unit: 'day' } },
+  checkins:  [],
+  cravings:  [],
+  triggers:  [],   // string[]  — the saved trigger library
   documents: [],
   theme: 'dark'
 };
@@ -577,20 +525,16 @@ function load() {
     const parsed = JSON.parse(raw);
     return {
       ...structuredClone(defaultState), ...parsed,
-      starts: { ...defaultState.starts, ...(parsed.starts || {}) },
-      costs:  { ...defaultState.costs,  ...(parsed.costs  || {}) },
-      documents: parsed.documents || []
+      starts:    { ...defaultState.starts,  ...(parsed.starts  || {}) },
+      costs:     { ...defaultState.costs,   ...(parsed.costs   || {}) },
+      triggers:  Array.isArray(parsed.triggers)  ? parsed.triggers  : [],
+      documents: Array.isArray(parsed.documents) ? parsed.documents : []
     };
   } catch { return structuredClone(defaultState); }
 }
 function save() {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(state));
-  } catch(e) {
-    if (e.name === 'QuotaExceededError') {
-      toast('Storage full — remove a document to free space');
-    }
-  }
+  try { localStorage.setItem(KEY, JSON.stringify(state)); }
+  catch(e) { if (e.name === 'QuotaExceededError') toast('Storage full — remove a document to free space'); }
 }
 
 const $ = s => document.querySelector(s);
@@ -599,6 +543,7 @@ const uid = () => Math.random().toString(36).slice(2,10) + Date.now().toString(3
 const fmtDate = ts => new Date(ts).toLocaleString('en-IE', { dateStyle: 'medium', timeStyle: 'short' });
 const fmtMoney = n => new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' }).format(n);
 const fmtBytes = b => b < 1024*1024 ? (b/1024).toFixed(1)+' KB' : (b/(1024*1024)).toFixed(1)+' MB';
+const normalise = s => s.trim().toLowerCase();
 
 function durationParts(start) {
   if (!start) return null;
@@ -609,9 +554,7 @@ function durationParts(start) {
 }
 
 function toast(msg) {
-  const t = $('#toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2400);
 }
 
@@ -624,8 +567,7 @@ function applyTheme() {
   if (currentView === 'charts') renderCharts();
 }
 $('#themeToggle').addEventListener('click', () => {
-  state.theme = state.theme === 'dark' ? 'light' : 'dark';
-  save(); applyTheme();
+  state.theme = state.theme === 'dark' ? 'light' : 'dark'; save(); applyTheme();
 });
 
 /* ---------- Tabs ---------- */
@@ -636,27 +578,25 @@ $$('.tab').forEach(t => t.addEventListener('click', () => {
   t.classList.add('active');
   currentView = t.dataset.view;
   $('#view-' + currentView).classList.add('active');
-  if (currentView === 'charts') renderCharts();
-  if (currentView === 'checkin') renderCheckins();
-  if (currentView === 'cravings') renderCravings();
+  if (currentView === 'charts')    renderCharts();
+  if (currentView === 'checkin')   renderCheckins();
+  if (currentView === 'cravings')  { renderTriggerChips(); renderCravings(); }
   if (currentView === 'documents') renderDocuments();
 }));
 
-/* ---------- Settings modal ---------- */
-$('#settingsBtn').addEventListener('click', () => $('#settingsModalBg').classList.add('open'));
+/* ---------- Settings ---------- */
+$('#settingsBtn').addEventListener('click', () => { renderTriggerManage(); $('#settingsModalBg').classList.add('open'); });
 $('#settingsClose').addEventListener('click', () => $('#settingsModalBg').classList.remove('open'));
 $('#settingsModalBg').addEventListener('click', e => { if (e.target.id === 'settingsModalBg') $('#settingsModalBg').classList.remove('open'); });
 
 /* ---------- Streaks ---------- */
 function renderStreaks() {
-  const grid = $('#streaksGrid');
-  grid.innerHTML = '';
+  const grid = $('#streaksGrid'); grid.innerHTML = '';
   CATS.forEach(c => {
     const start = state.starts[c.id];
     const d = durationParts(start);
     const card = document.createElement('div');
-    card.className = 'streak-card';
-    card.dataset.cat = c.id;
+    card.className = 'streak-card'; card.dataset.cat = c.id;
     if (!start) {
       card.innerHTML = `
         <div class="streak-head"><span class="streak-label">${c.label}</span><span class="streak-icon">${c.icon}</span></div>
@@ -690,14 +630,12 @@ function renderStreaks() {
 function calcMoney() {
   const out = { total: 0, items: [] };
   CATS.forEach(c => {
-    const start = state.starts[c.id];
-    const cost = state.costs[c.id];
+    const start = state.starts[c.id]; const cost = state.costs[c.id];
     if (!start || !cost.amount) { out.items.push({ cat: c, saved: 0 }); return; }
     const days = (Date.now() - new Date(start).getTime()) / 86400000;
     const perDay = cost.unit === 'week' ? cost.amount / 7 : cost.unit === 'month' ? cost.amount / 30.437 : cost.amount;
     const saved = Math.max(0, days * perDay);
-    out.total += saved;
-    out.items.push({ cat: c, saved });
+    out.total += saved; out.items.push({ cat: c, saved });
   });
   return out;
 }
@@ -710,8 +648,8 @@ function renderMoney() {
       <span class="name">${c.label}</span>
       <input type="number" min="0" step="0.01" data-cost="${c.id}" value="${state.costs[c.id].amount || ''}" placeholder="€ amount">
       <select data-unit="${c.id}">
-        <option value="day"   ${state.costs[c.id].unit==='day'?'selected':''}>per day</option>
-        <option value="week"  ${state.costs[c.id].unit==='week'?'selected':''}>per week</option>
+        <option value="day"   ${state.costs[c.id].unit==='day'  ?'selected':''}>per day</option>
+        <option value="week"  ${state.costs[c.id].unit==='week' ?'selected':''}>per week</option>
         <option value="month" ${state.costs[c.id].unit==='month'?'selected':''}>per month</option>
       </select>
     </div>`).join('');
@@ -730,8 +668,7 @@ function openModal(cat) {
 }
 function closeModal() { $('#modalBg').classList.remove('open'); modalCat = null; }
 function toLocalInput(iso) {
-  const d = new Date(iso);
-  const pad = n => String(n).padStart(2,'0');
+  const d = new Date(iso); const pad = n => String(n).padStart(2,'0');
   return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 $('#modalCancel').addEventListener('click', closeModal);
@@ -769,6 +706,83 @@ function renderCheckins() {
 }
 function moodEmoji(m) { return ['','😔','😕','😐','🙂','😊'][m] || ''; }
 
+/* ---------- Trigger library ---------- */
+let selectedTrigger = null;   // the currently-selected trigger string (or null)
+
+function addTriggerToLibrary(raw) {
+  const t = raw.trim();
+  if (!t) return false;
+  const norm = normalise(t);
+  const exists = state.triggers.some(x => normalise(x) === norm);
+  if (!exists) { state.triggers.push(t); save(); }
+  return t;
+}
+
+function renderTriggerChips() {
+  const wrap = $('#triggerChips');
+  const hint = $('#triggerChipHint');
+  wrap.innerHTML = '';
+
+  if (!state.triggers.length) {
+    hint.style.display = 'none';
+    return;
+  }
+
+  hint.style.display = 'block';
+  state.triggers.forEach(trig => {
+    const chip = document.createElement('button');
+    chip.className = 'trigger-chip' + (selectedTrigger === trig ? ' selected' : '');
+    chip.textContent = trig;
+    chip.type = 'button';
+    chip.addEventListener('click', () => {
+      if (selectedTrigger === trig) {
+        selectedTrigger = null;
+        $('#cravingTrigger').value = '';
+      } else {
+        selectedTrigger = trig;
+        $('#cravingTrigger').value = '';
+      }
+      renderTriggerChips();
+    });
+    wrap.appendChild(chip);
+  });
+}
+
+// Add button / Enter key on text field
+function handleTriggerAdd() {
+  const val = $('#cravingTrigger').value.trim();
+  if (!val) return;
+  const saved = addTriggerToLibrary(val);
+  selectedTrigger = saved;
+  $('#cravingTrigger').value = '';
+  renderTriggerChips();
+  renderTriggerManage();
+}
+$('#triggerAddBtn').addEventListener('click', handleTriggerAdd);
+$('#cravingTrigger').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); handleTriggerAdd(); } });
+
+/* Trigger management list in settings */
+function renderTriggerManage() {
+  const list = $('#triggerManageList');
+  if (!state.triggers.length) {
+    list.innerHTML = '<span class="trigger-manage-empty">No triggers saved yet — they\'ll appear here as you log cravings.</span>';
+    return;
+  }
+  list.innerHTML = state.triggers.map((t, i) => `
+    <span class="trigger-manage-chip">
+      ${escapeHtml(t)}
+      <button data-del-trigger="${i}" title="Remove">×</button>
+    </span>`).join('');
+  list.querySelectorAll('[data-del-trigger]').forEach(b => b.addEventListener('click', () => {
+    const idx = parseInt(b.dataset.delTrigger);
+    const removed = state.triggers[idx];
+    state.triggers.splice(idx, 1);
+    if (selectedTrigger === removed) selectedTrigger = null;
+    save(); renderTriggerManage(); renderTriggerChips();
+    toast(`"${removed}" removed`);
+  }));
+}
+
 /* ---------- Cravings ---------- */
 let cravingCat = null, cravingInt = null;
 $$('#cravingCats .quick-chip').forEach(b => b.addEventListener('click', () => {
@@ -777,15 +791,36 @@ $$('#cravingCats .quick-chip').forEach(b => b.addEventListener('click', () => {
 $$('#intensityRow .intensity-btn').forEach(b => b.addEventListener('click', () => {
   $$('#intensityRow .intensity-btn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); cravingInt = parseInt(b.dataset.int);
 }));
+
 $('#saveCraving').addEventListener('click', () => {
   if (!cravingCat) { toast('Pick a category'); return; }
   if (!cravingInt) { toast('Pick an intensity'); return; }
-  state.cravings.unshift({ id: uid(), ts: new Date().toISOString(), cat: cravingCat, intensity: cravingInt, trigger: $('#cravingTrigger').value.trim(), notes: $('#cravingNotes').value.trim() });
-  save(); $('#cravingTrigger').value = ''; $('#cravingNotes').value = '';
+
+  // Resolve trigger: chip selection takes priority; otherwise use text field
+  let triggerValue = selectedTrigger;
+  if (!triggerValue) {
+    const typed = $('#cravingTrigger').value.trim();
+    if (typed) {
+      triggerValue = addTriggerToLibrary(typed);
+    }
+  }
+
+  state.cravings.unshift({
+    id: uid(), ts: new Date().toISOString(), cat: cravingCat,
+    intensity: cravingInt, trigger: triggerValue || '', notes: $('#cravingNotes').value.trim()
+  });
+  save();
+
+  // Reset form
+  $('#cravingTrigger').value = ''; $('#cravingNotes').value = '';
   $$('#cravingCats .quick-chip').forEach(x => x.classList.remove('active'));
   $$('#intensityRow .intensity-btn').forEach(x => x.classList.remove('selected'));
-  cravingCat = null; cravingInt = null; renderCravings(); renderRecent(); toast('Craving logged — you got through it');
+  cravingCat = null; cravingInt = null; selectedTrigger = null;
+
+  renderTriggerChips(); renderTriggerManage(); renderCravings(); renderRecent();
+  toast('Craving logged — you got through it');
 });
+
 function renderCravings() {
   const list = $('#cravingsList');
   if (!state.cravings.length) { list.innerHTML = '<div class="empty">No cravings logged</div>'; return; }
@@ -841,7 +876,7 @@ function renderCharts() {
   const catSeries = CATS.map(cat => ({ label: cat.label, data: days.map(d => state.cravings.filter(cv => cv.cat === cat.id && dayKey(cv.ts) === dayKey(d)).length), backgroundColor: cat.id === 'drugs' ? '#7a5cb5' : cat.id === 'alcohol' ? c.warm : c.accent }));
   charts.crav = new Chart($('#cravingsChart'), { type: 'bar', data: { labels, datasets: catSeries }, options: chartOpts(c, { x: { stacked: true }, y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } } }) });
   const trigCount = {};
-  state.cravings.forEach(cv => { const t = (cv.trigger || 'unspecified').toLowerCase().trim() || 'unspecified'; trigCount[t] = (trigCount[t] || 0) + 1; });
+  state.cravings.forEach(cv => { if (!cv.trigger) return; const t = cv.trigger.trim(); if (t) trigCount[t] = (trigCount[t] || 0) + 1; });
   const trigEntries = Object.entries(trigCount).sort((a,b) => b[1]-a[1]).slice(0, 8);
   charts.trig = new Chart($('#triggerChart'), { type: 'bar', data: { labels: trigEntries.map(e => e[0]), datasets: [{ label: 'Count', data: trigEntries.map(e => e[1]), backgroundColor: c.gold, borderRadius: 4 }]}, options: { ...chartOpts(c, { y: { beginAtZero: true, ticks: { stepSize: 1 } } }), indexAxis: 'y' } });
 }
@@ -851,25 +886,18 @@ function chartOpts(c, scales = {}) {
 
 /* ---------- Documents ---------- */
 const MAX_DOC_SIZE = 4 * 1024 * 1024;
-const STORAGE_WARN_THRESHOLD = 0.8;
-
 function checkStorageUsage() {
   try {
     const used = new Blob([localStorage.getItem(KEY) || '']).size;
-    const warn = used > 5 * 1024 * 1024 * STORAGE_WARN_THRESHOLD;
-    $('#sizeWarn').classList.toggle('show', warn);
+    $('#sizeWarn').classList.toggle('show', used > 5 * 1024 * 1024 * 0.8);
   } catch {}
 }
-
 function renderDocuments() {
   checkStorageUsage();
   const grid = $('#docGrid');
-  if (!state.documents.length) {
-    grid.innerHTML = '<div class="empty">No documents yet — upload a PDF to get started</div>';
-    return;
-  }
+  if (!state.documents.length) { grid.innerHTML = '<div class="empty">No documents yet — upload a PDF to get started</div>'; return; }
   grid.innerHTML = state.documents.map(doc => `
-    <div class="doc-item" data-doc-id="${doc.id}">
+    <div class="doc-item">
       <div class="doc-icon">📄</div>
       <div class="doc-info">
         <div class="doc-name">${escapeHtml(doc.name)}</div>
@@ -881,63 +909,43 @@ function renderDocuments() {
         <button class="doc-btn danger" data-del-doc="${doc.id}">Remove</button>
       </div>
     </div>`).join('');
-
   grid.querySelectorAll('[data-view-doc]').forEach(b => b.addEventListener('click', () => openPdfViewer(b.dataset.viewDoc)));
   grid.querySelectorAll('[data-dl-doc]').forEach(b => b.addEventListener('click', () => downloadDoc(b.dataset.dlDoc)));
   grid.querySelectorAll('[data-del-doc]').forEach(b => b.addEventListener('click', () => {
-    const doc = state.documents.find(d => d.id === b.dataset.delDoc);
-    if (!doc) return;
+    const doc = state.documents.find(d => d.id === b.dataset.delDoc); if (!doc) return;
     if (confirm(`Remove "${doc.name}"? This cannot be undone.`)) {
       state.documents = state.documents.filter(d => d.id !== b.dataset.delDoc);
       save(); renderDocuments(); toast('Document removed');
     }
   }));
 }
-
 function handleDocUpload(file) {
   if (!file) return;
   if (file.type !== 'application/pdf') { toast('Only PDF files are supported'); return; }
   if (file.size > MAX_DOC_SIZE) { toast(`File too large — max 4MB (this file is ${fmtBytes(file.size)})`); return; }
   const reader = new FileReader();
   reader.onload = ev => {
-    const base64 = ev.target.result;
-    const doc = { id: uid(), name: file.name, size: file.size, uploadedAt: new Date().toISOString(), data: base64 };
-    state.documents.unshift(doc);
-    save();
-    renderDocuments();
-    toast(`"${file.name}" uploaded`);
+    state.documents.unshift({ id: uid(), name: file.name, size: file.size, uploadedAt: new Date().toISOString(), data: ev.target.result });
+    save(); renderDocuments(); toast(`"${file.name}" uploaded`);
   };
   reader.readAsDataURL(file);
 }
-
 $('#docUploadArea').addEventListener('click', () => $('#docFileInput').click());
 $('#docFileInput').addEventListener('change', e => { handleDocUpload(e.target.files[0]); e.target.value = ''; });
 $('#docUploadArea').addEventListener('dragover', e => { e.preventDefault(); $('#docUploadArea').classList.add('drag-over'); });
 $('#docUploadArea').addEventListener('dragleave', () => $('#docUploadArea').classList.remove('drag-over'));
-$('#docUploadArea').addEventListener('drop', e => {
-  e.preventDefault(); $('#docUploadArea').classList.remove('drag-over');
-  handleDocUpload(e.dataTransfer.files[0]);
-});
+$('#docUploadArea').addEventListener('drop', e => { e.preventDefault(); $('#docUploadArea').classList.remove('drag-over'); handleDocUpload(e.dataTransfer.files[0]); });
 
-/* ---------- PDF viewer ---------- */
 function openPdfViewer(docId) {
-  const doc = state.documents.find(d => d.id === docId);
-  if (!doc) return;
-  $('#pdfModalTitle').textContent = doc.name;
-  $('#pdfFrame').src = doc.data;
+  const doc = state.documents.find(d => d.id === docId); if (!doc) return;
+  $('#pdfModalTitle').textContent = doc.name; $('#pdfFrame').src = doc.data;
   $('#pdfModalBg').classList.add('open');
 }
-function closePdfViewer() {
-  $('#pdfModalBg').classList.remove('open');
-  $('#pdfFrame').src = '';
-}
+function closePdfViewer() { $('#pdfModalBg').classList.remove('open'); $('#pdfFrame').src = ''; }
 $('#pdfClose').addEventListener('click', closePdfViewer);
-
 function downloadDoc(docId) {
-  const doc = state.documents.find(d => d.id === docId);
-  if (!doc) return;
-  const a = document.createElement('a');
-  a.href = doc.data; a.download = doc.name; a.click();
+  const doc = state.documents.find(d => d.id === docId); if (!doc) return;
+  const a = document.createElement('a'); a.href = doc.data; a.download = doc.name; a.click();
 }
 
 /* ---------- Settings: export / import / reset ---------- */
@@ -956,16 +964,16 @@ $('#importFile').addEventListener('change', e => {
     try {
       const data = JSON.parse(ev.target.result);
       if (!data.starts || !data.checkins || !data.cravings) throw new Error('Invalid file');
-      state = { ...defaultState, ...data, documents: data.documents || [] };
+      state = { ...defaultState, ...data, triggers: data.triggers || [], documents: data.documents || [] };
       save(); renderAll(); $('#settingsModalBg').classList.remove('open'); toast('Imported');
     } catch(err) { alert('Could not import: ' + err.message); }
   };
   r.readAsText(f); e.target.value = '';
 });
 $('#resetBtn').addEventListener('click', () => {
-  if (confirm('Erase ALL data including documents? This cannot be undone.')) {
-    localStorage.removeItem(KEY); state = structuredClone(defaultState); renderAll();
-    $('#settingsModalBg').classList.remove('open'); toast('Reset complete');
+  if (confirm('Erase ALL data including documents and saved triggers? This cannot be undone.')) {
+    localStorage.removeItem(KEY); state = structuredClone(defaultState); selectedTrigger = null;
+    renderAll(); $('#settingsModalBg').classList.remove('open'); toast('Reset complete');
   }
 });
 
@@ -976,7 +984,8 @@ function escapeHtml(s) {
 
 /* ---------- Render all ---------- */
 function renderAll() {
-  renderStreaks(); renderMoney(); renderRecent(); renderCheckins(); renderCravings();
+  renderStreaks(); renderMoney(); renderRecent(); renderCheckins();
+  renderTriggerChips(); renderCravings();
   if (currentView === 'documents') renderDocuments();
 }
 applyTheme();
