@@ -64,7 +64,6 @@
   }
   button { -webkit-appearance: none; appearance: none; }
   input, select, textarea { -webkit-appearance: none; appearance: none; border-radius: var(--radius-sm); }
-  /* Prevent iOS focus-zoom: form fields must be >=16px. Buttons keep their own sizes. */
   input, select, textarea { font-size: 16px; }
   .container { max-width: 880px; margin: 0 auto; }
 
@@ -91,7 +90,8 @@
     color: var(--text-mute);
     margin-top: 6px;
   }
-  .theme-toggle {
+  .header-actions { display: flex; gap: 8px; align-items: center; }
+  .icon-btn {
     background: var(--surface);
     border: 1px solid var(--border);
     color: var(--text);
@@ -101,8 +101,10 @@
     font-size: 16px;
     display: grid; place-items: center;
     transition: all .2s;
+    flex-shrink: 0;
   }
-  .theme-toggle:hover { border-color: var(--text-dim); transform: rotate(15deg); }
+  .icon-btn:hover { border-color: var(--text-dim); }
+  .theme-toggle:hover { transform: rotate(15deg); }
 
   /* ===== Tabs ===== */
   .tabs {
@@ -166,307 +168,151 @@
   .streak-card[data-cat="alcohol"] { --card-color: var(--warm); }
   .streak-card[data-cat="nicotine"] { --card-color: var(--accent); }
 
-  .streak-head {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 14px;
-  }
-  .streak-label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: .15em;
-    color: var(--text-mute);
-    font-weight: 600;
-  }
+  .streak-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .streak-label { font-size: 11px; text-transform: uppercase; letter-spacing: .15em; color: var(--text-mute); font-weight: 600; }
   .streak-icon { font-size: 18px; opacity: .6; }
-  .streak-count {
-    font-family: 'Cormorant Garamond', Georgia, serif;
-    font-size: 56px;
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: -.03em;
-    color: var(--card-color);
-  }
-  .streak-unit {
-    font-size: 13px;
-    color: var(--text-dim);
-    margin-top: 2px;
-    margin-bottom: 12px;
-  }
-  .streak-since {
-    font-size: 12px;
-    color: var(--text-mute);
-    padding-top: 12px;
-    border-top: 1px dashed var(--border);
-  }
-  .streak-actions {
-    display: flex; gap: 6px; margin-top: 12px;
-  }
+  .streak-count { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 56px; font-weight: 500; line-height: 1; letter-spacing: -.03em; color: var(--card-color); }
+  .streak-unit { font-size: 13px; color: var(--text-dim); margin-top: 2px; margin-bottom: 12px; }
+  .streak-since { font-size: 12px; color: var(--text-mute); padding-top: 12px; border-top: 1px dashed var(--border); }
+  .streak-actions { display: flex; gap: 6px; margin-top: 12px; }
   .mini-btn {
-    flex: 1;
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-size: 11px;
-    padding: 6px 8px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all .15s;
+    flex: 1; background: var(--surface-2); border: 1px solid var(--border);
+    color: var(--text-dim); font-size: 11px; padding: 6px 8px; border-radius: 6px;
+    cursor: pointer; font-family: inherit; transition: all .15s;
   }
   .mini-btn:hover { color: var(--text); border-color: var(--text-dim); }
   .mini-btn.danger:hover { color: var(--warm); border-color: var(--warm); }
-
-  .not-set {
-    color: var(--text-mute);
-    font-style: italic;
-    font-size: 14px;
-    padding: 16px 0;
-    font-family: 'Cormorant Garamond', serif;
-  }
-  .set-btn {
-    background: var(--card-color, var(--accent));
-    color: white;
-    border: none;
-    padding: 9px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    font-family: inherit;
-    transition: opacity .2s;
-  }
+  .not-set { color: var(--text-mute); font-style: italic; font-size: 14px; padding: 16px 0; font-family: 'Cormorant Garamond', serif; }
+  .set-btn { background: var(--card-color, var(--accent)); color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; font-family: inherit; transition: opacity .2s; }
   .set-btn:hover { opacity: .88; }
 
   /* ===== Money saved ===== */
   .money-card {
     background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px;
-    margin-bottom: 24px;
-    position: relative;
+    border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px;
   }
-  .money-head {
-    display: flex; justify-content: space-between; align-items: baseline;
-    margin-bottom: 18px;
-  }
-  .money-head h2 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px; font-weight: 500;
-    letter-spacing: -.01em;
-  }
-  .money-total {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 44px; font-weight: 500;
-    color: var(--gold);
-    letter-spacing: -.02em;
-    line-height: 1;
-  }
-  .money-breakdown {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 14px;
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
-  }
+  .money-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px; }
+  .money-head h2 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 500; letter-spacing: -.01em; }
+  .money-total { font-family: 'Cormorant Garamond', serif; font-size: 44px; font-weight: 500; color: var(--gold); letter-spacing: -.02em; line-height: 1; }
+  .money-breakdown { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
   .money-item .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--text-mute); }
   .money-item .val { font-family: 'Cormorant Garamond', serif; font-size: 22px; margin-top: 2px; }
-  .money-config {
-    display: grid; gap: 10px;
-    margin-top: 16px; padding-top: 16px;
-    border-top: 1px dashed var(--border);
-  }
-  .money-row {
-    display: grid;
-    grid-template-columns: 90px 1fr 1fr;
-    gap: 8px;
-    align-items: center;
-    font-size: 13px;
-  }
+  .money-config { display: grid; gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border); }
+  .money-row { display: grid; grid-template-columns: 90px 1fr 1fr; gap: 8px; align-items: center; font-size: 13px; }
   .money-row .name { color: var(--text-dim); font-size: 12px; text-transform: uppercase; letter-spacing: .1em; }
 
   /* ===== Forms ===== */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 22px;
-    margin-bottom: 20px;
-  }
-  .card h2 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
-    font-weight: 500;
-    margin-bottom: 16px;
-    letter-spacing: -.01em;
-  }
-  .card h3 {
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: .15em;
-    color: var(--text-mute);
-    margin-bottom: 12px;
-    font-weight: 600;
-  }
-  label {
-    display: block;
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-bottom: 6px;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-  }
-  input, select, textarea {
-    width: 100%;
-    padding: 10px 12px;
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text);
-    font-size: 16px;
-    font-family: inherit;
-    transition: border-color .15s;
-  }
-  input:focus, select:focus, textarea:focus {
-    outline: none;
-    border-color: var(--accent);
-  }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; margin-bottom: 20px; }
+  .card h2 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 500; margin-bottom: 16px; letter-spacing: -.01em; }
+  .card h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .15em; color: var(--text-mute); margin-bottom: 12px; font-weight: 600; }
+  label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .08em; }
+  input, select, textarea { width: 100%; padding: 10px 12px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 16px; font-family: inherit; transition: border-color .15s; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
   textarea { resize: vertical; min-height: 70px; }
-  /* iOS renders datetime-local with zero internal height; force a sensible min-height */
   input[type="datetime-local"] { min-height: 44px; line-height: 1.2; }
-  /* iOS 44pt minimum tap target on key controls */
-  .btn, .set-btn, .tab, .mood-btn, .intensity-btn, .quick-chip, .theme-toggle { min-height: 38px; }
+  .btn, .set-btn, .tab, .mood-btn, .intensity-btn, .quick-chip, .icon-btn { min-height: 38px; }
   .btn, .set-btn { min-height: 44px; }
-  .form-grid {
-    display: grid;
-    gap: 12px;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  }
-  .btn {
-    background: var(--text);
-    color: var(--bg);
-    border: none;
-    padding: 10px 18px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    font-family: inherit;
-    transition: opacity .2s, transform .1s;
-  }
+  .form-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+  .btn { background: var(--text); color: var(--bg); border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; font-family: inherit; transition: opacity .2s, transform .1s; }
   .btn:hover { opacity: .85; }
   .btn:active { transform: scale(.98); }
   .btn-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
 
   /* ===== Mood scale ===== */
-  .mood-scale {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 6px;
-    margin-bottom: 12px;
-  }
-  .mood-btn {
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 4px;
-    cursor: pointer;
-    font-size: 22px;
-    transition: all .15s;
-  }
+  .mood-scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 12px; }
+  .mood-btn { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 4px; cursor: pointer; font-size: 22px; transition: all .15s; }
   .mood-btn:hover { transform: translateY(-2px); }
-  .mood-btn.selected {
-    background: var(--accent-soft);
-    border-color: var(--accent);
-  }
+  .mood-btn.selected { background: var(--accent-soft); border-color: var(--accent); }
 
   /* ===== Intensity ===== */
   .intensity-row { display: flex; gap: 6px; }
-  .intensity-btn {
-    flex: 1;
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 10px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-dim);
-    font-family: inherit;
-    transition: all .15s;
-  }
-  .intensity-btn.selected {
-    background: var(--warm-soft);
-    border-color: var(--warm);
-    color: var(--warm);
-  }
+  .intensity-btn { flex: 1; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 10px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-dim); font-family: inherit; transition: all .15s; }
+  .intensity-btn.selected { background: var(--warm-soft); border-color: var(--warm); color: var(--warm); }
 
   /* ===== Log entries ===== */
   .log-list { display: grid; gap: 8px; }
-  .log-entry {
-    background: var(--surface-2);
-    border-left: 3px solid var(--accent);
-    padding: 12px 14px;
-    border-radius: 6px;
-    font-size: 13px;
-    position: relative;
-  }
+  .log-entry { background: var(--surface-2); border-left: 3px solid var(--accent); padding: 12px 14px; border-radius: 6px; font-size: 13px; position: relative; }
   .log-entry.craving { border-left-color: var(--warm); }
-  .log-entry .meta {
-    font-size: 11px;
-    color: var(--text-mute);
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    margin-bottom: 4px;
-    display: flex;
-    justify-content: space-between;
-  }
+  .log-entry .meta { font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; display: flex; justify-content: space-between; }
   .log-entry .body { color: var(--text); line-height: 1.5; }
-  .log-entry .tags {
-    display: flex; gap: 6px; flex-wrap: wrap;
-    margin-top: 6px;
-  }
-  .tag {
-    background: var(--bg);
-    color: var(--text-dim);
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-  }
-  .delete-x {
-    background: transparent;
-    border: none;
-    color: var(--text-mute);
-    cursor: pointer;
-    font-size: 14px;
-    padding: 0 4px;
-  }
+  .log-entry .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .tag { background: var(--bg); color: var(--text-dim); font-size: 11px; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border); }
+  .delete-x { background: transparent; border: none; color: var(--text-mute); cursor: pointer; font-size: 14px; padding: 0 4px; }
   .delete-x:hover { color: var(--warm); }
-
-  .empty {
-    text-align: center;
-    padding: 32px 12px;
-    color: var(--text-mute);
-    font-style: italic;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 16px;
-  }
+  .empty { text-align: center; padding: 32px 12px; color: var(--text-mute); font-style: italic; font-family: 'Cormorant Garamond', serif; font-size: 16px; }
 
   /* ===== Charts ===== */
-  .chart-wrap {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 16px;
-    height: 280px;
-    position: relative;
-  }
+  .chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; height: 280px; position: relative; }
   .chart-wrap canvas { max-height: 240px !important; }
 
-  /* ===== Modal ===== */
+  /* ===== Document library ===== */
+  .doc-upload-area {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 36px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    margin-bottom: 20px;
+    background: var(--surface-2);
+  }
+  .doc-upload-area:hover, .doc-upload-area.drag-over {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .doc-upload-icon { font-size: 32px; margin-bottom: 10px; opacity: .6; }
+  .doc-upload-area p { font-size: 14px; color: var(--text-dim); margin-bottom: 4px; }
+  .doc-upload-area small { font-size: 12px; color: var(--text-mute); }
+  .doc-grid { display: grid; gap: 10px; }
+  .doc-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: box-shadow .2s;
+  }
+  .doc-item:hover { box-shadow: var(--shadow); }
+  .doc-icon { font-size: 28px; flex-shrink: 0; }
+  .doc-info { flex: 1; min-width: 0; }
+  .doc-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .doc-meta { font-size: 11px; color: var(--text-mute); margin-top: 2px; text-transform: uppercase; letter-spacing: .08em; }
+  .doc-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .doc-btn {
+    background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim);
+    font-size: 11px; padding: 5px 10px; border-radius: 6px; cursor: pointer;
+    font-family: inherit; transition: all .15s; white-space: nowrap;
+  }
+  .doc-btn:hover { color: var(--text); border-color: var(--text-dim); }
+  .doc-btn.danger:hover { color: var(--warm); border-color: var(--warm); }
+
+  /* ===== PDF Viewer modal ===== */
+  .pdf-modal-bg {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: none;
+    flex-direction: column;
+    z-index: 200;
+    padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+             max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  }
+  .pdf-modal-bg.open { display: flex; animation: fadeIn .2s; }
+  .pdf-modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; background: var(--surface); border-radius: var(--radius) var(--radius) 0 0;
+    border-bottom: 1px solid var(--border); flex-shrink: 0;
+  }
+  .pdf-modal-header .doc-name { font-size: 14px; font-weight: 500; max-width: 70vw; }
+  .pdf-close { background: transparent; border: none; font-size: 20px; cursor: pointer; color: var(--text-dim); padding: 4px 8px; line-height: 1; }
+  .pdf-close:hover { color: var(--text); }
+  .pdf-frame-wrap { flex: 1; background: var(--surface); border-radius: 0 0 var(--radius) var(--radius); overflow: hidden; }
+  .pdf-frame-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+
+  /* ===== Settings modal ===== */
   .modal-bg {
     position: fixed; inset: 0;
     background: rgba(0,0,0,.5);
@@ -475,28 +321,15 @@
     display: none;
     align-items: center; justify-content: center;
     z-index: 100;
-    padding:
-      max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
-      max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+             max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
   }
   .modal-bg.open { display: flex; animation: fadeIn .2s; }
-  .modal {
-    background: var(--surface);
-    border-radius: var(--radius);
-    padding: 24px;
-    max-width: 380px;
-    width: 100%;
-    border: 1px solid var(--border);
-  }
-  .modal h3 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
-    font-weight: 500;
-    margin-bottom: 14px;
-    text-transform: none;
-    letter-spacing: -.01em;
-    color: var(--text);
-  }
+  .modal { background: var(--surface); border-radius: var(--radius); padding: 24px; max-width: 420px; width: 100%; border: 1px solid var(--border); }
+  .modal h3 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 500; margin-bottom: 14px; text-transform: none; letter-spacing: -.01em; color: var(--text); }
+  .modal-section { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .modal-section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .modal-section p { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.5; }
 
   /* ===== Toast ===== */
   .toast {
@@ -511,38 +344,30 @@
     font-size: 14px;
     font-weight: 500;
     transition: transform .3s ease;
-    z-index: 200;
+    z-index: 300;
     box-shadow: var(--shadow);
     pointer-events: none;
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
-  /* Quick add */
+  /* Quick chips */
   .quick-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
-  .quick-chip {
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    padding: 6px 12px;
-    border-radius: 16px;
-    font-size: 12px;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all .15s;
-  }
+  .quick-chip { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim); padding: 6px 12px; border-radius: 16px; font-size: 12px; cursor: pointer; font-family: inherit; transition: all .15s; }
   .quick-chip:hover { border-color: var(--text-dim); color: var(--text); }
   .quick-chip.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 
+  /* Size warning */
+  .size-warn { background: var(--warm-soft); border: 1px solid var(--warm); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; color: var(--warm); margin-bottom: 14px; display: none; }
+  .size-warn.show { display: block; }
+
   @media (max-width: 540px) {
-    body { padding:
-      max(16px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
-      calc(70px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
-    }
+    body { padding: max(16px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) calc(70px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
     .brand h1 { font-size: 28px; }
     .streak-count { font-size: 48px; }
     .money-total { font-size: 36px; }
     .money-row { grid-template-columns: 1fr; gap: 4px; }
     .money-row .name { margin-top: 6px; }
+    .doc-actions { flex-direction: column; }
   }
 </style>
 </head>
@@ -554,7 +379,10 @@
       <h1>Recovery</h1>
       <div class="sub">Day by day · since today</div>
     </div>
-    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+    <div class="header-actions">
+      <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Toggle theme">◐</button>
+      <button class="icon-btn" id="settingsBtn" aria-label="Settings" title="Settings">⚙</button>
+    </div>
   </header>
 
   <div class="tabs" role="tablist">
@@ -562,13 +390,12 @@
     <button class="tab" data-view="checkin">Check-in</button>
     <button class="tab" data-view="cravings">Cravings</button>
     <button class="tab" data-view="charts">Charts</button>
-    <button class="tab" data-view="data">Data</button>
+    <button class="tab" data-view="documents">Documents</button>
   </div>
 
   <!-- ============ DASHBOARD ============ -->
   <section class="view active" id="view-dashboard">
     <div class="streaks" id="streaksGrid"></div>
-
     <div class="money-card">
       <div class="money-head">
         <h2>Money saved</h2>
@@ -580,7 +407,6 @@
         <div id="costRows" style="margin-top:14px; display:grid; gap:10px;"></div>
       </details>
     </div>
-
     <div class="card">
       <h3>Recent activity</h3>
       <div class="log-list" id="recentActivity"></div>
@@ -605,7 +431,6 @@
         <button class="btn" id="saveCheckin">Save check-in</button>
       </div>
     </div>
-
     <div class="card">
       <h3>Recent check-ins</h3>
       <div class="log-list" id="checkinList"></div>
@@ -622,7 +447,6 @@
         <button class="quick-chip" data-cat="alcohol">Alcohol</button>
         <button class="quick-chip" data-cat="nicotine">Nicotine</button>
       </div>
-
       <label>Intensity (1 = mild, 5 = intense)</label>
       <div class="intensity-row" id="intensityRow">
         <button class="intensity-btn" data-int="1">1</button>
@@ -631,18 +455,14 @@
         <button class="intensity-btn" data-int="4">4</button>
         <button class="intensity-btn" data-int="5">5</button>
       </div>
-
       <label style="margin-top:12px">Trigger</label>
       <input type="text" id="cravingTrigger" placeholder="e.g. stress, social, boredom, after coffee...">
-
       <label style="margin-top:12px">Notes (optional)</label>
       <textarea id="cravingNotes" placeholder="What helped? What did you do instead?"></textarea>
-
       <div class="btn-row">
         <button class="btn" id="saveCraving">Log craving</button>
       </div>
     </div>
-
     <div class="card">
       <h3>Recent cravings</h3>
       <div class="log-list" id="cravingsList"></div>
@@ -654,34 +474,32 @@
     <div class="card" style="padding:18px;">
       <h3>Mood — last 30 days</h3>
       <div class="chart-wrap"><canvas id="moodChart"></canvas></div>
-
       <h3 style="margin-top:8px">Cravings — last 30 days</h3>
       <div class="chart-wrap"><canvas id="cravingsChart"></canvas></div>
-
       <h3 style="margin-top:8px">Cravings by trigger</h3>
       <div class="chart-wrap"><canvas id="triggerChart"></canvas></div>
     </div>
   </section>
 
-  <!-- ============ DATA ============ -->
-  <section class="view" id="view-data">
+  <!-- ============ DOCUMENTS ============ -->
+  <section class="view" id="view-documents">
     <div class="card">
-      <h2>Your data</h2>
-      <p style="color:var(--text-dim); font-size:14px; margin-bottom:14px;">
-        Everything is stored locally in your browser (localStorage). Nothing is sent anywhere.
-      </p>
-      <div class="btn-row">
-        <button class="btn" id="exportBtn">Export JSON</button>
-        <button class="btn" id="importBtn" style="background:var(--surface-2); color:var(--text); border:1px solid var(--border)">Import JSON</button>
-        <input type="file" id="importFile" accept="application/json" style="display:none">
-        <button class="btn" id="resetBtn" style="background:var(--warm); color:white;">Reset everything</button>
+      <h2>Document library</h2>
+      <p style="color:var(--text-dim); font-size:14px; margin-bottom:16px;">Upload PDFs related to your recovery — plans, reading material, resources. Stored locally on your device.</p>
+      <div class="size-warn" id="sizeWarn">⚠️ Storage is getting full. Consider removing older documents before uploading more. Browser localStorage has a ~5MB limit.</div>
+      <div class="doc-upload-area" id="docUploadArea">
+        <div class="doc-upload-icon">📄</div>
+        <p>Drop a PDF here or click to browse</p>
+        <small>PDF only · max 4MB per file</small>
       </div>
+      <input type="file" id="docFileInput" accept="application/pdf" style="display:none">
+      <div class="doc-grid" id="docGrid"></div>
     </div>
   </section>
 
 </div>
 
-<!-- Modal for setting start date -->
+<!-- ===== Streak / date modal ===== -->
 <div class="modal-bg" id="modalBg">
   <div class="modal">
     <h3 id="modalTitle">Set start date</h3>
@@ -694,14 +512,47 @@
   </div>
 </div>
 
+<!-- ===== Settings modal ===== -->
+<div class="modal-bg" id="settingsModalBg">
+  <div class="modal">
+    <h3>Settings</h3>
+
+    <div class="modal-section">
+      <div style="font-size:12px; text-transform:uppercase; letter-spacing:.15em; color:var(--text-mute); font-weight:600; margin-bottom:10px;">Export &amp; import</div>
+      <p>Back up all your data as a JSON file, or restore from a previous backup. Your documents are included.</p>
+      <div class="btn-row" style="margin-top:0;">
+        <button class="btn" id="exportBtn">Export JSON</button>
+        <button class="btn" id="importBtn" style="background:var(--surface-2); color:var(--text); border:1px solid var(--border)">Import JSON</button>
+        <input type="file" id="importFile" accept="application/json" style="display:none">
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div style="font-size:12px; text-transform:uppercase; letter-spacing:.15em; color:var(--text-mute); font-weight:600; margin-bottom:10px;">Danger zone</div>
+      <p>Permanently erase all data including documents. This cannot be undone.</p>
+      <button class="btn" id="resetBtn" style="background:var(--warm); color:white; margin-top:0;">Reset everything</button>
+    </div>
+
+    <div class="btn-row" style="margin-top:4px;">
+      <button class="btn" id="settingsClose" style="background:var(--surface-2); color:var(--text); border:1px solid var(--border)">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PDF viewer ===== -->
+<div class="pdf-modal-bg" id="pdfModalBg">
+  <div class="pdf-modal-header">
+    <div class="doc-name" id="pdfModalTitle">Document</div>
+    <button class="pdf-close" id="pdfClose">✕</button>
+  </div>
+  <div class="pdf-frame-wrap">
+    <iframe id="pdfFrame" title="PDF viewer"></iframe>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-/* =========================================================
-   Recovery Tracker — V1
-   Single-file, localStorage, Chart.js, dark mode, PWA-ready
-   ========================================================= */
-
 const KEY = 'recovery_v1';
 const CATS = [
   { id: 'drugs',    label: 'Drugs',    icon: '🌿' },
@@ -709,12 +560,12 @@ const CATS = [
   { id: 'nicotine', label: 'Nicotine', icon: '🚬' }
 ];
 
-/* ---------- State ---------- */
 const defaultState = {
   starts: { drugs: null, alcohol: null, nicotine: null },
   costs:  { drugs: { amount: 0, unit: 'day' }, alcohol: { amount: 0, unit: 'day' }, nicotine: { amount: 0, unit: 'day' } },
-  checkins: [],   // { id, ts, mood, notes }
-  cravings: [],   // { id, ts, cat, intensity, trigger, notes }
+  checkins: [],
+  cravings: [],
+  documents: [],
   theme: 'dark'
 };
 let state = load();
@@ -724,20 +575,30 @@ function load() {
     const raw = localStorage.getItem(KEY);
     if (!raw) return structuredClone(defaultState);
     const parsed = JSON.parse(raw);
-    return { ...structuredClone(defaultState), ...parsed,
+    return {
+      ...structuredClone(defaultState), ...parsed,
       starts: { ...defaultState.starts, ...(parsed.starts || {}) },
-      costs:  { ...defaultState.costs,  ...(parsed.costs  || {}) }
+      costs:  { ...defaultState.costs,  ...(parsed.costs  || {}) },
+      documents: parsed.documents || []
     };
   } catch { return structuredClone(defaultState); }
 }
-function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+function save() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(state));
+  } catch(e) {
+    if (e.name === 'QuotaExceededError') {
+      toast('Storage full — remove a document to free space');
+    }
+  }
+}
 
-/* ---------- Utils ---------- */
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 const uid = () => Math.random().toString(36).slice(2,10) + Date.now().toString(36);
 const fmtDate = ts => new Date(ts).toLocaleString('en-IE', { dateStyle: 'medium', timeStyle: 'short' });
 const fmtMoney = n => new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' }).format(n);
+const fmtBytes = b => b < 1024*1024 ? (b/1024).toFixed(1)+' KB' : (b/(1024*1024)).toFixed(1)+' MB';
 
 function durationParts(start) {
   if (!start) return null;
@@ -751,17 +612,15 @@ function toast(msg) {
   const t = $('#toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
+  setTimeout(() => t.classList.remove('show'), 2400);
 }
 
 /* ---------- Theme ---------- */
 function applyTheme() {
   document.documentElement.setAttribute('data-theme', state.theme);
   $('#themeToggle').textContent = state.theme === 'dark' ? '☾' : '◐';
-  // Keep iOS status bar colour in sync on manual toggle
   const bg = state.theme === 'dark' ? '#0a0e1a' : '#f7f5f0';
   document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.setAttribute('content', bg));
-  // Re-render charts so axis colours update
   if (currentView === 'charts') renderCharts();
 }
 $('#themeToggle').addEventListener('click', () => {
@@ -780,9 +639,15 @@ $$('.tab').forEach(t => t.addEventListener('click', () => {
   if (currentView === 'charts') renderCharts();
   if (currentView === 'checkin') renderCheckins();
   if (currentView === 'cravings') renderCravings();
+  if (currentView === 'documents') renderDocuments();
 }));
 
-/* ---------- Streak cards ---------- */
+/* ---------- Settings modal ---------- */
+$('#settingsBtn').addEventListener('click', () => $('#settingsModalBg').classList.add('open'));
+$('#settingsClose').addEventListener('click', () => $('#settingsModalBg').classList.remove('open'));
+$('#settingsModalBg').addEventListener('click', e => { if (e.target.id === 'settingsModalBg') $('#settingsModalBg').classList.remove('open'); });
+
+/* ---------- Streaks ---------- */
 function renderStreaks() {
   const grid = $('#streaksGrid');
   grid.innerHTML = '';
@@ -792,48 +657,36 @@ function renderStreaks() {
     const card = document.createElement('div');
     card.className = 'streak-card';
     card.dataset.cat = c.id;
-
     if (!start) {
       card.innerHTML = `
-        <div class="streak-head">
-          <span class="streak-label">${c.label}</span>
-          <span class="streak-icon">${c.icon}</span>
-        </div>
+        <div class="streak-head"><span class="streak-label">${c.label}</span><span class="streak-icon">${c.icon}</span></div>
         <div class="not-set">Not set yet</div>
-        <button class="set-btn" data-set="${c.id}">Set start date</button>
-      `;
+        <button class="set-btn" data-set="${c.id}">Set start date</button>`;
     } else {
       const big = d.days >= 1 ? d.days : d.hours;
       const unit = d.days >= 1 ? (d.days === 1 ? 'day clean' : 'days clean') : (d.hours === 1 ? 'hour clean' : 'hours clean');
       card.innerHTML = `
-        <div class="streak-head">
-          <span class="streak-label">${c.label}</span>
-          <span class="streak-icon">${c.icon}</span>
-        </div>
+        <div class="streak-head"><span class="streak-label">${c.label}</span><span class="streak-icon">${c.icon}</span></div>
         <div class="streak-count">${big}</div>
         <div class="streak-unit">${unit}${d.days >= 1 ? ` · ${d.hours}h` : ''}</div>
         <div class="streak-since">Since ${fmtDate(start)}</div>
         <div class="streak-actions">
           <button class="mini-btn" data-set="${c.id}">Edit date</button>
           <button class="mini-btn danger" data-reset="${c.id}">Reset</button>
-        </div>
-      `;
+        </div>`;
     }
     grid.appendChild(card);
   });
-
   grid.querySelectorAll('[data-set]').forEach(b => b.addEventListener('click', () => openModal(b.dataset.set)));
   grid.querySelectorAll('[data-reset]').forEach(b => b.addEventListener('click', () => {
     const cat = b.dataset.reset;
-    if (confirm(`Reset ${cat} streak? The current start date will be cleared. (Relapses happen — this is a tool, not a judge.)`)) {
-      state.starts[cat] = null;
-      save(); renderAll();
-      toast('Streak reset');
+    if (confirm(`Reset ${cat} streak? The current start date will be cleared.`)) {
+      state.starts[cat] = null; save(); renderAll(); toast('Streak reset');
     }
   }));
 }
 
-/* ---------- Money saved ---------- */
+/* ---------- Money ---------- */
 function calcMoney() {
   const out = { total: 0, items: [] };
   CATS.forEach(c => {
@@ -851,10 +704,7 @@ function calcMoney() {
 function renderMoney() {
   const m = calcMoney();
   $('#moneyTotal').textContent = fmtMoney(m.total);
-  $('#moneyBreakdown').innerHTML = m.items.map(i =>
-    `<div class="money-item"><div class="lbl">${i.cat.label}</div><div class="val">${fmtMoney(i.saved)}</div></div>`
-  ).join('');
-
+  $('#moneyBreakdown').innerHTML = m.items.map(i => `<div class="money-item"><div class="lbl">${i.cat.label}</div><div class="val">${fmtMoney(i.saved)}</div></div>`).join('');
   $('#costRows').innerHTML = CATS.map(c => `
     <div class="money-row">
       <span class="name">${c.label}</span>
@@ -864,20 +714,12 @@ function renderMoney() {
         <option value="week"  ${state.costs[c.id].unit==='week'?'selected':''}>per week</option>
         <option value="month" ${state.costs[c.id].unit==='month'?'selected':''}>per month</option>
       </select>
-    </div>
-  `).join('');
-
-  $$('#costRows [data-cost]').forEach(inp => inp.addEventListener('change', e => {
-    state.costs[e.target.dataset.cost].amount = parseFloat(e.target.value) || 0;
-    save(); renderMoney();
-  }));
-  $$('#costRows [data-unit]').forEach(sel => sel.addEventListener('change', e => {
-    state.costs[e.target.dataset.unit].unit = e.target.value;
-    save(); renderMoney();
-  }));
+    </div>`).join('');
+  $$('#costRows [data-cost]').forEach(inp => inp.addEventListener('change', e => { state.costs[e.target.dataset.cost].amount = parseFloat(e.target.value) || 0; save(); renderMoney(); }));
+  $$('#costRows [data-unit]').forEach(sel => sel.addEventListener('change', e => { state.costs[e.target.dataset.unit].unit = e.target.value; save(); renderMoney(); }));
 }
 
-/* ---------- Modal ---------- */
+/* ---------- Streak modal ---------- */
 let modalCat = null;
 function openModal(cat) {
   modalCat = cat;
@@ -895,51 +737,34 @@ function toLocalInput(iso) {
 $('#modalCancel').addEventListener('click', closeModal);
 $('#modalBg').addEventListener('click', e => { if (e.target.id === 'modalBg') closeModal(); });
 $('#modalSave').addEventListener('click', () => {
-  const v = $('#modalDate').value;
-  if (!v) return;
+  const v = $('#modalDate').value; if (!v) return;
   state.starts[modalCat] = new Date(v).toISOString();
-  save(); closeModal(); renderAll();
-  toast('Saved');
+  save(); closeModal(); renderAll(); toast('Saved');
 });
 
 /* ---------- Check-in ---------- */
 let selectedMood = null;
 $$('#moodScale .mood-btn').forEach(b => b.addEventListener('click', () => {
   $$('#moodScale .mood-btn').forEach(x => x.classList.remove('selected'));
-  b.classList.add('selected');
-  selectedMood = parseInt(b.dataset.mood);
+  b.classList.add('selected'); selectedMood = parseInt(b.dataset.mood);
 }));
 $('#saveCheckin').addEventListener('click', () => {
   if (!selectedMood) { toast('Pick a mood first'); return; }
-  state.checkins.unshift({
-    id: uid(),
-    ts: new Date().toISOString(),
-    mood: selectedMood,
-    notes: $('#checkinNotes').value.trim()
-  });
-  save();
-  $('#checkinNotes').value = '';
-  $$('#moodScale .mood-btn').forEach(x => x.classList.remove('selected'));
-  selectedMood = null;
-  renderCheckins(); renderRecent();
-  toast('Check-in saved');
+  state.checkins.unshift({ id: uid(), ts: new Date().toISOString(), mood: selectedMood, notes: $('#checkinNotes').value.trim() });
+  save(); $('#checkinNotes').value = '';
+  $$('#moodScale .mood-btn').forEach(x => x.classList.remove('selected')); selectedMood = null;
+  renderCheckins(); renderRecent(); toast('Check-in saved');
 });
-
 function renderCheckins() {
   const list = $('#checkinList');
   if (!state.checkins.length) { list.innerHTML = '<div class="empty">No check-ins yet</div>'; return; }
   list.innerHTML = state.checkins.slice(0, 20).map(c => `
     <div class="log-entry">
-      <div class="meta">
-        <span>${fmtDate(c.ts)} · mood ${c.mood}/5 ${moodEmoji(c.mood)}</span>
-        <button class="delete-x" data-del-checkin="${c.id}">×</button>
-      </div>
+      <div class="meta"><span>${fmtDate(c.ts)} · mood ${c.mood}/5 ${moodEmoji(c.mood)}</span><button class="delete-x" data-del-checkin="${c.id}">×</button></div>
       ${c.notes ? `<div class="body">${escapeHtml(c.notes)}</div>` : ''}
-    </div>
-  `).join('');
+    </div>`).join('');
   list.querySelectorAll('[data-del-checkin]').forEach(b => b.addEventListener('click', () => {
-    state.checkins = state.checkins.filter(x => x.id !== b.dataset.delCheckin);
-    save(); renderCheckins(); renderRecent();
+    state.checkins = state.checkins.filter(x => x.id !== b.dataset.delCheckin); save(); renderCheckins(); renderRecent();
   }));
 }
 function moodEmoji(m) { return ['','😔','😕','😐','🙂','😊'][m] || ''; }
@@ -947,79 +772,48 @@ function moodEmoji(m) { return ['','😔','😕','😐','🙂','😊'][m] || '';
 /* ---------- Cravings ---------- */
 let cravingCat = null, cravingInt = null;
 $$('#cravingCats .quick-chip').forEach(b => b.addEventListener('click', () => {
-  $$('#cravingCats .quick-chip').forEach(x => x.classList.remove('active'));
-  b.classList.add('active');
-  cravingCat = b.dataset.cat;
+  $$('#cravingCats .quick-chip').forEach(x => x.classList.remove('active')); b.classList.add('active'); cravingCat = b.dataset.cat;
 }));
 $$('#intensityRow .intensity-btn').forEach(b => b.addEventListener('click', () => {
-  $$('#intensityRow .intensity-btn').forEach(x => x.classList.remove('selected'));
-  b.classList.add('selected');
-  cravingInt = parseInt(b.dataset.int);
+  $$('#intensityRow .intensity-btn').forEach(x => x.classList.remove('selected')); b.classList.add('selected'); cravingInt = parseInt(b.dataset.int);
 }));
 $('#saveCraving').addEventListener('click', () => {
   if (!cravingCat) { toast('Pick a category'); return; }
   if (!cravingInt) { toast('Pick an intensity'); return; }
-  state.cravings.unshift({
-    id: uid(),
-    ts: new Date().toISOString(),
-    cat: cravingCat,
-    intensity: cravingInt,
-    trigger: $('#cravingTrigger').value.trim(),
-    notes: $('#cravingNotes').value.trim()
-  });
-  save();
-  $('#cravingTrigger').value = '';
-  $('#cravingNotes').value = '';
+  state.cravings.unshift({ id: uid(), ts: new Date().toISOString(), cat: cravingCat, intensity: cravingInt, trigger: $('#cravingTrigger').value.trim(), notes: $('#cravingNotes').value.trim() });
+  save(); $('#cravingTrigger').value = ''; $('#cravingNotes').value = '';
   $$('#cravingCats .quick-chip').forEach(x => x.classList.remove('active'));
   $$('#intensityRow .intensity-btn').forEach(x => x.classList.remove('selected'));
-  cravingCat = null; cravingInt = null;
-  renderCravings(); renderRecent();
-  toast('Craving logged — you got through it');
+  cravingCat = null; cravingInt = null; renderCravings(); renderRecent(); toast('Craving logged — you got through it');
 });
-
 function renderCravings() {
   const list = $('#cravingsList');
   if (!state.cravings.length) { list.innerHTML = '<div class="empty">No cravings logged</div>'; return; }
   list.innerHTML = state.cravings.slice(0, 30).map(c => {
     const cat = CATS.find(x => x.id === c.cat);
-    return `
-      <div class="log-entry craving">
-        <div class="meta">
-          <span>${fmtDate(c.ts)} · ${cat ? cat.label : c.cat} · intensity ${c.intensity}/5</span>
-          <button class="delete-x" data-del-crave="${c.id}">×</button>
-        </div>
-        ${c.trigger ? `<div class="tags"><span class="tag">${escapeHtml(c.trigger)}</span></div>` : ''}
-        ${c.notes ? `<div class="body" style="margin-top:6px">${escapeHtml(c.notes)}</div>` : ''}
-      </div>
-    `;
+    return `<div class="log-entry craving">
+      <div class="meta"><span>${fmtDate(c.ts)} · ${cat ? cat.label : c.cat} · intensity ${c.intensity}/5</span><button class="delete-x" data-del-crave="${c.id}">×</button></div>
+      ${c.trigger ? `<div class="tags"><span class="tag">${escapeHtml(c.trigger)}</span></div>` : ''}
+      ${c.notes ? `<div class="body" style="margin-top:6px">${escapeHtml(c.notes)}</div>` : ''}
+    </div>`;
   }).join('');
   list.querySelectorAll('[data-del-crave]').forEach(b => b.addEventListener('click', () => {
-    state.cravings = state.cravings.filter(x => x.id !== b.dataset.delCrave);
-    save(); renderCravings(); renderRecent();
+    state.cravings = state.cravings.filter(x => x.id !== b.dataset.delCrave); save(); renderCravings(); renderRecent();
   }));
 }
 
-/* ---------- Recent activity (dashboard) ---------- */
+/* ---------- Recent activity ---------- */
 function renderRecent() {
   const merged = [
     ...state.checkins.map(c => ({ ts: c.ts, type: 'checkin', data: c })),
     ...state.cravings.map(c => ({ ts: c.ts, type: 'craving', data: c }))
   ].sort((a,b) => new Date(b.ts) - new Date(a.ts)).slice(0, 6);
-
   const el = $('#recentActivity');
   if (!merged.length) { el.innerHTML = '<div class="empty">Nothing logged yet — try a check-in to start</div>'; return; }
   el.innerHTML = merged.map(m => {
-    if (m.type === 'checkin') {
-      return `<div class="log-entry">
-        <div class="meta"><span>${fmtDate(m.ts)} · check-in ${moodEmoji(m.data.mood)}</span></div>
-        ${m.data.notes ? `<div class="body">${escapeHtml(m.data.notes.slice(0,140))}</div>` : ''}
-      </div>`;
-    }
+    if (m.type === 'checkin') return `<div class="log-entry"><div class="meta"><span>${fmtDate(m.ts)} · check-in ${moodEmoji(m.data.mood)}</span></div>${m.data.notes ? `<div class="body">${escapeHtml(m.data.notes.slice(0,140))}</div>` : ''}</div>`;
     const cat = CATS.find(x => x.id === m.data.cat);
-    return `<div class="log-entry craving">
-      <div class="meta"><span>${fmtDate(m.ts)} · craving · ${cat ? cat.label : ''} · ${m.data.intensity}/5</span></div>
-      ${m.data.trigger ? `<div class="tags"><span class="tag">${escapeHtml(m.data.trigger)}</span></div>` : ''}
-    </div>`;
+    return `<div class="log-entry craving"><div class="meta"><span>${fmtDate(m.ts)} · craving · ${cat ? cat.label : ''} · ${m.data.intensity}/5</span></div>${m.data.trigger ? `<div class="tags"><span class="tag">${escapeHtml(m.data.trigger)}</span></div>` : ''}</div>`;
   }).join('');
 }
 
@@ -1027,129 +821,151 @@ function renderRecent() {
 let charts = {};
 function chartColors() {
   const cs = getComputedStyle(document.documentElement);
-  return {
-    text: cs.getPropertyValue('--text-dim').trim(),
-    grid: cs.getPropertyValue('--border').trim(),
-    accent: cs.getPropertyValue('--accent').trim(),
-    warm: cs.getPropertyValue('--warm').trim(),
-    gold: cs.getPropertyValue('--gold').trim()
-  };
+  return { text: cs.getPropertyValue('--text-dim').trim(), grid: cs.getPropertyValue('--border').trim(), accent: cs.getPropertyValue('--accent').trim(), warm: cs.getPropertyValue('--warm').trim(), gold: cs.getPropertyValue('--gold').trim() };
 }
 function last30Days() {
   const days = [];
-  for (let i = 29; i >= 0; i--) {
-    const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - i);
-    days.push(d);
-  }
+  for (let i = 29; i >= 0; i--) { const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - i); days.push(d); }
   return days;
 }
 function dayKey(d) { return new Date(d).toISOString().slice(0,10); }
-
 function renderCharts() {
   const c = chartColors();
-  Object.values(charts).forEach(ch => ch && ch.destroy());
-  charts = {};
-
+  Object.values(charts).forEach(ch => ch && ch.destroy()); charts = {};
   const days = last30Days();
   const labels = days.map(d => d.toLocaleDateString('en-IE', { day: '2-digit', month: 'short' }));
-
-  // Mood per day (avg if multiple)
   const moodByDay = {};
-  state.checkins.forEach(ci => {
-    const k = dayKey(ci.ts);
-    if (!moodByDay[k]) moodByDay[k] = [];
-    moodByDay[k].push(ci.mood);
-  });
-  const moodSeries = days.map(d => {
-    const arr = moodByDay[dayKey(d)];
-    return arr ? arr.reduce((a,b)=>a+b,0)/arr.length : null;
-  });
-
-  charts.mood = new Chart($('#moodChart'), {
-    type: 'line',
-    data: { labels, datasets: [{
-      label: 'Mood', data: moodSeries, borderColor: c.accent,
-      backgroundColor: c.accent + '33', tension: .35, spanGaps: true,
-      pointRadius: 3, pointHoverRadius: 5, fill: true
-    }]},
-    options: chartOpts(c, { y: { min: 1, max: 5, ticks: { stepSize: 1 } } })
-  });
-
-  // Cravings count per day, stacked by category
-  const catSeries = CATS.map(cat => ({
-    label: cat.label,
-    data: days.map(d => state.cravings.filter(cv => cv.cat === cat.id && dayKey(cv.ts) === dayKey(d)).length),
-    backgroundColor: cat.id === 'drugs' ? '#7a5cb5' : cat.id === 'alcohol' ? c.warm : c.accent
-  }));
-  charts.crav = new Chart($('#cravingsChart'), {
-    type: 'bar',
-    data: { labels, datasets: catSeries },
-    options: chartOpts(c, { x: { stacked: true }, y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } } })
-  });
-
-  // Triggers
+  state.checkins.forEach(ci => { const k = dayKey(ci.ts); if (!moodByDay[k]) moodByDay[k] = []; moodByDay[k].push(ci.mood); });
+  const moodSeries = days.map(d => { const arr = moodByDay[dayKey(d)]; return arr ? arr.reduce((a,b)=>a+b,0)/arr.length : null; });
+  charts.mood = new Chart($('#moodChart'), { type: 'line', data: { labels, datasets: [{ label: 'Mood', data: moodSeries, borderColor: c.accent, backgroundColor: c.accent + '33', tension: .35, spanGaps: true, pointRadius: 3, pointHoverRadius: 5, fill: true }]}, options: chartOpts(c, { y: { min: 1, max: 5, ticks: { stepSize: 1 } } }) });
+  const catSeries = CATS.map(cat => ({ label: cat.label, data: days.map(d => state.cravings.filter(cv => cv.cat === cat.id && dayKey(cv.ts) === dayKey(d)).length), backgroundColor: cat.id === 'drugs' ? '#7a5cb5' : cat.id === 'alcohol' ? c.warm : c.accent }));
+  charts.crav = new Chart($('#cravingsChart'), { type: 'bar', data: { labels, datasets: catSeries }, options: chartOpts(c, { x: { stacked: true }, y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } } }) });
   const trigCount = {};
-  state.cravings.forEach(cv => {
-    const t = (cv.trigger || 'unspecified').toLowerCase().trim() || 'unspecified';
-    trigCount[t] = (trigCount[t] || 0) + 1;
-  });
+  state.cravings.forEach(cv => { const t = (cv.trigger || 'unspecified').toLowerCase().trim() || 'unspecified'; trigCount[t] = (trigCount[t] || 0) + 1; });
   const trigEntries = Object.entries(trigCount).sort((a,b) => b[1]-a[1]).slice(0, 8);
-  charts.trig = new Chart($('#triggerChart'), {
-    type: 'bar',
-    data: {
-      labels: trigEntries.map(e => e[0]),
-      datasets: [{
-        label: 'Count', data: trigEntries.map(e => e[1]),
-        backgroundColor: c.gold, borderRadius: 4
-      }]
-    },
-    options: { ...chartOpts(c, { y: { beginAtZero: true, ticks: { stepSize: 1 } } }), indexAxis: 'y' }
-  });
+  charts.trig = new Chart($('#triggerChart'), { type: 'bar', data: { labels: trigEntries.map(e => e[0]), datasets: [{ label: 'Count', data: trigEntries.map(e => e[1]), backgroundColor: c.gold, borderRadius: 4 }]}, options: { ...chartOpts(c, { y: { beginAtZero: true, ticks: { stepSize: 1 } } }), indexAxis: 'y' } });
 }
 function chartOpts(c, scales = {}) {
-  return {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { labels: { color: c.text, font: { size: 11 } } } },
-    scales: {
-      x: { ticks: { color: c.text, font: { size: 10 } }, grid: { color: c.grid }, ...(scales.x || {}) },
-      y: { ticks: { color: c.text, font: { size: 11 } }, grid: { color: c.grid }, ...(scales.y || {}) }
-    }
-  };
+  return { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: c.text, font: { size: 11 } } } }, scales: { x: { ticks: { color: c.text, font: { size: 10 } }, grid: { color: c.grid }, ...(scales.x || {}) }, y: { ticks: { color: c.text, font: { size: 11 } }, grid: { color: c.grid }, ...(scales.y || {}) } } };
 }
 
-/* ---------- Data export/import/reset ---------- */
+/* ---------- Documents ---------- */
+const MAX_DOC_SIZE = 4 * 1024 * 1024;
+const STORAGE_WARN_THRESHOLD = 0.8;
+
+function checkStorageUsage() {
+  try {
+    const used = new Blob([localStorage.getItem(KEY) || '']).size;
+    const warn = used > 5 * 1024 * 1024 * STORAGE_WARN_THRESHOLD;
+    $('#sizeWarn').classList.toggle('show', warn);
+  } catch {}
+}
+
+function renderDocuments() {
+  checkStorageUsage();
+  const grid = $('#docGrid');
+  if (!state.documents.length) {
+    grid.innerHTML = '<div class="empty">No documents yet — upload a PDF to get started</div>';
+    return;
+  }
+  grid.innerHTML = state.documents.map(doc => `
+    <div class="doc-item" data-doc-id="${doc.id}">
+      <div class="doc-icon">📄</div>
+      <div class="doc-info">
+        <div class="doc-name">${escapeHtml(doc.name)}</div>
+        <div class="doc-meta">${fmtBytes(doc.size)} · ${fmtDate(doc.uploadedAt)}</div>
+      </div>
+      <div class="doc-actions">
+        <button class="doc-btn" data-view-doc="${doc.id}">View</button>
+        <button class="doc-btn" data-dl-doc="${doc.id}">Download</button>
+        <button class="doc-btn danger" data-del-doc="${doc.id}">Remove</button>
+      </div>
+    </div>`).join('');
+
+  grid.querySelectorAll('[data-view-doc]').forEach(b => b.addEventListener('click', () => openPdfViewer(b.dataset.viewDoc)));
+  grid.querySelectorAll('[data-dl-doc]').forEach(b => b.addEventListener('click', () => downloadDoc(b.dataset.dlDoc)));
+  grid.querySelectorAll('[data-del-doc]').forEach(b => b.addEventListener('click', () => {
+    const doc = state.documents.find(d => d.id === b.dataset.delDoc);
+    if (!doc) return;
+    if (confirm(`Remove "${doc.name}"? This cannot be undone.`)) {
+      state.documents = state.documents.filter(d => d.id !== b.dataset.delDoc);
+      save(); renderDocuments(); toast('Document removed');
+    }
+  }));
+}
+
+function handleDocUpload(file) {
+  if (!file) return;
+  if (file.type !== 'application/pdf') { toast('Only PDF files are supported'); return; }
+  if (file.size > MAX_DOC_SIZE) { toast(`File too large — max 4MB (this file is ${fmtBytes(file.size)})`); return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const base64 = ev.target.result;
+    const doc = { id: uid(), name: file.name, size: file.size, uploadedAt: new Date().toISOString(), data: base64 };
+    state.documents.unshift(doc);
+    save();
+    renderDocuments();
+    toast(`"${file.name}" uploaded`);
+  };
+  reader.readAsDataURL(file);
+}
+
+$('#docUploadArea').addEventListener('click', () => $('#docFileInput').click());
+$('#docFileInput').addEventListener('change', e => { handleDocUpload(e.target.files[0]); e.target.value = ''; });
+$('#docUploadArea').addEventListener('dragover', e => { e.preventDefault(); $('#docUploadArea').classList.add('drag-over'); });
+$('#docUploadArea').addEventListener('dragleave', () => $('#docUploadArea').classList.remove('drag-over'));
+$('#docUploadArea').addEventListener('drop', e => {
+  e.preventDefault(); $('#docUploadArea').classList.remove('drag-over');
+  handleDocUpload(e.dataTransfer.files[0]);
+});
+
+/* ---------- PDF viewer ---------- */
+function openPdfViewer(docId) {
+  const doc = state.documents.find(d => d.id === docId);
+  if (!doc) return;
+  $('#pdfModalTitle').textContent = doc.name;
+  $('#pdfFrame').src = doc.data;
+  $('#pdfModalBg').classList.add('open');
+}
+function closePdfViewer() {
+  $('#pdfModalBg').classList.remove('open');
+  $('#pdfFrame').src = '';
+}
+$('#pdfClose').addEventListener('click', closePdfViewer);
+
+function downloadDoc(docId) {
+  const doc = state.documents.find(d => d.id === docId);
+  if (!doc) return;
+  const a = document.createElement('a');
+  a.href = doc.data; a.download = doc.name; a.click();
+}
+
+/* ---------- Settings: export / import / reset ---------- */
 $('#exportBtn').addEventListener('click', () => {
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = `recovery-${new Date().toISOString().slice(0,10)}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  toast('Exported');
+  a.href = url; a.download = `recovery-${new Date().toISOString().slice(0,10)}.json`; a.click();
+  URL.revokeObjectURL(url); toast('Exported');
 });
 $('#importBtn').addEventListener('click', () => $('#importFile').click());
 $('#importFile').addEventListener('change', e => {
-  const f = e.target.files[0];
-  if (!f) return;
+  const f = e.target.files[0]; if (!f) return;
   const r = new FileReader();
   r.onload = ev => {
     try {
       const data = JSON.parse(ev.target.result);
       if (!data.starts || !data.checkins || !data.cravings) throw new Error('Invalid file');
-      state = { ...defaultState, ...data };
-      save(); renderAll();
-      toast('Imported');
+      state = { ...defaultState, ...data, documents: data.documents || [] };
+      save(); renderAll(); $('#settingsModalBg').classList.remove('open'); toast('Imported');
     } catch(err) { alert('Could not import: ' + err.message); }
   };
-  r.readAsText(f);
-  e.target.value = '';
+  r.readAsText(f); e.target.value = '';
 });
 $('#resetBtn').addEventListener('click', () => {
-  if (confirm('Erase ALL data? This cannot be undone.')) {
-    localStorage.removeItem(KEY);
-    state = structuredClone(defaultState);
-    renderAll();
-    toast('Reset complete');
+  if (confirm('Erase ALL data including documents? This cannot be undone.')) {
+    localStorage.removeItem(KEY); state = structuredClone(defaultState); renderAll();
+    $('#settingsModalBg').classList.remove('open'); toast('Reset complete');
   }
 });
 
@@ -1158,17 +974,13 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
 
-/* ---------- Render all + tick ---------- */
+/* ---------- Render all ---------- */
 function renderAll() {
-  renderStreaks();
-  renderMoney();
-  renderRecent();
-  renderCheckins();
-  renderCravings();
+  renderStreaks(); renderMoney(); renderRecent(); renderCheckins(); renderCravings();
+  if (currentView === 'documents') renderDocuments();
 }
 applyTheme();
 renderAll();
-// Tick every minute so streaks update without reload
 setInterval(() => { if (currentView === 'dashboard') { renderStreaks(); renderMoney(); } }, 60000);
 </script>
 </body>
