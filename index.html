@@ -554,12 +554,9 @@
     <div class="pdf-loading" id="pdfLoading">Loading…</div>
   </div>
   <div class="pdf-toolbar">
-    <div class="pdf-nav">
-      <button class="pdf-nav-btn" id="pdfPrev" disabled>‹</button>
-      <span class="pdf-page-info" id="pdfPageInfo">— / —</span>
-      <button class="pdf-nav-btn" id="pdfNext" disabled>›</button>
-    </div>
-    <button class="pdf-open-tab" id="pdfOpenTab">↗ Open in tab</button>
+    <button class="pdf-nav-btn" id="pdfPrev" disabled>‹</button>
+    <span class="pdf-page-info" id="pdfPageInfo">— / —</span>
+    <button class="pdf-nav-btn" id="pdfNext" disabled>›</button>
   </div>
 </div>
 
@@ -956,53 +953,49 @@ $('#docFileInput').addEventListener('change',e=>{ handleDocUpload(e.target.files
 $('#docUploadArea').addEventListener('dragover',e=>{ e.preventDefault(); $('#docUploadArea').classList.add('drag-over'); });
 $('#docUploadArea').addEventListener('dragleave',()=>$('#docUploadArea').classList.remove('drag-over'));
 $('#docUploadArea').addEventListener('drop',e=>{ e.preventDefault(); $('#docUploadArea').classList.remove('drag-over'); handleDocUpload(e.dataTransfer.files[0]); });
-/* PDF.js viewer */
-let currentPdfData = null;
-let pdfDoc = null;
-let pdfCurrentPage = 1;
+/* ===== PDF.js in-app viewer =====
+   pdfjs-dist 2.16.105 UMD build — exposes window.pdfjsLib, mobile-safe
+===== */
+const PDFJS_CDN    = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/build/pdf.min.js';
+const PDFJS_WORKER = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/build/pdf.worker.min.js';
+
+let pdfjsLib     = null;
+let pdfDoc       = null;
+let pdfCurPage   = 1;
 let pdfRendering = false;
+let currentPdfId = null;
 
-// Load PDF.js from CDN
-const pdfScript = document.createElement('script');
-pdfScript.src = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.min.mjs';
-pdfScript.type = 'module';
-document.head.appendChild(pdfScript);
-
-// We use the legacy (non-module) build for broader compatibility
-const PDFJS_CDN = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js';
-const PDFJS_WORKER = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
-
-let pdfjsLib = null;
 function loadPdfJs(cb) {
   if (pdfjsLib) { cb(); return; }
   const s = document.createElement('script');
   s.src = PDFJS_CDN;
   s.onload = () => {
-    pdfjsLib = window['pdfjs-dist/build/pdf'];
+    pdfjsLib = window.pdfjsLib;
     pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER;
     cb();
+  };
+  s.onerror = () => {
+    $('#pdfViewerWrap').innerHTML = '<div class="pdf-loading">Failed to load PDF renderer. Check your connection.</div>';
   };
   document.head.appendChild(s);
 }
 
-function pdfUpdateNav() {
-  $('#pdfPrev').disabled = pdfCurrentPage <= 1;
-  $('#pdfNext').disabled = !pdfDoc || pdfCurrentPage >= pdfDoc.numPages;
-  $('#pdfPageInfo').textContent = pdfDoc ? `${pdfCurrentPage} / ${pdfDoc.numPages}` : '— / —';
+function pdfSetNav() {
+  $('#pdfPrev').disabled        = pdfCurPage <= 1;
+  $('#pdfNext').disabled        = !pdfDoc || pdfCurPage >= pdfDoc.numPages;
+  $('#pdfPageInfo').textContent = pdfDoc ? pdfCurPage + ' / ' + pdfDoc.numPages : '— / —';
 }
 
 async function pdfRenderPage(num) {
   if (!pdfDoc || pdfRendering) return;
   pdfRendering = true;
-  const page = await pdfDoc.getPage(num);
-  const wrap = $('#pdfViewerWrap');
-  // Scale to fit the modal width with a small margin
-  const availW = wrap.clientWidth - 16;
-  const viewport = page.getViewport({ scale: 1 });
-  const scale = Math.min(availW / viewport.width, 2.5); // cap at 2.5x
-  const scaled = page.getViewport({ scale });
+  const page   = await pdfDoc.getPage(num);
+  const wrap   = $('#pdfViewerWrap');
+  const availW = wrap.clientWidth - 24;
+  const vpAt1  = page.getViewport({ scale: 1 });
+  const scale  = availW / vpAt1.width;
+  const vp     = page.getViewport({ scale });
 
-  // Reuse or create canvas
   let canvas = wrap.querySelector('canvas.pdf-page-canvas');
   if (!canvas) {
     canvas = document.createElement('canvas');
@@ -1010,58 +1003,59 @@ async function pdfRenderPage(num) {
     wrap.innerHTML = '';
     wrap.appendChild(canvas);
   }
-  canvas.width  = scaled.width;
-  canvas.height = scaled.height;
-  canvas.style.width  = scaled.width  + 'px';
-  canvas.style.height = scaled.height + 'px';
+  const dpr          = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width       = Math.floor(vp.width  * dpr);
+  canvas.height      = Math.floor(vp.height * dpr);
+  canvas.style.width  = Math.floor(vp.width)  + 'px';
+  canvas.style.height = Math.floor(vp.height) + 'px';
 
-  await page.render({ canvasContext: canvas.getContext('2d'), viewport: scaled }).promise;
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  await page.render({ canvasContext: ctx, viewport: vp }).promise;
   wrap.scrollTop = 0;
-  pdfRendering = false;
-  pdfUpdateNav();
+  pdfRendering   = false;
+  pdfSetNav();
 }
 
 async function openPdf(id) {
-  const d = state.documents.find(x => x.id === id); if (!d) return;
-  currentPdfData = d.data;
-  pdfCurrentPage = 1;
-  pdfDoc = null;
+  const d = state.documents.find(x => x.id === id);
+  if (!d) return;
+  currentPdfId = id;
+  pdfCurPage   = 1;
+  pdfDoc       = null;
   $('#pdfModalTitle').textContent = d.name;
-  $('#pdfViewerWrap').innerHTML = '<div class="pdf-loading">Loading…</div>';
-  pdfUpdateNav();
+  $('#pdfViewerWrap').innerHTML   = '<div class="pdf-loading">Loading…</div>';
+  pdfSetNav();
   $('#pdfModalBg').classList.add('open');
 
   loadPdfJs(async () => {
     try {
-      // Convert base64 data URL to Uint8Array
       const base64 = d.data.split(',')[1];
-      const binary  = atob(base64);
-      const bytes   = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      const raw    = atob(base64);
+      const bytes  = new Uint8Array(raw.length);
+      for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
       pdfDoc = await pdfjsLib.getDocument({ data: bytes }).promise;
-      pdfUpdateNav();
-      await pdfRenderPage(pdfCurrentPage);
-    } catch(e) {
-      $('#pdfViewerWrap').innerHTML = '<div class="pdf-loading">Could not render PDF. Try "Open in tab".</div>';
+      pdfSetNav();
+      await pdfRenderPage(pdfCurPage);
+    } catch(err) {
+      console.error('PDF render error:', err);
+      $('#pdfViewerWrap').innerHTML = '<div class="pdf-loading">Could not render this PDF. Try downloading it instead.</div>';
     }
   });
 }
 
 function closePdf() {
   $('#pdfModalBg').classList.remove('open');
-  pdfDoc = null; currentPdfData = null; pdfCurrentPage = 1;
+  pdfDoc = null; currentPdfId = null; pdfCurPage = 1; pdfRendering = false;
   $('#pdfViewerWrap').innerHTML = '<div class="pdf-loading">Loading…</div>';
-  pdfUpdateNav();
+  pdfSetNav();
 }
 $('#pdfClose').addEventListener('click', closePdf);
 $('#pdfPrev').addEventListener('click', async () => {
-  if (pdfCurrentPage > 1) { pdfCurrentPage--; await pdfRenderPage(pdfCurrentPage); }
+  if (pdfCurPage > 1) { pdfCurPage--; await pdfRenderPage(pdfCurPage); }
 });
 $('#pdfNext').addEventListener('click', async () => {
-  if (pdfDoc && pdfCurrentPage < pdfDoc.numPages) { pdfCurrentPage++; await pdfRenderPage(pdfCurrentPage); }
-});
-$('#pdfOpenTab').addEventListener('click', () => {
-  if (currentPdfData) window.open(currentPdfData, '_blank');
+  if (pdfDoc && pdfCurPage < pdfDoc.numPages) { pdfCurPage++; await pdfRenderPage(pdfCurPage); }
 });
 function dlDoc(id) { const d=state.documents.find(x=>x.id===id); if(!d)return; const a=document.createElement('a'); a.href=d.data; a.download=d.name; a.click(); }
 
