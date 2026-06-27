@@ -272,13 +272,13 @@
   .doc-upload-area p { font-size: 14px; color: var(--text-dim); margin-bottom: 3px; }
   .doc-upload-area small { font-size: 12px; color: var(--text-mute); }
   .doc-grid { display: grid; gap: 10px; }
-  .doc-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; align-items: center; gap: 10px; transition: box-shadow .2s; }
+  .doc-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px; transition: box-shadow .2s; }
   .doc-item:hover { box-shadow: var(--shadow); }
-  .doc-icon { font-size: 24px; flex-shrink: 0; }
-  .doc-info { flex: 1; min-width: 0; }
-  .doc-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .doc-meta { font-size: 11px; color: var(--text-mute); margin-top: 2px; text-transform: uppercase; letter-spacing: .07em; }
-  .doc-actions { display: flex; gap: 5px; flex-shrink: 0; }
+  .doc-icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
+  .doc-info { flex: 1; min-width: 0; overflow: hidden; }
+  .doc-name { font-size: 13px; font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word; line-height: 1.35; }
+  .doc-meta { font-size: 11px; color: var(--text-mute); margin-top: 3px; text-transform: uppercase; letter-spacing: .07em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .doc-actions { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
   .doc-btn { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim); font-size: 11px; padding: 5px 9px; border-radius: 6px; cursor: pointer; font-family: inherit; transition: all .15s; white-space: nowrap; }
   .doc-btn:hover { color: var(--text); border-color: var(--text-dim); }
   .doc-btn.danger:hover { color: var(--warm); border-color: var(--warm); }
@@ -286,14 +286,14 @@
   .size-warn.show { display: block; }
 
   /* PDF viewer */
-  .pdf-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.75); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: none; flex-direction: column; z-index: 200; padding: max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left)); }
+  .pdf-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.85); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: none; flex-direction: column; z-index: 200; padding: max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left)); }
   .pdf-modal-bg.open { display: flex; animation: fadeIn .2s; }
-  .pdf-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--surface); border-radius: var(--radius) var(--radius) 0 0; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-  .pdf-modal-header .doc-name { font-size: 14px; font-weight: 500; max-width: 70vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .pdf-close { background: transparent; border: none; font-size: 20px; cursor: pointer; color: var(--text-dim); padding: 4px 8px; line-height: 1; }
+  .pdf-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--surface); border-radius: var(--radius) var(--radius) 0 0; border-bottom: 1px solid var(--border); flex-shrink: 0; gap: 10px; }
+  .pdf-modal-header .doc-name { font-size: 14px; font-weight: 500; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pdf-close { background: transparent; border: none; font-size: 20px; cursor: pointer; color: var(--text-dim); padding: 4px 8px; line-height: 1; flex-shrink: 0; }
   .pdf-close:hover { color: var(--text); }
-  .pdf-frame-wrap { flex: 1; background: var(--surface); border-radius: 0 0 var(--radius) var(--radius); overflow: hidden; }
-  .pdf-frame-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+  .pdf-frame-wrap { flex: 1; background: #525659; border-radius: 0 0 var(--radius) var(--radius); overflow: auto; -webkit-overflow-scrolling: touch; position: relative; }
+  .pdf-frame-wrap iframe { width: 100%; height: 100%; min-height: 100%; border: none; display: block; position: absolute; inset: 0; }
 
   /* Modals */
   .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 100; padding: max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left)); }
@@ -933,7 +933,12 @@ $('#docFileInput').addEventListener('change',e=>{ handleDocUpload(e.target.files
 $('#docUploadArea').addEventListener('dragover',e=>{ e.preventDefault(); $('#docUploadArea').classList.add('drag-over'); });
 $('#docUploadArea').addEventListener('dragleave',()=>$('#docUploadArea').classList.remove('drag-over'));
 $('#docUploadArea').addEventListener('drop',e=>{ e.preventDefault(); $('#docUploadArea').classList.remove('drag-over'); handleDocUpload(e.dataTransfer.files[0]); });
-function openPdf(id) { const d=state.documents.find(x=>x.id===id); if(!d)return; $('#pdfModalTitle').textContent=d.name; $('#pdfFrame').src=d.data; $('#pdfModalBg').classList.add('open'); }
+function openPdf(id) {
+  const d=state.documents.find(x=>x.id===id); if(!d)return;
+  $('#pdfModalTitle').textContent=d.name;
+  $('#pdfFrame').src=d.data+'#view=FitH&toolbar=1&navpanes=1&scrollbar=1';
+  $('#pdfModalBg').classList.add('open');
+}
 function closePdf() { $('#pdfModalBg').classList.remove('open'); $('#pdfFrame').src=''; }
 $('#pdfClose').addEventListener('click',closePdf);
 function dlDoc(id) { const d=state.documents.find(x=>x.id===id); if(!d)return; const a=document.createElement('a'); a.href=d.data; a.download=d.name; a.click(); }
