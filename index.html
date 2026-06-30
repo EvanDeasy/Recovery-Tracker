@@ -1025,6 +1025,23 @@ function advanceDueDate(dueDateISO, recurrence) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 
+// Day-rollover: any completed recurring task whose due date has now arrived
+// (i.e. its advanced due date is today or earlier) resets to incomplete for
+// the new cycle. Runs on load and periodically — no card is ever generated
+// early, so "Your tasks" never shows tomorrow's task today.
+function rolloverRecurringTasks() {
+  const today = todayISO();
+  let changed = false;
+  state.tasks.forEach(t => {
+    if (t.recurrence !== 'once' && t.completed && t.dueDate <= today) {
+      t.completed = false;
+      t.lastCompletedAt = null;
+      changed = true;
+    }
+  });
+  if (changed) save();
+}
+
 $('#addTaskBtn').addEventListener('click', () => {
   const name = $('#taskName').value.trim();
   if (!name) { toast('Enter a task name'); return; }
@@ -1050,12 +1067,11 @@ function toggleTaskComplete(id) {
   if (!task) return;
 
   if (!task.completed) {
-    // Mark this instance complete — it stays in the list as a completed/historical card
     task.completed = true;
     task.lastCompletedAt = new Date().toISOString();
 
-    // Snapshot the completion so the daily summary can show it even after
-    // the card itself auto-removes (recurring tasks)
+    // Snapshot the completion so the daily summary keeps a record even after
+    // a recurring task's due date rolls forward and it drops off "Your tasks"
     state.taskCompletions.unshift({
       id: uid(),
       taskId: task.id,
@@ -1066,21 +1082,16 @@ function toggleTaskComplete(id) {
     });
 
     if (task.recurrence !== 'once') {
-      // Spawn a fresh card for the next occurrence
-      const nextDue = advanceDueDate(task.dueDate < todayISO() ? todayISO() : task.dueDate, task.recurrence);
-      state.tasks.unshift({
-        id: uid(),
-        name: task.name,
-        category: task.category,
-        recurrence: task.recurrence,
-        dueDate: nextDue,
-        completed: false,
-        lastCompletedAt: null
-      });
+      // Advance the due date in place — no new card, no visible change until
+      // that future date actually arrives (rolloverRecurringTasks then resets it)
+      task.dueDate = advanceDueDate(task.dueDate < todayISO() ? todayISO() : task.dueDate, task.recurrence);
     }
   } else {
-    // Un-checking — revert this card's completion and remove its most recent
-    // completion-log entry so the summary doesn't show a stale "Done" row
+    // Un-checking — revert completion and remove the matching log entry.
+    // For recurring tasks, also roll the due date back so it still shows today.
+    if (task.recurrence !== 'once') {
+      task.dueDate = todayISO();
+    }
     task.completed = false;
     task.lastCompletedAt = null;
     const logIdx = state.taskCompletions.findIndex(c => c.taskId === id);
@@ -1088,30 +1099,21 @@ function toggleTaskComplete(id) {
   }
   save();
   renderTasks();
-
-  // Auto-remove completed recurring cards after a short delay so the next
-  // occurrence's card takes its place. One-off tasks stay until manually deleted.
-  if (task.completed && task.recurrence !== 'once') {
-    setTimeout(() => {
-      const stillThere = state.tasks.find(t => t.id === id);
-      if (!stillThere || !stillThere.completed) return;
-      const el = document.querySelector(`[data-toggle-task="${id}"]`)?.closest('.task-item');
-      if (el) el.classList.add('fading-out');
-      setTimeout(() => {
-        state.tasks = state.tasks.filter(t => t.id !== id);
-        save();
-        renderTasks();
-      }, 400);
-    }, 1400);
-  }
 }
 
 function renderTasks() {
+  rolloverRecurringTasks();
   const list = $('#taskList');
-  if (!state.tasks.length) { list.innerHTML = '<div class="empty">No tasks yet — add one above</div>'; return; }
+  const today = todayISO();
 
-  // Sort: overdue first, then by due date, completed last
-  const sorted = [...state.tasks].sort((a, b) => {
+  // "Your tasks" only ever shows today's tasks + anything overdue.
+  // Recurring tasks completed today have a future due date now, so they
+  // naturally fall out of this view until their day arrives.
+  const visible = state.tasks.filter(t => t.dueDate && t.dueDate <= today);
+
+  if (!visible.length) { list.innerHTML = '<div class="empty">Nothing due today</div>'; renderDailySummary(); return; }
+
+  const sorted = [...visible].sort((a, b) => {
     if (a.completed !== b.completed) return a.completed ? 1 : -1;
     const aOver = isOverdue(a), bOver = isOverdue(b);
     if (aOver !== bOver) return aOver ? -1 : 1;
