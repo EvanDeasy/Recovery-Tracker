@@ -240,8 +240,9 @@
     0%, 100% { box-shadow: 0 0 0 0 rgba(192,57,43,0); }
     50% { box-shadow: 0 0 10px 1px rgba(192,57,43,0.25); }
   }
-  .task-item.completed { opacity: .55; }
+  .task-item.completed { opacity: .55; transition: opacity .5s ease, max-height .4s ease, padding .4s ease, margin .4s ease; }
   .task-item.completed .task-name { text-decoration: line-through; }
+  .task-item.fading-out { opacity: 0; max-height: 0; padding-top: 0; padding-bottom: 0; margin: 0; overflow: hidden; border-width: 0; }
   .task-check {
     width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border);
     background: var(--surface); flex-shrink: 0; cursor: pointer; display: grid; place-items: center;
@@ -1007,19 +1008,47 @@ function toggleTaskComplete(id) {
   if (!task) return;
 
   if (!task.completed) {
+    // Mark this instance complete — it stays in the list as a completed/historical card
     task.completed = true;
     task.lastCompletedAt = new Date().toISOString();
+
     if (task.recurrence !== 'once') {
-      // Roll forward and reset for next cycle
-      task.dueDate = advanceDueDate(task.dueDate < todayISO() ? todayISO() : task.dueDate, task.recurrence);
-      task.completed = false;
+      // Spawn a fresh card for the next occurrence
+      const nextDue = advanceDueDate(task.dueDate < todayISO() ? todayISO() : task.dueDate, task.recurrence);
+      state.tasks.unshift({
+        id: uid(),
+        name: task.name,
+        category: task.category,
+        recurrence: task.recurrence,
+        dueDate: nextDue,
+        completed: false,
+        lastCompletedAt: null
+      });
     }
   } else {
-    // Un-checking a one-off task
+    // Un-checking — just revert this card's completion (no new card removal needed,
+    // since the next-occurrence card is a separate independent task)
     task.completed = false;
+    task.lastCompletedAt = null;
   }
   save();
   renderTasks();
+
+  // Auto-remove completed recurring cards after a short delay so the next
+  // occurrence's card takes its place. One-off tasks stay until manually deleted.
+  if (task.completed && task.recurrence !== 'once') {
+    setTimeout(() => {
+      const stillThere = state.tasks.find(t => t.id === id);
+      if (!stillThere || !stillThere.completed) return;
+      const el = document.querySelector(`[data-toggle-task="${id}"]`)?.closest('.task-item');
+      if (el) el.classList.add('fading-out');
+      setTimeout(() => {
+        state.tasks = state.tasks.filter(t => t.id !== id);
+        save();
+        renderTasks();
+      }, 400);
+    }, 1400);
+  }
 }
 
 function renderTasks() {
