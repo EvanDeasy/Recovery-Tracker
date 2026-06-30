@@ -27,6 +27,8 @@
     --warm: #c9551f;
     --warm-soft: #f4ddd1;
     --gold: #b89556;
+    --danger: #c0392b;
+    --danger-soft: #f6d9d4;
     --shadow: 0 1px 2px rgba(26,31,46,.04), 0 4px 16px rgba(26,31,46,.06);
     --radius: 14px;
     --radius-sm: 8px;
@@ -44,6 +46,8 @@
     --warm: #e07a4a;
     --warm-soft: #2d1f17;
     --gold: #d4af6a;
+    --danger: #e0584a;
+    --danger-soft: #2f1815;
     --shadow: 0 2px 8px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.2);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -98,58 +102,26 @@
   @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
 
   /* ===== DASHBOARD — compact streak grid ===== */
-  .streak-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-bottom: 10px;
-  }
+  .streak-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
   .streak-card-compact {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 12px 10px 10px;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform .15s, box-shadow .15s;
-    text-align: center;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 12px 10px 10px; position: relative; overflow: hidden; cursor: pointer;
+    transition: transform .15s, box-shadow .15s; text-align: center;
     -webkit-user-select: none; user-select: none;
   }
   .streak-card-compact:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
-  .streak-card-compact::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-    background: var(--card-color, var(--accent));
-  }
+  .streak-card-compact::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--card-color, var(--accent)); }
   .streak-card-compact[data-cat="drugs"]    { --card-color: #7a5cb5; }
   .streak-card-compact[data-cat="alcohol"]  { --card-color: var(--warm); }
   .streak-card-compact[data-cat="nicotine"] { --card-color: var(--accent); }
-
   .scc-icon  { font-size: 16px; opacity: .55; margin-bottom: 4px; }
   .scc-label { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: var(--text-mute); font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .scc-count {
-    font-family: 'Cormorant Garamond',Georgia,serif;
-    font-size: 36px; font-weight: 500; line-height: 1;
-    letter-spacing: -.03em; color: var(--card-color);
-  }
+  .scc-count { font-family: 'Cormorant Garamond',Georgia,serif; font-size: 36px; font-weight: 500; line-height: 1; letter-spacing: -.03em; color: var(--card-color); }
   .scc-unit  { font-size: 10px; color: var(--text-mute); margin-top: 2px; }
   .scc-not-set { font-size: 11px; color: var(--text-mute); font-style: italic; padding: 6px 0 2px; font-family: 'Cormorant Garamond',serif; }
-  .scc-set-btn {
-    margin-top: 6px; font-size: 10px; padding: 4px 8px;
-    background: var(--card-color); color: #fff; border: none;
-    border-radius: 5px; cursor: pointer; font-family: inherit; font-weight: 500;
-  }
+  .scc-set-btn { margin-top: 6px; font-size: 10px; padding: 4px 8px; background: var(--card-color); color: #fff; border: none; border-radius: 5px; cursor: pointer; font-family: inherit; font-weight: 500; }
 
-  /* Streak detail panel (expands below grid on tap) */
-  .streak-detail {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px 16px;
-    margin-bottom: 10px;
-    display: none;
-    animation: fadeIn .2s ease;
-  }
+  .streak-detail { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; display: none; animation: fadeIn .2s ease; }
   .streak-detail.open { display: block; }
   .sd-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .sd-title { font-size: 13px; font-weight: 600; color: var(--text); }
@@ -157,47 +129,17 @@
   .sd-close { background: transparent; border: none; color: var(--text-mute); font-size: 18px; cursor: pointer; line-height: 1; padding: 0 2px; }
   .sd-close:hover { color: var(--text); }
   .sd-actions { display: flex; gap: 8px; }
-  .sd-btn {
-    flex: 1; background: var(--surface-2); border: 1px solid var(--border);
-    color: var(--text-dim); font-size: 12px; padding: 8px; border-radius: 7px;
-    cursor: pointer; font-family: inherit; transition: all .15s;
-  }
+  .sd-btn { flex: 1; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim); font-size: 12px; padding: 8px; border-radius: 7px; cursor: pointer; font-family: inherit; transition: all .15s; }
   .sd-btn:hover { color: var(--text); border-color: var(--text-dim); }
   .sd-btn.danger:hover { color: var(--warm); border-color: var(--warm); }
 
-  /* ===== Money hero ===== */
-  .money-hero {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px 18px;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
+  .money-hero { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .money-hero-label { font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: var(--text-mute); font-weight: 600; margin-bottom: 4px; }
-  .money-hero-total {
-    font-family: 'Cormorant Garamond',serif;
-    font-size: 40px; font-weight: 500; color: var(--gold);
-    letter-spacing: -.02em; line-height: 1;
-  }
+  .money-hero-total { font-family: 'Cormorant Garamond',serif; font-size: 40px; font-weight: 500; color: var(--gold); letter-spacing: -.02em; line-height: 1; }
   .money-hero-icon { font-size: 28px; opacity: .4; flex-shrink: 0; }
 
-  /* ===== Collapsible sections ===== */
-  .collapsible {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 10px;
-    overflow: hidden;
-  }
-  .collapsible-trigger {
-    width: 100%; display: flex; align-items: center; justify-content: space-between;
-    padding: 13px 16px; background: transparent; border: none; cursor: pointer;
-    font-family: inherit; text-align: left; transition: background .15s;
-  }
+  .collapsible { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
+  .collapsible-trigger { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; background: transparent; border: none; cursor: pointer; font-family: inherit; text-align: left; transition: background .15s; }
   .collapsible-trigger:hover { background: var(--surface-2); }
   .collapsible-trigger-label { font-size: 13px; font-weight: 500; color: var(--text); }
   .collapsible-trigger-meta  { font-size: 12px; color: var(--text-mute); margin-left: auto; margin-right: 10px; }
@@ -206,14 +148,12 @@
   .collapsible-body { display: none; padding: 0 16px 14px; border-top: 1px solid var(--border); }
   .collapsible.open .collapsible-body { display: block; padding-top: 14px; }
 
-  /* money breakdown inside collapsible */
   .money-breakdown { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 14px; }
   .money-item .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--text-mute); }
   .money-item .val { font-family: 'Cormorant Garamond',serif; font-size: 20px; margin-top: 2px; }
   .money-row { display: grid; grid-template-columns: 80px 1fr 1fr; gap: 8px; align-items: center; font-size: 13px; margin-bottom: 8px; }
   .money-row .name { color: var(--text-dim); font-size: 11px; text-transform: uppercase; letter-spacing: .09em; }
 
-  /* ===== Recent activity ===== */
   .log-list { display: grid; gap: 8px; }
   .log-entry { background: var(--surface-2); border-left: 3px solid var(--accent); padding: 10px 12px; border-radius: 6px; font-size: 13px; }
   .log-entry.craving { border-left-color: var(--warm); }
@@ -225,7 +165,7 @@
   .delete-x:hover { color: var(--warm); }
   .empty { text-align: center; padding: 24px 12px; color: var(--text-mute); font-style: italic; font-family: 'Cormorant Garamond',serif; font-size: 15px; }
 
-  /* ===== Other views (checkin, cravings, charts, docs) ===== */
+  /* ===== Cards / forms (general) ===== */
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 18px; }
   .card h2 { font-family: 'Cormorant Garamond',serif; font-size: 22px; font-weight: 500; margin-bottom: 14px; letter-spacing: -.01em; }
   .card h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .15em; color: var(--text-mute); margin-bottom: 10px; font-weight: 600; }
@@ -233,7 +173,7 @@
   input, select, textarea { width: 100%; padding: 10px 12px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: inherit; transition: border-color .15s; }
   input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
   textarea { resize: vertical; min-height: 70px; }
-  input[type="datetime-local"] { min-height: 44px; line-height: 1.2; }
+  input[type="datetime-local"], input[type="date"] { min-height: 44px; line-height: 1.2; }
   .btn { background: var(--text); color: var(--bg); border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; font-family: inherit; transition: opacity .2s, transform .1s; min-height: 44px; }
   .btn:hover { opacity: .85; } .btn:active { transform: scale(.98); }
   .btn-row { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
@@ -249,6 +189,13 @@
   .quick-chip:hover { border-color: var(--text-dim); color: var(--text); }
   .quick-chip.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 
+  /* ===== Check-in/Cravings segmented toggle ===== */
+  .segmented { display: flex; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 3px; margin-bottom: 18px; }
+  .segmented-btn { flex: 1; padding: 9px; background: transparent; border: none; border-radius: 7px; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 500; color: var(--text-dim); transition: all .2s; }
+  .segmented-btn.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+  .log-subview { display: none; }
+  .log-subview.active { display: block; animation: fadeIn .2s ease; }
+
   /* Trigger chips */
   .trigger-chips-wrap { margin-bottom: 10px; }
   .trigger-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
@@ -260,6 +207,42 @@
   .trigger-new-row input { flex: 1; }
   .trigger-add-btn { background: var(--surface-2); border: 1px solid var(--border); color: var(--text-dim); padding: 0 14px; border-radius: var(--radius-sm); cursor: pointer; font-size: 13px; font-family: inherit; white-space: nowrap; transition: all .15s; flex-shrink: 0; }
   .trigger-add-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ===== Checklist tab ===== */
+  .checklist-add-row { display: grid; gap: 10px; margin-bottom: 4px; }
+  .checklist-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .task-list { display: grid; gap: 8px; margin-top: 4px; }
+  .task-item {
+    background: var(--surface-2); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+    border-radius: 6px; padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px;
+    transition: all .2s;
+  }
+  .task-item.overdue {
+    border-left-color: var(--danger);
+    background: var(--danger-soft);
+    animation: taskGlow 2s ease-in-out infinite;
+  }
+  @keyframes taskGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(192,57,43,0); }
+    50% { box-shadow: 0 0 10px 1px rgba(192,57,43,0.25); }
+  }
+  .task-item.completed { opacity: .55; }
+  .task-item.completed .task-name { text-decoration: line-through; }
+  .task-check {
+    width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border);
+    background: var(--surface); flex-shrink: 0; cursor: pointer; display: grid; place-items: center;
+    font-size: 13px; color: transparent; transition: all .15s; margin-top: 1px;
+  }
+  .task-check.checked { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .task-item.overdue .task-check { border-color: var(--danger); }
+  .task-info { flex: 1; min-width: 0; }
+  .task-name { font-size: 14px; font-weight: 500; word-break: break-word; }
+  .task-meta { font-size: 11px; color: var(--text-mute); margin-top: 3px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .task-item.overdue .task-meta-due { color: var(--danger); font-weight: 600; }
+  .task-cat-tag { background: var(--bg); color: var(--text-dim); font-size: 10px; padding: 2px 7px; border-radius: 10px; border: 1px solid var(--border); text-transform: uppercase; letter-spacing: .05em; }
+  .task-recur-tag { font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: .05em; }
+  .task-delete { background: transparent; border: none; color: var(--text-mute); cursor: pointer; font-size: 15px; padding: 2px 4px; flex-shrink: 0; margin-top: 1px; }
+  .task-delete:hover { color: var(--warm); }
 
   /* Charts */
   .chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 14px; height: 260px; position: relative; }
@@ -296,13 +279,11 @@
   .pdf-close:hover { color: var(--text); }
   .pdf-viewer-wrap { flex: 1; background: #525659; border-radius: 0; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; align-items: center; padding: 12px 8px; gap: 10px; }
   .pdf-page-canvas { display: block; box-shadow: 0 2px 8px rgba(0,0,0,.4); border-radius: 2px; }
-  .pdf-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: var(--surface); border-top: 1px solid var(--border); flex-shrink: 0; border-radius: 0 0 var(--radius) var(--radius); gap: 8px; }
-  .pdf-nav { display: flex; align-items: center; gap: 8px; }
+  .pdf-toolbar { display: flex; align-items: center; justify-content: center; padding: 8px 14px; background: var(--surface); border-top: 1px solid var(--border); flex-shrink: 0; border-radius: 0 0 var(--radius) var(--radius); gap: 12px; }
   .pdf-nav-btn { background: var(--surface-2); border: 1px solid var(--border); color: var(--text); font-size: 16px; width: 34px; height: 34px; border-radius: 6px; cursor: pointer; display: grid; place-items: center; transition: all .15s; }
   .pdf-nav-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
   .pdf-nav-btn:disabled { opacity: .35; cursor: default; }
   .pdf-page-info { font-size: 12px; color: var(--text-dim); min-width: 60px; text-align: center; }
-
   .pdf-loading { color: #ccc; font-size: 14px; padding: 40px; text-align: center; }
 
   /* Modals */
@@ -320,7 +301,6 @@
   .trigger-manage-chip button:hover { color: var(--warm); }
   .trigger-manage-empty { font-size: 12px; color: var(--text-mute); font-style: italic; }
 
-  /* Toast */
   .toast { position: fixed; bottom: calc(24px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%) translateY(120px); background: var(--text); color: var(--bg); padding: 10px 20px; border-radius: 30px; font-size: 14px; font-weight: 500; transition: transform .3s ease; z-index: 300; box-shadow: var(--shadow); pointer-events: none; }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
@@ -328,6 +308,7 @@
     .scc-count { font-size: 28px; }
     .scc-label { font-size: 9px; }
     .money-hero-total { font-size: 34px; }
+    .checklist-grid-2 { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -347,19 +328,16 @@
 
   <div class="tabs" role="tablist">
     <button class="tab active" data-view="dashboard">Dashboard</button>
-    <button class="tab" data-view="checkin">Check-in</button>
-    <button class="tab" data-view="cravings">Cravings</button>
+    <button class="tab" data-view="log">Log</button>
+    <button class="tab" data-view="checklist">Checklist</button>
     <button class="tab" data-view="charts">Charts</button>
     <button class="tab" data-view="documents">Documents</button>
   </div>
 
   <!-- ===== DASHBOARD ===== -->
   <section class="view active" id="view-dashboard">
-
-    <!-- 3-col compact streak grid -->
     <div class="streak-grid" id="streakGrid"></div>
 
-    <!-- Expandable streak detail panel -->
     <div class="streak-detail" id="streakDetail">
       <div class="sd-head">
         <div>
@@ -374,7 +352,6 @@
       </div>
     </div>
 
-    <!-- Money hero — always visible -->
     <div class="money-hero">
       <div>
         <div class="money-hero-label">Total saved</div>
@@ -383,7 +360,6 @@
       <div class="money-hero-icon">💰</div>
     </div>
 
-    <!-- Collapsible: savings breakdown -->
     <div class="collapsible" id="col-breakdown">
       <button class="collapsible-trigger" data-target="col-breakdown">
         <span class="collapsible-trigger-label">Savings breakdown</span>
@@ -398,7 +374,6 @@
       </div>
     </div>
 
-    <!-- Collapsible: recent activity -->
     <div class="collapsible" id="col-activity">
       <button class="collapsible-trigger" data-target="col-activity">
         <span class="collapsible-trigger-label">Recent activity</span>
@@ -409,65 +384,109 @@
         <div class="log-list" id="recentActivity"></div>
       </div>
     </div>
-
   </section>
 
-  <!-- ===== CHECK-IN ===== -->
-  <section class="view" id="view-checkin">
+  <!-- ===== LOG (merged check-in + cravings) ===== -->
+  <section class="view" id="view-log">
     <div class="card">
-      <h2>Daily check-in</h2>
-      <label>How are you feeling today?</label>
-      <div class="mood-scale" id="moodScale">
-        <button class="mood-btn" data-mood="1">😔</button>
-        <button class="mood-btn" data-mood="2">😕</button>
-        <button class="mood-btn" data-mood="3">😐</button>
-        <button class="mood-btn" data-mood="4">🙂</button>
-        <button class="mood-btn" data-mood="5">😊</button>
+      <div class="segmented">
+        <button class="segmented-btn active" data-subview="checkinSub">Check-in</button>
+        <button class="segmented-btn" data-subview="cravingSub">Craving</button>
       </div>
-      <label style="margin-top:10px">Notes (optional)</label>
-      <textarea id="checkinNotes" placeholder="Anything on your mind — wins, struggles, gratitude..."></textarea>
-      <div class="btn-row"><button class="btn" id="saveCheckin">Save check-in</button></div>
+
+      <!-- Check-in sub-form -->
+      <div class="log-subview active" id="checkinSub">
+        <label>How are you feeling today?</label>
+        <div class="mood-scale" id="moodScale">
+          <button class="mood-btn" data-mood="1">😔</button>
+          <button class="mood-btn" data-mood="2">😕</button>
+          <button class="mood-btn" data-mood="3">😐</button>
+          <button class="mood-btn" data-mood="4">🙂</button>
+          <button class="mood-btn" data-mood="5">😊</button>
+        </div>
+        <label style="margin-top:10px">Notes (optional)</label>
+        <textarea id="checkinNotes" placeholder="Anything on your mind — wins, struggles, gratitude..."></textarea>
+        <div class="btn-row"><button class="btn" id="saveCheckin">Save check-in</button></div>
+      </div>
+
+      <!-- Craving sub-form -->
+      <div class="log-subview" id="cravingSub">
+        <label>Category</label>
+        <div class="quick-row" id="cravingCats">
+          <button class="quick-chip" data-cat="drugs">Drugs</button>
+          <button class="quick-chip" data-cat="alcohol">Alcohol</button>
+          <button class="quick-chip" data-cat="nicotine">Nicotine</button>
+        </div>
+        <label>Intensity (1 = mild, 5 = intense)</label>
+        <div class="intensity-row" id="intensityRow">
+          <button class="intensity-btn" data-int="1">1</button>
+          <button class="intensity-btn" data-int="2">2</button>
+          <button class="intensity-btn" data-int="3">3</button>
+          <button class="intensity-btn" data-int="4">4</button>
+          <button class="intensity-btn" data-int="5">5</button>
+        </div>
+        <label style="margin-top:10px">Trigger</label>
+        <div class="trigger-chips-wrap">
+          <div class="trigger-chips" id="triggerChips"></div>
+          <div class="trigger-chip-hint" id="triggerChipHint" style="display:none">Tap to select, or type a new one below</div>
+          <div class="trigger-new-row">
+            <input type="text" id="cravingTrigger" placeholder="New trigger…">
+            <button class="trigger-add-btn" id="triggerAddBtn">Add</button>
+          </div>
+        </div>
+        <label style="margin-top:10px">Notes (optional)</label>
+        <textarea id="cravingNotes" placeholder="What helped? What did you do instead?"></textarea>
+        <div class="btn-row"><button class="btn" id="saveCraving">Log craving</button></div>
+      </div>
     </div>
+
     <div class="card">
-      <h3>Recent check-ins</h3>
-      <div class="log-list" id="checkinList"></div>
+      <h3>Recent entries</h3>
+      <div class="log-list" id="combinedLogList"></div>
     </div>
   </section>
 
-  <!-- ===== CRAVINGS ===== -->
-  <section class="view" id="view-cravings">
+  <!-- ===== CHECKLIST ===== -->
+  <section class="view" id="view-checklist">
     <div class="card">
-      <h2>Log a craving</h2>
-      <label>Category</label>
-      <div class="quick-row" id="cravingCats">
-        <button class="quick-chip" data-cat="drugs">Drugs</button>
-        <button class="quick-chip" data-cat="alcohol">Alcohol</button>
-        <button class="quick-chip" data-cat="nicotine">Nicotine</button>
-      </div>
-      <label>Intensity (1 = mild, 5 = intense)</label>
-      <div class="intensity-row" id="intensityRow">
-        <button class="intensity-btn" data-int="1">1</button>
-        <button class="intensity-btn" data-int="2">2</button>
-        <button class="intensity-btn" data-int="3">3</button>
-        <button class="intensity-btn" data-int="4">4</button>
-        <button class="intensity-btn" data-int="5">5</button>
-      </div>
-      <label style="margin-top:10px">Trigger</label>
-      <div class="trigger-chips-wrap">
-        <div class="trigger-chips" id="triggerChips"></div>
-        <div class="trigger-chip-hint" id="triggerChipHint" style="display:none">Tap to select, or type a new one below</div>
-        <div class="trigger-new-row">
-          <input type="text" id="cravingTrigger" placeholder="New trigger…">
-          <button class="trigger-add-btn" id="triggerAddBtn">Add</button>
+      <h2>Add task</h2>
+      <div class="checklist-add-row">
+        <div>
+          <label>Task name</label>
+          <input type="text" id="taskName" placeholder="e.g. Take morning medication">
+        </div>
+        <div class="checklist-grid-2">
+          <div>
+            <label>Category</label>
+            <select id="taskCategory">
+              <option value="hygiene">Hygiene</option>
+              <option value="chores">Chores</option>
+              <option value="admin">Admin</option>
+              <option value="health">Health</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label>Recurrence</label>
+            <select id="taskRecurrence">
+              <option value="once">One-off</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label>Due date</label>
+          <input type="date" id="taskDueDate">
         </div>
       </div>
-      <label style="margin-top:10px">Notes (optional)</label>
-      <textarea id="cravingNotes" placeholder="What helped? What did you do instead?"></textarea>
-      <div class="btn-row"><button class="btn" id="saveCraving">Log craving</button></div>
+      <div class="btn-row"><button class="btn" id="addTaskBtn">Add task</button></div>
     </div>
+
     <div class="card">
-      <h3>Recent cravings</h3>
-      <div class="log-list" id="cravingsList"></div>
+      <h3>Your tasks</h3>
+      <div class="task-list" id="taskList"></div>
     </div>
   </section>
 
@@ -568,10 +587,14 @@ const CATS = [
   { id:'alcohol',  label:'Alcohol',  icon:'🥃' },
   { id:'nicotine', label:'Nicotine', icon:'🚬' }
 ];
+const TASK_CATS = { hygiene:'Hygiene', chores:'Chores', admin:'Admin', health:'Health', other:'Other' };
+const RECUR_LABELS = { once:'One-off', daily:'Daily', weekly:'Weekly', monthly:'Monthly' };
+
 const defaultState = {
   starts:    { drugs:null, alcohol:null, nicotine:null },
   costs:     { drugs:{amount:0,unit:'day'}, alcohol:{amount:0,unit:'day'}, nicotine:{amount:0,unit:'day'} },
   checkins:  [], cravings:  [], triggers:  [], documents: [],
+  tasks:     [],  // { id, name, category, recurrence, dueDate (ISO date), completed, lastCompletedAt }
   theme: 'dark'
 };
 let state = load();
@@ -585,7 +608,8 @@ function load() {
       starts:    { ...defaultState.starts,  ...(p.starts  ||{}) },
       costs:     { ...defaultState.costs,   ...(p.costs   ||{}) },
       triggers:  Array.isArray(p.triggers)  ? p.triggers  : [],
-      documents: Array.isArray(p.documents) ? p.documents : []
+      documents: Array.isArray(p.documents) ? p.documents : [],
+      tasks:     Array.isArray(p.tasks)     ? p.tasks     : []
     };
   } catch { return structuredClone(defaultState); }
 }
@@ -598,6 +622,7 @@ const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 const uid = () => Math.random().toString(36).slice(2,10) + Date.now().toString(36);
 const fmtDate = ts => new Date(ts).toLocaleString('en-IE',{dateStyle:'medium',timeStyle:'short'});
+const fmtDateOnly = ts => new Date(ts).toLocaleDateString('en-IE',{dateStyle:'medium'});
 const fmtMoney = n => new Intl.NumberFormat('en-IE',{style:'currency',currency:'EUR'}).format(n);
 const fmtBytes = b => b<1048576 ? (b/1024).toFixed(1)+' KB' : (b/1048576).toFixed(1)+' MB';
 const normalise = s => s.trim().toLowerCase();
@@ -630,32 +655,35 @@ $$('.tab').forEach(t => t.addEventListener('click', ()=>{
   t.classList.add('active'); currentView = t.dataset.view;
   $('#view-'+currentView).classList.add('active');
   if (currentView==='charts')    renderCharts();
-  if (currentView==='checkin')   renderCheckins();
-  if (currentView==='cravings')  { renderTriggerChips(); renderCravings(); }
+  if (currentView==='log')       { renderTriggerChips(); renderCombinedLog(); }
+  if (currentView==='checklist') renderTasks();
   if (currentView==='documents') renderDocuments();
 }));
 
 /* Collapsibles */
 $$('.collapsible-trigger').forEach(btn => {
-  btn.addEventListener('click', ()=>{
-    const col = btn.closest('.collapsible');
-    col.classList.toggle('open');
+  btn.addEventListener('click', ()=>{ btn.closest('.collapsible').classList.toggle('open'); });
+});
+
+/* Log segmented toggle */
+$$('.segmented-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    $$('.segmented-btn').forEach(b=>b.classList.remove('active'));
+    $$('.log-subview').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    $('#'+btn.dataset.subview).classList.add('active');
   });
 });
 
 /* ===== DASHBOARD: compact streak cards ===== */
 let activeDetailCat = null;
-
 function renderStreakGrid() {
-  const grid = $('#streakGrid');
-  grid.innerHTML = '';
+  const grid = $('#streakGrid'); grid.innerHTML = '';
   CATS.forEach(c => {
     const start = state.starts[c.id];
     const d = durationParts(start);
     const card = document.createElement('div');
-    card.className = 'streak-card-compact';
-    card.dataset.cat = c.id;
-
+    card.className = 'streak-card-compact'; card.dataset.cat = c.id;
     if (!start) {
       card.innerHTML = `
         <div class="scc-icon">${c.icon}</div>
@@ -676,12 +704,9 @@ function renderStreakGrid() {
     grid.appendChild(card);
   });
 }
-
 function toggleStreakDetail(catId) {
   const panel = $('#streakDetail');
-  if (activeDetailCat === catId && panel.classList.contains('open')) {
-    panel.classList.remove('open'); activeDetailCat = null; return;
-  }
+  if (activeDetailCat === catId && panel.classList.contains('open')) { panel.classList.remove('open'); activeDetailCat=null; return; }
   activeDetailCat = catId;
   const c = CATS.find(x => x.id===catId);
   const start = state.starts[catId];
@@ -690,7 +715,6 @@ function toggleStreakDetail(catId) {
   $('#sdSince').textContent = start ? `Since ${fmtDate(start)} · ${d.days}d ${d.hours}h` : '';
   panel.classList.add('open');
 }
-
 $('#sdClose').addEventListener('click', ()=>{ $('#streakDetail').classList.remove('open'); activeDetailCat=null; });
 $('#sdEdit').addEventListener('click', ()=>{ if (activeDetailCat) openModal(activeDetailCat); });
 $('#sdReset').addEventListener('click', ()=>{
@@ -732,14 +756,13 @@ function renderMoney() {
   $$('#costRows [data-unit]').forEach(sel=>sel.addEventListener('change',e=>{ state.costs[e.target.dataset.unit].unit=e.target.value; save(); renderMoney(); }));
 }
 
-/* Activity meta count */
+/* Recent activity (dashboard) */
 function renderRecent() {
   const merged = [
     ...state.checkins.map(c=>({ts:c.ts,type:'checkin',data:c})),
     ...state.cravings.map(c=>({ts:c.ts,type:'craving',data:c}))
   ].sort((a,b)=>new Date(b.ts)-new Date(a.ts)).slice(0,6);
-  const meta = merged.length ? `${merged.length} recent` : '';
-  $('#activityMeta').textContent = meta;
+  $('#activityMeta').textContent = merged.length ? `${merged.length} recent` : '';
   const el=$('#recentActivity');
   if (!merged.length) { el.innerHTML='<div class="empty">Nothing logged yet</div>'; return; }
   el.innerHTML = merged.map(m=>{
@@ -747,6 +770,36 @@ function renderRecent() {
     const cat=CATS.find(x=>x.id===m.data.cat);
     return `<div class="log-entry craving"><div class="meta"><span>${fmtDate(m.ts)} · ${cat?cat.label:''} · ${m.data.intensity}/5</span></div>${m.data.trigger?`<div class="tags"><span class="tag">${escapeHtml(m.data.trigger)}</span></div>`:''}</div>`;
   }).join('');
+}
+
+/* Combined log list (Log tab) */
+function renderCombinedLog() {
+  const merged = [
+    ...state.checkins.map(c=>({ts:c.ts,type:'checkin',data:c})),
+    ...state.cravings.map(c=>({ts:c.ts,type:'craving',data:c}))
+  ].sort((a,b)=>new Date(b.ts)-new Date(a.ts)).slice(0,40);
+  const el = $('#combinedLogList');
+  if (!merged.length) { el.innerHTML = '<div class="empty">Nothing logged yet</div>'; return; }
+  el.innerHTML = merged.map(m => {
+    if (m.type === 'checkin') {
+      return `<div class="log-entry">
+        <div class="meta"><span>${fmtDate(m.ts)} · check-in ${moodEmoji(m.data.mood)}</span><button class="delete-x" data-del-checkin="${m.data.id}">×</button></div>
+        ${m.data.notes ? `<div class="body">${escapeHtml(m.data.notes)}</div>` : ''}
+      </div>`;
+    }
+    const cat = CATS.find(x => x.id === m.data.cat);
+    return `<div class="log-entry craving">
+      <div class="meta"><span>${fmtDate(m.ts)} · ${cat?cat.label:m.data.cat} · ${m.data.intensity}/5</span><button class="delete-x" data-del-crave="${m.data.id}">×</button></div>
+      ${m.data.trigger ? `<div class="tags"><span class="tag">${escapeHtml(m.data.trigger)}</span></div>` : ''}
+      ${m.data.notes ? `<div class="body" style="margin-top:5px">${escapeHtml(m.data.notes)}</div>` : ''}
+    </div>`;
+  }).join('');
+  el.querySelectorAll('[data-del-checkin]').forEach(b=>b.addEventListener('click',()=>{
+    state.checkins=state.checkins.filter(x=>x.id!==b.dataset.delCheckin); save(); renderCombinedLog(); renderRecent();
+  }));
+  el.querySelectorAll('[data-del-crave]').forEach(b=>b.addEventListener('click',()=>{
+    state.cravings=state.cravings.filter(x=>x.id!==b.dataset.delCrave); save(); renderCombinedLog(); renderRecent();
+  }));
 }
 
 /* Streak modal */
@@ -781,20 +834,8 @@ $('#saveCheckin').addEventListener('click',()=>{
   state.checkins.unshift({id:uid(),ts:new Date().toISOString(),mood:selectedMood,notes:$('#checkinNotes').value.trim()});
   save(); $('#checkinNotes').value='';
   $$('#moodScale .mood-btn').forEach(x=>x.classList.remove('selected')); selectedMood=null;
-  renderCheckins(); renderRecent(); toast('Check-in saved');
+  renderCombinedLog(); renderRecent(); toast('Check-in saved');
 });
-function renderCheckins() {
-  const list=$('#checkinList');
-  if (!state.checkins.length) { list.innerHTML='<div class="empty">No check-ins yet</div>'; return; }
-  list.innerHTML=state.checkins.slice(0,20).map(c=>`
-    <div class="log-entry">
-      <div class="meta"><span>${fmtDate(c.ts)} · mood ${c.mood}/5 ${moodEmoji(c.mood)}</span><button class="delete-x" data-del-checkin="${c.id}">×</button></div>
-      ${c.notes?`<div class="body">${escapeHtml(c.notes)}</div>`:''}
-    </div>`).join('');
-  list.querySelectorAll('[data-del-checkin]').forEach(b=>b.addEventListener('click',()=>{
-    state.checkins=state.checkins.filter(x=>x.id!==b.dataset.delCheckin); save(); renderCheckins(); renderRecent();
-  }));
-}
 function moodEmoji(m) { return ['','😔','😕','😐','🙂','😊'][m]||''; }
 
 /* Triggers */
@@ -860,26 +901,11 @@ $('#saveCraving').addEventListener('click',()=>{
   $$('#cravingCats .quick-chip').forEach(x=>x.classList.remove('active'));
   $$('#intensityRow .intensity-btn').forEach(x=>x.classList.remove('selected'));
   cravingCat=null; cravingInt=null; selectedTrigger=null;
-  renderTriggerChips(); renderTriggerManage(); renderCravings(); renderRecent();
+  renderTriggerChips(); renderTriggerManage(); renderCombinedLog(); renderRecent();
   toast('Craving logged — you got through it');
 });
-function renderCravings() {
-  const list=$('#cravingsList');
-  if (!state.cravings.length) { list.innerHTML='<div class="empty">No cravings logged</div>'; return; }
-  list.innerHTML=state.cravings.slice(0,30).map(c=>{
-    const cat=CATS.find(x=>x.id===c.cat);
-    return `<div class="log-entry craving">
-      <div class="meta"><span>${fmtDate(c.ts)} · ${cat?cat.label:c.cat} · ${c.intensity}/5</span><button class="delete-x" data-del-crave="${c.id}">×</button></div>
-      ${c.trigger?`<div class="tags"><span class="tag">${escapeHtml(c.trigger)}</span></div>`:''}
-      ${c.notes?`<div class="body" style="margin-top:5px">${escapeHtml(c.notes)}</div>`:''}
-    </div>`;
-  }).join('');
-  list.querySelectorAll('[data-del-crave]').forEach(b=>b.addEventListener('click',()=>{
-    state.cravings=state.cravings.filter(x=>x.id!==b.dataset.delCrave); save(); renderCravings(); renderRecent();
-  }));
-}
 
-/* Charts */
+/* ===== Charts ===== */
 let charts={};
 function chartColors() {
   const cs=getComputedStyle(document.documentElement);
@@ -911,7 +937,110 @@ function chartOpts(c,scales={}) {
   return {responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:c.text,font:{size:11}}}},scales:{x:{ticks:{color:c.text,font:{size:10}},grid:{color:c.grid},...(scales.x||{})},y:{ticks:{color:c.text,font:{size:11}},grid:{color:c.grid},...(scales.y||{})}}};
 }
 
-/* Documents */
+/* ===== Checklist ===== */
+function todayISO() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+// Default the date picker to today on first load of the checklist view
+$('#taskDueDate').value = todayISO();
+
+function isOverdue(task) {
+  if (task.completed) return false;
+  if (!task.dueDate) return false;
+  return task.dueDate < todayISO();
+}
+
+function advanceDueDate(dueDateISO, recurrence) {
+  const d = new Date(dueDateISO + 'T00:00:00');
+  if (recurrence === 'daily')   d.setDate(d.getDate() + 1);
+  if (recurrence === 'weekly')  d.setDate(d.getDate() + 7);
+  if (recurrence === 'monthly') d.setMonth(d.getMonth() + 1);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+$('#addTaskBtn').addEventListener('click', () => {
+  const name = $('#taskName').value.trim();
+  if (!name) { toast('Enter a task name'); return; }
+  const category    = $('#taskCategory').value;
+  const recurrence  = $('#taskRecurrence').value;
+  const dueDate     = $('#taskDueDate').value || todayISO();
+
+  state.tasks.unshift({
+    id: uid(), name, category, recurrence, dueDate,
+    completed: false, lastCompletedAt: null
+  });
+  save();
+  $('#taskName').value = '';
+  $('#taskDueDate').value = todayISO();
+  $('#taskCategory').value = 'hygiene';
+  $('#taskRecurrence').value = 'once';
+  renderTasks();
+  toast('Task added');
+});
+
+function toggleTaskComplete(id) {
+  const task = state.tasks.find(t => t.id === id);
+  if (!task) return;
+
+  if (!task.completed) {
+    task.completed = true;
+    task.lastCompletedAt = new Date().toISOString();
+    if (task.recurrence !== 'once') {
+      // Roll forward and reset for next cycle
+      task.dueDate = advanceDueDate(task.dueDate < todayISO() ? todayISO() : task.dueDate, task.recurrence);
+      task.completed = false;
+    }
+  } else {
+    // Un-checking a one-off task
+    task.completed = false;
+  }
+  save();
+  renderTasks();
+}
+
+function renderTasks() {
+  const list = $('#taskList');
+  if (!state.tasks.length) { list.innerHTML = '<div class="empty">No tasks yet — add one above</div>'; return; }
+
+  // Sort: overdue first, then by due date, completed last
+  const sorted = [...state.tasks].sort((a, b) => {
+    if (a.completed !== b.completed) return a.completed ? 1 : -1;
+    const aOver = isOverdue(a), bOver = isOverdue(b);
+    if (aOver !== bOver) return aOver ? -1 : 1;
+    return (a.dueDate || '').localeCompare(b.dueDate || '');
+  });
+
+  list.innerHTML = sorted.map(t => {
+    const overdue = isOverdue(t);
+    const dueLabel = t.dueDate ? fmtDateOnly(t.dueDate + 'T00:00:00') : '';
+    return `
+      <div class="task-item ${overdue ? 'overdue' : ''} ${t.completed ? 'completed' : ''}">
+        <button class="task-check ${t.completed ? 'checked' : ''}" data-toggle-task="${t.id}">${t.completed ? '✓' : ''}</button>
+        <div class="task-info">
+          <div class="task-name">${escapeHtml(t.name)}</div>
+          <div class="task-meta">
+            <span class="task-cat-tag">${TASK_CATS[t.category] || t.category}</span>
+            <span class="task-recur-tag">${RECUR_LABELS[t.recurrence] || t.recurrence}</span>
+            ${dueLabel ? `<span class="task-meta-due">${overdue ? '⚠ Overdue · ' : 'Due '}${dueLabel}</span>` : ''}
+          </div>
+        </div>
+        <button class="task-delete" data-del-task="${t.id}">×</button>
+      </div>`;
+  }).join('');
+
+  list.querySelectorAll('[data-toggle-task]').forEach(b => b.addEventListener('click', () => toggleTaskComplete(b.dataset.toggleTask)));
+  list.querySelectorAll('[data-del-task]').forEach(b => b.addEventListener('click', () => {
+    const t = state.tasks.find(x => x.id === b.dataset.delTask);
+    if (!t) return;
+    if (confirm(`Delete "${t.name}"?`)) {
+      state.tasks = state.tasks.filter(x => x.id !== b.dataset.delTask);
+      save(); renderTasks(); toast('Task deleted');
+    }
+  }));
+}
+
+/* ===== Documents ===== */
 const MAX_DOC=4*1024*1024;
 function checkStorage() {
   try { const u=new Blob([localStorage.getItem(KEY)||'']).size; $('#sizeWarn').classList.toggle('show',u>5*1024*1024*0.8); } catch{}
@@ -952,9 +1081,8 @@ $('#docFileInput').addEventListener('change',e=>{ handleDocUpload(e.target.files
 $('#docUploadArea').addEventListener('dragover',e=>{ e.preventDefault(); $('#docUploadArea').classList.add('drag-over'); });
 $('#docUploadArea').addEventListener('dragleave',()=>$('#docUploadArea').classList.remove('drag-over'));
 $('#docUploadArea').addEventListener('drop',e=>{ e.preventDefault(); $('#docUploadArea').classList.remove('drag-over'); handleDocUpload(e.dataTransfer.files[0]); });
-/* ===== PDF.js in-app viewer =====
-   pdfjs-dist 2.16.105 UMD build — exposes window.pdfjsLib, mobile-safe
-===== */
+
+/* ===== PDF.js in-app viewer ===== */
 const PDFJS_CDN    = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/build/pdf.min.js';
 const PDFJS_WORKER = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/build/pdf.worker.min.js';
 
@@ -973,18 +1101,14 @@ function loadPdfJs(cb) {
     pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER;
     cb();
   };
-  s.onerror = () => {
-    $('#pdfViewerWrap').innerHTML = '<div class="pdf-loading">Failed to load PDF renderer. Check your connection.</div>';
-  };
+  s.onerror = () => { $('#pdfViewerWrap').innerHTML = '<div class="pdf-loading">Failed to load PDF renderer. Check your connection.</div>'; };
   document.head.appendChild(s);
 }
-
 function pdfSetNav() {
   $('#pdfPrev').disabled        = pdfCurPage <= 1;
   $('#pdfNext').disabled        = !pdfDoc || pdfCurPage >= pdfDoc.numPages;
   $('#pdfPageInfo').textContent = pdfDoc ? pdfCurPage + ' / ' + pdfDoc.numPages : '— / —';
 }
-
 async function pdfRenderPage(num) {
   if (!pdfDoc || pdfRendering) return;
   pdfRendering = true;
@@ -1002,11 +1126,10 @@ async function pdfRenderPage(num) {
     wrap.innerHTML = '';
     wrap.appendChild(canvas);
   }
-  // Render at device pixel ratio for crisp text — canvas is larger than CSS size
-  const dpr        = Math.min(window.devicePixelRatio || 1, 3);
-  const vpHi       = page.getViewport({ scale: scale * dpr });
-  canvas.width     = Math.floor(vpHi.width);
-  canvas.height    = Math.floor(vpHi.height);
+  const dpr  = Math.min(window.devicePixelRatio || 1, 3);
+  const vpHi = page.getViewport({ scale: scale * dpr });
+  canvas.width        = Math.floor(vpHi.width);
+  canvas.height       = Math.floor(vpHi.height);
   canvas.style.width  = Math.floor(vp.width)  + 'px';
   canvas.style.height = Math.floor(vp.height) + 'px';
 
@@ -1016,18 +1139,14 @@ async function pdfRenderPage(num) {
   pdfRendering   = false;
   pdfSetNav();
 }
-
 async function openPdf(id) {
   const d = state.documents.find(x => x.id === id);
   if (!d) return;
-  currentPdfId = id;
-  pdfCurPage   = 1;
-  pdfDoc       = null;
+  currentPdfId = id; pdfCurPage = 1; pdfDoc = null;
   $('#pdfModalTitle').textContent = d.name;
   $('#pdfViewerWrap').innerHTML   = '<div class="pdf-loading">Loading…</div>';
   pdfSetNav();
   $('#pdfModalBg').classList.add('open');
-
   loadPdfJs(async () => {
     try {
       const base64 = d.data.split(',')[1];
@@ -1043,7 +1162,6 @@ async function openPdf(id) {
     }
   });
 }
-
 function closePdf() {
   $('#pdfModalBg').classList.remove('open');
   pdfDoc = null; currentPdfId = null; pdfCurPage = 1; pdfRendering = false;
@@ -1051,12 +1169,8 @@ function closePdf() {
   pdfSetNav();
 }
 $('#pdfClose').addEventListener('click', closePdf);
-$('#pdfPrev').addEventListener('click', async () => {
-  if (pdfCurPage > 1) { pdfCurPage--; await pdfRenderPage(pdfCurPage); }
-});
-$('#pdfNext').addEventListener('click', async () => {
-  if (pdfDoc && pdfCurPage < pdfDoc.numPages) { pdfCurPage++; await pdfRenderPage(pdfCurPage); }
-});
+$('#pdfPrev').addEventListener('click', async () => { if (pdfCurPage > 1) { pdfCurPage--; await pdfRenderPage(pdfCurPage); } });
+$('#pdfNext').addEventListener('click', async () => { if (pdfDoc && pdfCurPage < pdfDoc.numPages) { pdfCurPage++; await pdfRenderPage(pdfCurPage); } });
 function dlDoc(id) { const d=state.documents.find(x=>x.id===id); if(!d)return; const a=document.createElement('a'); a.href=d.data; a.download=d.name; a.click(); }
 
 /* Settings */
@@ -1076,7 +1190,7 @@ $('#importFile').addEventListener('change',e=>{
     try {
       const data=JSON.parse(ev.target.result);
       if(!data.starts||!data.checkins||!data.cravings) throw new Error('Invalid file');
-      state={...defaultState,...data,triggers:data.triggers||[],documents:data.documents||[]};
+      state={...defaultState,...data,triggers:data.triggers||[],documents:data.documents||[],tasks:data.tasks||[]};
       save(); renderAll(); $('#settingsModalBg').classList.remove('open'); toast('Imported');
     } catch(err) { alert('Could not import: '+err.message); }
   };
@@ -1094,12 +1208,12 @@ function escapeHtml(s) { return String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','
 
 /* Render all */
 function renderAll() {
-  renderStreakGrid(); renderMoney(); renderRecent(); renderCheckins();
-  renderTriggerChips(); renderCravings();
+  renderStreakGrid(); renderMoney(); renderRecent();
+  renderTriggerChips(); renderCombinedLog(); renderTasks();
   if (currentView==='documents') renderDocuments();
 }
 applyTheme(); renderAll();
-setInterval(()=>{ if(currentView==='dashboard'){renderStreakGrid();renderMoney();} },60000);
+setInterval(()=>{ if(currentView==='dashboard'){renderStreakGrid();renderMoney();} if(currentView==='checklist'){renderTasks();} },60000);
 </script>
 </body>
 </html>
