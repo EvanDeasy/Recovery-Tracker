@@ -226,6 +226,23 @@
   .checklist-add-row { display: grid; gap: 10px; margin-bottom: 4px; }
   .checklist-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .task-list { display: grid; gap: 8px; margin-top: 4px; }
+
+  /* Daily summary table */
+  .summary-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .summary-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .summary-table th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: var(--text-mute); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  .summary-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .summary-table tr:last-child td { border-bottom: none; }
+  .summary-table tr.row-overdue td { background: var(--danger-soft); }
+  .summary-row-status { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; }
+  .summary-status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .summary-status-dot.done { background: var(--accent); }
+  .summary-status-dot.pending { background: var(--gold); }
+  .summary-status-dot.overdue { background: var(--danger); }
+  .summary-table .task-name-cell { font-weight: 500; word-break: break-word; max-width: 180px; }
+  .summary-table .due-cell { white-space: nowrap; color: var(--text-dim); font-size: 12px; }
+  .summary-table .row-overdue .due-cell { color: var(--danger); font-weight: 600; }
+  .summary-empty-cell { text-align: center; color: var(--text-mute); font-style: italic; padding: 18px; }
   .task-item {
     background: var(--surface-2); border: 1px solid var(--border); border-left: 3px solid var(--accent);
     border-radius: 6px; padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px;
@@ -511,6 +528,29 @@
     <div class="card">
       <h3>Your tasks</h3>
       <div class="task-list" id="taskList"></div>
+    </div>
+
+    <div class="collapsible" id="col-daily-summary">
+      <button class="collapsible-trigger" data-target="col-daily-summary">
+        <span class="collapsible-trigger-label">Daily summary</span>
+        <span class="collapsible-trigger-meta" id="dailySummaryMeta"></span>
+        <span class="collapsible-chevron">▼</span>
+      </button>
+      <div class="collapsible-body">
+        <div class="summary-table-wrap">
+          <table class="summary-table">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Task</th>
+                <th>Category</th>
+                <th>Due</th>
+              </tr>
+            </thead>
+            <tbody id="dailySummaryBody"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1090,6 +1130,46 @@ function renderTasks() {
       save(); renderTasks(); toast('Task deleted');
     }
   }));
+
+  renderDailySummary();
+}
+
+function renderDailySummary() {
+  const body = $('#dailySummaryBody');
+  const meta = $('#dailySummaryMeta');
+  const today = todayISO();
+
+  // Today + overdue: due date is today, or due date is in the past and not completed
+  const relevant = state.tasks.filter(t => t.dueDate === today || (t.dueDate && t.dueDate < today && !t.completed));
+
+  const doneCount = relevant.filter(t => t.completed).length;
+  meta.textContent = relevant.length ? `${doneCount}/${relevant.length} done` : '';
+
+  if (!relevant.length) {
+    body.innerHTML = `<tr><td colspan="4" class="summary-empty-cell">Nothing due today</td></tr>`;
+    return;
+  }
+
+  const sorted = [...relevant].sort((a, b) => {
+    const aOver = isOverdue(a), bOver = isOverdue(b);
+    if (aOver !== bOver) return aOver ? -1 : 1;
+    if (a.completed !== b.completed) return a.completed ? 1 : -1;
+    return (a.dueDate || '').localeCompare(b.dueDate || '');
+  });
+
+  body.innerHTML = sorted.map(t => {
+    const overdue = isOverdue(t);
+    const statusClass = t.completed ? 'done' : overdue ? 'overdue' : 'pending';
+    const statusLabel = t.completed ? 'Done' : overdue ? 'Overdue' : 'Pending';
+    const dueLabel = t.dueDate ? fmtDateOnly(t.dueDate + 'T00:00:00') : '—';
+    return `
+      <tr class="${overdue ? 'row-overdue' : ''}">
+        <td><span class="summary-row-status"><span class="summary-status-dot ${statusClass}"></span>${statusLabel}</span></td>
+        <td class="task-name-cell">${escapeHtml(t.name)}</td>
+        <td>${TASK_CATS[t.category] || t.category}</td>
+        <td class="due-cell">${dueLabel}</td>
+      </tr>`;
+  }).join('');
 }
 
 /* ===== Documents ===== */
