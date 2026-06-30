@@ -103,6 +103,20 @@
 
   /* ===== DASHBOARD — compact streak grid ===== */
   .streak-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+
+  /* Check-in status tile */
+  .checkin-status { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; position: relative; overflow: hidden; }
+  .checkin-status::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--rag-color, var(--text-mute)); }
+  .checkin-status[data-rag="green"] { --rag-color: #2d9e54; }
+  .checkin-status[data-rag="amber"] { --rag-color: #d99a1f; }
+  .checkin-status[data-rag="red"]   { --rag-color: var(--danger); animation: ragPulse 2s ease-in-out infinite; }
+  @keyframes ragPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0); } 50% { box-shadow: 0 0 10px 1px rgba(192,57,43,0.2); } }
+  .checkin-status-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--rag-color, var(--text-mute)); flex-shrink: 0; }
+  .checkin-status-info { flex: 1; min-width: 0; }
+  .checkin-status-label { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--text-mute); font-weight: 600; margin-bottom: 2px; }
+  .checkin-status-value { font-size: 14px; font-weight: 500; color: var(--text); }
+  .checkin-status-cta { background: var(--rag-color, var(--accent)); color: #fff; border: none; padding: 8px 14px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit; flex-shrink: 0; transition: opacity .15s; }
+  .checkin-status-cta:hover { opacity: .88; }
   .streak-card-compact {
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
     padding: 12px 10px 10px; position: relative; overflow: hidden; cursor: pointer;
@@ -336,6 +350,15 @@
 
   <!-- ===== DASHBOARD ===== -->
   <section class="view active" id="view-dashboard">
+    <div class="checkin-status" id="checkinStatus" data-rag="red">
+      <div class="checkin-status-dot"></div>
+      <div class="checkin-status-info">
+        <div class="checkin-status-label">Last check-in</div>
+        <div class="checkin-status-value" id="checkinStatusValue">No check-ins yet</div>
+      </div>
+      <button class="checkin-status-cta" id="checkinStatusCta">Check in</button>
+    </div>
+
     <div class="streak-grid" id="streakGrid"></div>
 
     <div class="streak-detail" id="streakDetail">
@@ -795,7 +818,7 @@ function renderCombinedLog() {
     </div>`;
   }).join('');
   el.querySelectorAll('[data-del-checkin]').forEach(b=>b.addEventListener('click',()=>{
-    state.checkins=state.checkins.filter(x=>x.id!==b.dataset.delCheckin); save(); renderCombinedLog(); renderRecent();
+    state.checkins=state.checkins.filter(x=>x.id!==b.dataset.delCheckin); save(); renderCombinedLog(); renderRecent(); renderCheckinStatus();
   }));
   el.querySelectorAll('[data-del-crave]').forEach(b=>b.addEventListener('click',()=>{
     state.cravings=state.cravings.filter(x=>x.id!==b.dataset.delCrave); save(); renderCombinedLog(); renderRecent();
@@ -834,7 +857,7 @@ $('#saveCheckin').addEventListener('click',()=>{
   state.checkins.unshift({id:uid(),ts:new Date().toISOString(),mood:selectedMood,notes:$('#checkinNotes').value.trim()});
   save(); $('#checkinNotes').value='';
   $$('#moodScale .mood-btn').forEach(x=>x.classList.remove('selected')); selectedMood=null;
-  renderCombinedLog(); renderRecent(); toast('Check-in saved');
+  renderCombinedLog(); renderRecent(); renderCheckinStatus(); toast('Check-in saved');
 });
 function moodEmoji(m) { return ['','😔','😕','😐','🙂','😊'][m]||''; }
 
@@ -1206,14 +1229,58 @@ $('#resetBtn').addEventListener('click',()=>{
 /* Helpers */
 function escapeHtml(s) { return String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
 
+/* Check-in status tile (RAG) */
+function renderCheckinStatus() {
+  const el = $('#checkinStatus');
+  const valueEl = $('#checkinStatusValue');
+  const cta = $('#checkinStatusCta');
+
+  if (!state.checkins.length) {
+    el.dataset.rag = 'red';
+    valueEl.textContent = 'No check-ins yet';
+    cta.textContent = 'Check in';
+    return;
+  }
+
+  const latest = state.checkins[0]; // checkins are unshifted, so [0] is most recent
+  const hoursSince = (Date.now() - new Date(latest.ts).getTime()) / 3600000;
+
+  let rag;
+  if (hoursSince < 24) rag = 'green';
+  else if (hoursSince < 48) rag = 'amber';
+  else rag = 'red';
+
+  el.dataset.rag = rag;
+  const hoursRounded = Math.floor(hoursSince);
+  const label = hoursRounded < 1 ? 'Just now'
+    : hoursRounded === 1 ? '1 hour ago'
+    : hoursRounded < 24 ? `${hoursRounded} hours ago`
+    : `${Math.floor(hoursRounded/24)}d ${hoursRounded%24}h ago`;
+  valueEl.textContent = `${label} · ${fmtDate(latest.ts)}`;
+  cta.textContent = rag === 'green' ? 'Checked in' : 'Check in now';
+}
+$('#checkinStatusCta').addEventListener('click', () => {
+  // Jump to Log tab, Check-in sub-view
+  $$('.tab').forEach(x => x.classList.remove('active'));
+  $$('.view').forEach(x => x.classList.remove('active'));
+  document.querySelector('.tab[data-view="log"]').classList.add('active');
+  $('#view-log').classList.add('active');
+  currentView = 'log';
+  $$('.segmented-btn').forEach(b=>b.classList.remove('active'));
+  $$('.log-subview').forEach(s=>s.classList.remove('active'));
+  document.querySelector('.segmented-btn[data-subview="checkinSub"]').classList.add('active');
+  $('#checkinSub').classList.add('active');
+  renderTriggerChips(); renderCombinedLog();
+});
+
 /* Render all */
 function renderAll() {
-  renderStreakGrid(); renderMoney(); renderRecent();
+  renderStreakGrid(); renderMoney(); renderRecent(); renderCheckinStatus();
   renderTriggerChips(); renderCombinedLog(); renderTasks();
   if (currentView==='documents') renderDocuments();
 }
 applyTheme(); renderAll();
-setInterval(()=>{ if(currentView==='dashboard'){renderStreakGrid();renderMoney();} if(currentView==='checklist'){renderTasks();} },60000);
+setInterval(()=>{ if(currentView==='dashboard'){renderStreakGrid();renderMoney();renderCheckinStatus();} if(currentView==='checklist'){renderTasks();} },60000);
 </script>
 </body>
 </html>
