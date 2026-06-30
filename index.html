@@ -659,6 +659,7 @@ const defaultState = {
   costs:     { drugs:{amount:0,unit:'day'}, alcohol:{amount:0,unit:'day'}, nicotine:{amount:0,unit:'day'} },
   checkins:  [], cravings:  [], triggers:  [], documents: [],
   tasks:     [],  // { id, name, category, recurrence, dueDate (ISO date), completed, lastCompletedAt }
+  taskCompletions: [], // { id, taskId, name, category, dueDate, completedAt } — snapshot log, survives card auto-removal
   theme: 'dark'
 };
 let state = load();
@@ -673,7 +674,8 @@ function load() {
       costs:     { ...defaultState.costs,   ...(p.costs   ||{}) },
       triggers:  Array.isArray(p.triggers)  ? p.triggers  : [],
       documents: Array.isArray(p.documents) ? p.documents : [],
-      tasks:     Array.isArray(p.tasks)     ? p.tasks     : []
+      tasks:     Array.isArray(p.tasks)     ? p.tasks     : [],
+      taskCompletions: Array.isArray(p.taskCompletions) ? p.taskCompletions : []
     };
   } catch { return structuredClone(defaultState); }
 }
@@ -1052,6 +1054,17 @@ function toggleTaskComplete(id) {
     task.completed = true;
     task.lastCompletedAt = new Date().toISOString();
 
+    // Snapshot the completion so the daily summary can show it even after
+    // the card itself auto-removes (recurring tasks)
+    state.taskCompletions.unshift({
+      id: uid(),
+      taskId: task.id,
+      name: task.name,
+      category: task.category,
+      dueDate: task.dueDate,
+      completedAt: task.lastCompletedAt
+    });
+
     if (task.recurrence !== 'once') {
       // Spawn a fresh card for the next occurrence
       const nextDue = advanceDueDate(task.dueDate < todayISO() ? todayISO() : task.dueDate, task.recurrence);
@@ -1066,10 +1079,12 @@ function toggleTaskComplete(id) {
       });
     }
   } else {
-    // Un-checking — just revert this card's completion (no new card removal needed,
-    // since the next-occurrence card is a separate independent task)
+    // Un-checking — revert this card's completion and remove its most recent
+    // completion-log entry so the summary doesn't show a stale "Done" row
     task.completed = false;
     task.lastCompletedAt = null;
+    const logIdx = state.taskCompletions.findIndex(c => c.taskId === id);
+    if (logIdx !== -1) state.taskCompletions.splice(logIdx, 1);
   }
   save();
   renderTasks();
@@ -1139,31 +1154,55 @@ function renderDailySummary() {
   const meta = $('#dailySummaryMeta');
   const today = todayISO();
 
-  // Today + overdue: due date is today, or due date is in the past and not completed
-  const relevant = state.tasks.filter(t => t.dueDate === today || (t.dueDate && t.dueDate < today && !t.completed));
+  // Live tasks: today + overdue, not yet completed (completed live cards are
+  // about to fade out, so we don't double-count them here)
+  const liveRelevant = state.tasks.filter(t =>
+    !t.completed && (t.dueDate === today || (t.dueDate && t.dueDate < today))
+  ).map(t => ({
+    key: 'live-' + t.id,
+    name: t.name,
+    category: t.category,
+    dueDate: t.dueDate,
+    completed: false,
+    overdue: isOverdue(t)
+  }));
 
-  const doneCount = relevant.filter(t => t.completed).length;
-  meta.textContent = relevant.length ? `${doneCount}/${relevant.length} done` : '';
+  // Completed today: pulled from the persistent log, independent of whether
+  // the originating card still exists in state.tasks
+  const completedToday = state.taskCompletions.filter(c => {
+    const d = new Date(c.completedAt);
+    const completedDateISO = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    return completedDateISO === today;
+  }).map(c => ({
+    key: 'done-' + c.id,
+    name: c.name,
+    category: c.category,
+    dueDate: c.dueDate,
+    completed: true,
+    overdue: false
+  }));
+
+  const relevant = [...liveRelevant, ...completedToday];
+
+  meta.textContent = relevant.length ? `${completedToday.length}/${relevant.length} done` : '';
 
   if (!relevant.length) {
     body.innerHTML = `<tr><td colspan="4" class="summary-empty-cell">Nothing due today</td></tr>`;
     return;
   }
 
-  const sorted = [...relevant].sort((a, b) => {
-    const aOver = isOverdue(a), bOver = isOverdue(b);
-    if (aOver !== bOver) return aOver ? -1 : 1;
+  const sorted = relevant.sort((a, b) => {
+    if (a.overdue !== b.overdue) return a.overdue ? -1 : 1;
     if (a.completed !== b.completed) return a.completed ? 1 : -1;
     return (a.dueDate || '').localeCompare(b.dueDate || '');
   });
 
   body.innerHTML = sorted.map(t => {
-    const overdue = isOverdue(t);
-    const statusClass = t.completed ? 'done' : overdue ? 'overdue' : 'pending';
-    const statusLabel = t.completed ? 'Done' : overdue ? 'Overdue' : 'Pending';
+    const statusClass = t.completed ? 'done' : t.overdue ? 'overdue' : 'pending';
+    const statusLabel = t.completed ? 'Done' : t.overdue ? 'Overdue' : 'Pending';
     const dueLabel = t.dueDate ? fmtDateOnly(t.dueDate + 'T00:00:00') : '—';
     return `
-      <tr class="${overdue ? 'row-overdue' : ''}">
+      <tr class="${t.overdue ? 'row-overdue' : ''}">
         <td><span class="summary-row-status"><span class="summary-status-dot ${statusClass}"></span>${statusLabel}</span></td>
         <td class="task-name-cell">${escapeHtml(t.name)}</td>
         <td>${TASK_CATS[t.category] || t.category}</td>
@@ -1322,7 +1361,7 @@ $('#importFile').addEventListener('change',e=>{
     try {
       const data=JSON.parse(ev.target.result);
       if(!data.starts||!data.checkins||!data.cravings) throw new Error('Invalid file');
-      state={...defaultState,...data,triggers:data.triggers||[],documents:data.documents||[],tasks:data.tasks||[]};
+      state={...defaultState,...data,triggers:data.triggers||[],documents:data.documents||[],tasks:data.tasks||[],taskCompletions:data.taskCompletions||[]};
       save(); renderAll(); $('#settingsModalBg').classList.remove('open'); toast('Imported');
     } catch(err) { alert('Could not import: '+err.message); }
   };
