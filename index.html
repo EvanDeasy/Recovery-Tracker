@@ -107,29 +107,26 @@
   /* Check-in status tile */
   /* RAG tile row — 2-col on mobile */
   .rag-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-  .checkin-status { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 12px; position: relative; overflow: hidden; margin-bottom: 0; }
-  .checkin-status::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--rag-color, var(--text-mute)); }
-  .checkin-status[data-rag="green"] { --rag-color: #2d9e54; }
-  .checkin-status[data-rag="amber"] { --rag-color: #d99a1f; }
-  .checkin-status[data-rag="red"]   { --rag-color: var(--danger); animation: ragPulse 2s ease-in-out infinite; }
+  /* Unified RAG tile — both checkin and task score share this base */
+  .rag-tile { display: flex; flex-direction: column; justify-content: space-between; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 12px; position: relative; overflow: hidden; min-height: 110px; }
+  .rag-tile::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--rag-color, var(--text-mute)); }
+  .rag-tile[data-rag="green"] { --rag-color: #2d9e54; }
+  .rag-tile[data-rag="amber"] { --rag-color: #d99a1f; }
+  .rag-tile[data-rag="red"]   { --rag-color: var(--danger); animation: ragPulse 2s ease-in-out infinite; }
+  .rag-tile-label { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: var(--text-mute); font-weight: 600; margin-bottom: 4px; }
+  .rag-tile-main { display: flex; align-items: baseline; gap: 4px; }
+  .rag-tile-big { font-family: 'Cormorant Garamond',serif; font-size: 34px; font-weight: 500; line-height: 1; color: var(--rag-color, var(--text-mute)); letter-spacing: -.02em; }
+  .rag-tile-sub { font-size: 12px; color: var(--text-mute); }
+  .rag-tile-detail { font-size: 11px; color: var(--rag-color, var(--text-mute)); font-weight: 600; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rag-tile-cta { margin-top: 8px; background: var(--rag-color, var(--accent)); color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity .15s; align-self: flex-start; }
+  .rag-tile-cta:hover { opacity: .88; }
+  /* Legacy aliases — keep for JS that reads data-rag on checkinStatus */
+  .checkin-status { display: contents; }
   @keyframes ragPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0); } 50% { box-shadow: 0 0 10px 1px rgba(192,57,43,0.2); } }
-  .task-score-tile { display: flex; flex-direction: column; justify-content: space-between; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 12px; position: relative; overflow: hidden; cursor: pointer; transition: box-shadow .15s; }
-  .task-score-tile:hover { box-shadow: var(--shadow); }
-  .task-score-tile::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--rag-color, var(--text-mute)); }
-  .task-score-tile[data-rag="green"] { --rag-color: #2d9e54; }
-  .task-score-tile[data-rag="amber"] { --rag-color: #d99a1f; }
-  .task-score-tile[data-rag="red"]   { --rag-color: var(--danger); animation: ragPulse 2s ease-in-out infinite; }
-  .task-score-label { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: var(--text-mute); font-weight: 600; margin-bottom: 6px; }
-  .task-score-main { display: flex; align-items: baseline; gap: 4px; }
-  .task-score-num { font-family: 'Cormorant Garamond',serif; font-size: 34px; font-weight: 500; line-height: 1; color: var(--rag-color, var(--text-mute)); letter-spacing: -.02em; }
+
   .task-score-denom { font-size: 13px; color: var(--text-mute); }
-  .task-score-pct { font-size: 11px; color: var(--rag-color, var(--text-mute)); font-weight: 600; margin-top: 3px; }
-  .checkin-status-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--rag-color, var(--text-mute)); flex-shrink: 0; }
-  .checkin-status-info { flex: 1; min-width: 0; }
-  .checkin-status-label { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--text-mute); font-weight: 600; margin-bottom: 2px; }
-  .checkin-status-value { font-size: 14px; font-weight: 500; color: var(--text); }
-  .checkin-status-cta { background: var(--rag-color, var(--accent)); color: #fff; border: none; padding: 8px 14px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit; flex-shrink: 0; transition: opacity .15s; }
-  .checkin-status-cta:hover { opacity: .88; }
+
+
   .streak-card-compact {
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
     padding: 12px 10px 10px; position: relative; overflow: hidden; cursor: pointer;
@@ -434,21 +431,21 @@
     </div>
 
     <div class="rag-row">
-      <div class="checkin-status" id="checkinStatus" data-rag="red">
-        <div class="checkin-status-dot"></div>
-        <div class="checkin-status-info">
-          <div class="checkin-status-label">Last check-in</div>
-          <div class="checkin-status-value" id="checkinStatusValue">No check-ins yet</div>
+      <div class="rag-tile" id="checkinStatus" data-rag="red">
+        <div class="rag-tile-label">Last check-in</div>
+        <div class="rag-tile-main">
+          <span class="rag-tile-big" id="checkinStatusValue">—</span>
         </div>
-        <button class="checkin-status-cta" id="checkinStatusCta">Check in</button>
+        <div class="rag-tile-detail" id="checkinStatusDate"></div>
+        <button class="rag-tile-cta" id="checkinStatusCta">Check in</button>
       </div>
-      <div class="task-score-tile" id="taskScoreTile" data-rag="red" title="Go to checklist">
-        <div class="task-score-label">Tasks today</div>
-        <div class="task-score-main">
-          <span class="task-score-num" id="taskScoreNum">0</span>
-          <span class="task-score-denom" id="taskScoreDenom">/ 0</span>
+      <div class="rag-tile" id="taskScoreTile" data-rag="red" style="cursor:pointer" title="Go to checklist">
+        <div class="rag-tile-label">Tasks today</div>
+        <div class="rag-tile-main">
+          <span class="rag-tile-big" id="taskScoreNum">—</span>
+          <span class="rag-tile-sub" id="taskScoreDenom"></span>
         </div>
-        <div class="task-score-pct" id="taskScorePct">—</div>
+        <div class="rag-tile-detail" id="taskScorePct">—</div>
       </div>
     </div>
 
@@ -1174,8 +1171,13 @@ function toggleTaskComplete(id) {
       // This prevents phantom missed-day accumulation: if you complete a daily
       // task a day late, the next occurrence is due tomorrow from today, not
       // tomorrow from yesterday.
-      const completionDateISO = task.lastCompletedAt.slice(0, 10);
-      task.dueDate = advanceDueDate(completionDateISO, task.recurrence);
+      // Daily tasks advance from their due date so cadence is preserved —
+      // completing last night's task this morning still schedules tonight's task.
+      // Weekly/monthly advance from today to avoid accumulating a backlog.
+      const advanceFrom = task.recurrence === 'daily'
+        ? task.dueDate
+        : task.lastCompletedAt.slice(0, 10);
+      task.dueDate = advanceDueDate(advanceFrom, task.recurrence);
     }
   } else {
     // Un-checking — revert completion and remove the matching log entry.
@@ -1473,33 +1475,34 @@ function escapeHtml(s) { return String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','
 
 /* Check-in status tile (RAG) */
 function renderCheckinStatus() {
-  const el = $('#checkinStatus');
-  const valueEl = $('#checkinStatusValue');
-  const cta = $('#checkinStatusCta');
+  const el      = $('#checkinStatus');
+  const bigEl   = $('#checkinStatusValue');
+  const dateEl  = $('#checkinStatusDate');
+  const cta     = $('#checkinStatusCta');
 
   if (!state.checkins.length) {
-    el.dataset.rag = 'red';
-    valueEl.textContent = 'No check-ins yet';
-    cta.textContent = 'Check in';
+    el.dataset.rag   = 'red';
+    bigEl.textContent  = 'Never';
+    dateEl.textContent = '';
+    cta.textContent  = 'Check in';
     return;
   }
 
-  const latest = state.checkins[0]; // checkins are unshifted, so [0] is most recent
+  const latest     = state.checkins[0];
   const hoursSince = (Date.now() - new Date(latest.ts).getTime()) / 3600000;
+  const rag        = hoursSince < 24 ? 'green' : hoursSince < 48 ? 'amber' : 'red';
+  el.dataset.rag   = rag;
 
-  let rag;
-  if (hoursSince < 24) rag = 'green';
-  else if (hoursSince < 48) rag = 'amber';
-  else rag = 'red';
+  // Big label: short and legible — hours or days
+  const h = Math.floor(hoursSince);
+  const bigLabel = h < 1    ? 'Now'
+    : h < 24   ? `${h}h`
+    : h < 48   ? '1d'
+    : `${Math.floor(h/24)}d`;
 
-  el.dataset.rag = rag;
-  const hoursRounded = Math.floor(hoursSince);
-  const label = hoursRounded < 1 ? 'Just now'
-    : hoursRounded === 1 ? '1 hour ago'
-    : hoursRounded < 24 ? `${hoursRounded} hours ago`
-    : `${Math.floor(hoursRounded/24)}d ${hoursRounded%24}h ago`;
-  valueEl.textContent = `${label} · ${fmtDate(latest.ts)}`;
-  cta.textContent = rag === 'green' ? 'Checked in' : 'Check in now';
+  bigEl.textContent  = bigLabel;
+  dateEl.textContent = fmtDate(latest.ts);
+  cta.textContent    = rag === 'green' ? '✓ Checked in' : 'Check in now';
 }
 function renderTaskScore() {
   const tile  = $('#taskScoreTile');
