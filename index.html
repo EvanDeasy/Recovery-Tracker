@@ -1146,7 +1146,7 @@ $('#addTaskBtn').addEventListener('click', () => {
   $('#taskDueDate').value = todayISO();
   $('#taskCategory').value = 'hygiene';
   $('#taskRecurrence').value = 'once';
-  renderTasks();
+  renderTasks(); renderTaskScore();
   closeFabAfterSave(); toast('Task added');
 });
 
@@ -1240,6 +1240,7 @@ function renderTasks() {
   }));
 
   renderDailySummary();
+  if (currentView === 'dashboard' || currentView === 'checklist') renderTaskScore();
 }
 
 function renderDailySummary() {
@@ -1507,22 +1508,24 @@ function renderTaskScore() {
   const pct   = $('#taskScorePct');
   const today = todayISO();
 
-  const todayTasks  = state.tasks.filter(t => t.dueDate && t.dueDate <= today);
-  const total       = todayTasks.length;
-
-  // Count completions from the persistent log that happened today
-  const completedToday = state.taskCompletions.filter(c => {
-    return c.completedAt && c.completedAt.slice(0,10) === today;
-  }).length;
-
-  // Cap completed count at total (edge case: manual data edits)
-  const done = Math.min(completedToday, total);
+  // Score is based purely on the completions log for today —
+  // how many tasks did I actually complete today?
+  const completedToday = state.taskCompletions.filter(c =>
+    c.completedAt && c.completedAt.slice(0, 10) === today
+  );
+  const done  = completedToday.length;
+  // Total = tasks that were due today (dueDate stored at completion time)
+  // plus any still open and due today
+  const dueTodayOpen = state.tasks.filter(t =>
+    !t.completed && t.dueDate && t.dueDate <= today
+  ).length;
+  const total = done + dueTodayOpen;
 
   if (total === 0) {
-    tile.dataset.rag = 'green';
-    num.textContent  = '—';
+    tile.dataset.rag  = 'green';
+    num.textContent   = '—';
     denom.textContent = '';
-    pct.textContent  = 'No tasks due';
+    pct.textContent   = 'No tasks due today';
     return;
   }
 
