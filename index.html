@@ -105,12 +105,25 @@
   .streak-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
 
   /* Check-in status tile */
-  .checkin-status { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; position: relative; overflow: hidden; }
+  /* RAG tile row — 2-col on mobile */
+  .rag-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .checkin-status { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 12px; position: relative; overflow: hidden; margin-bottom: 0; }
   .checkin-status::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--rag-color, var(--text-mute)); }
   .checkin-status[data-rag="green"] { --rag-color: #2d9e54; }
   .checkin-status[data-rag="amber"] { --rag-color: #d99a1f; }
   .checkin-status[data-rag="red"]   { --rag-color: var(--danger); animation: ragPulse 2s ease-in-out infinite; }
   @keyframes ragPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0); } 50% { box-shadow: 0 0 10px 1px rgba(192,57,43,0.2); } }
+  .task-score-tile { display: flex; flex-direction: column; justify-content: space-between; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 12px; position: relative; overflow: hidden; cursor: pointer; transition: box-shadow .15s; }
+  .task-score-tile:hover { box-shadow: var(--shadow); }
+  .task-score-tile::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--rag-color, var(--text-mute)); }
+  .task-score-tile[data-rag="green"] { --rag-color: #2d9e54; }
+  .task-score-tile[data-rag="amber"] { --rag-color: #d99a1f; }
+  .task-score-tile[data-rag="red"]   { --rag-color: var(--danger); animation: ragPulse 2s ease-in-out infinite; }
+  .task-score-label { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: var(--text-mute); font-weight: 600; margin-bottom: 6px; }
+  .task-score-main { display: flex; align-items: baseline; gap: 4px; }
+  .task-score-num { font-family: 'Cormorant Garamond',serif; font-size: 34px; font-weight: 500; line-height: 1; color: var(--rag-color, var(--text-mute)); letter-spacing: -.02em; }
+  .task-score-denom { font-size: 13px; color: var(--text-mute); }
+  .task-score-pct { font-size: 11px; color: var(--rag-color, var(--text-mute)); font-weight: 600; margin-top: 3px; }
   .checkin-status-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--rag-color, var(--text-mute)); flex-shrink: 0; }
   .checkin-status-info { flex: 1; min-width: 0; }
   .checkin-status-label { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--text-mute); font-weight: 600; margin-bottom: 2px; }
@@ -147,10 +160,7 @@
   .sd-btn:hover { color: var(--text); border-color: var(--text-dim); }
   .sd-btn.danger:hover { color: var(--warm); border-color: var(--warm); }
 
-  .money-hero { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-  .money-hero-label { font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: var(--text-mute); font-weight: 600; margin-bottom: 4px; }
-  .money-hero-total { font-family: 'Cormorant Garamond',serif; font-size: 40px; font-weight: 500; color: var(--gold); letter-spacing: -.02em; line-height: 1; }
-  .money-hero-icon { font-size: 28px; opacity: .4; flex-shrink: 0; }
+
 
   .collapsible { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
   .collapsible-trigger { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; background: transparent; border: none; cursor: pointer; font-family: inherit; text-align: left; transition: background .15s; }
@@ -339,8 +349,48 @@
   @media (max-width: 400px) {
     .scc-count { font-size: 28px; }
     .scc-label { font-size: 9px; }
-    .money-hero-total { font-size: 34px; }
     .checklist-grid-2 { grid-template-columns: 1fr; }
+  }
+
+  /* ===== Floating Action Button ===== */
+  .fab {
+    position: fixed;
+    bottom: calc(28px + env(safe-area-inset-bottom));
+    right: max(20px, env(safe-area-inset-right));
+    width: 52px; height: 52px;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: 50%;
+    font-size: 26px; line-height: 1;
+    display: none; place-items: center;
+    cursor: pointer; z-index: 50;
+    box-shadow: 0 4px 16px rgba(0,0,0,.25);
+    transition: transform .2s, background .2s;
+  }
+  .fab.visible { display: grid; }
+  .fab.open { transform: rotate(45deg); background: var(--warm); }
+  .fab:hover { transform: rotate(45deg) scale(1.08); }
+  .fab.open:hover { transform: rotate(45deg) scale(1.08); }
+
+  /* Slide-down add panel */
+  .add-panel {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height .35s ease, opacity .25s ease;
+    opacity: 0;
+    margin-bottom: 0;
+  }
+  .add-panel.open {
+    max-height: 900px;
+    opacity: 1;
+    margin-bottom: 18px;
+  }
+  .add-panel-inner {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px;
+  }
+  .add-panel-inner h2 {
+    font-family: 'Cormorant Garamond',serif; font-size: 20px;
+    font-weight: 500; margin-bottom: 14px; letter-spacing: -.01em;
   }
 </style>
 </head>
@@ -362,21 +412,11 @@
     <button class="tab active" data-view="dashboard">Dashboard</button>
     <button class="tab" data-view="log">Log</button>
     <button class="tab" data-view="checklist">Checklist</button>
-    <button class="tab" data-view="charts">Charts</button>
     <button class="tab" data-view="documents">Documents</button>
   </div>
 
   <!-- ===== DASHBOARD ===== -->
   <section class="view active" id="view-dashboard">
-    <div class="checkin-status" id="checkinStatus" data-rag="red">
-      <div class="checkin-status-dot"></div>
-      <div class="checkin-status-info">
-        <div class="checkin-status-label">Last check-in</div>
-        <div class="checkin-status-value" id="checkinStatusValue">No check-ins yet</div>
-      </div>
-      <button class="checkin-status-cta" id="checkinStatusCta">Check in</button>
-    </div>
-
     <div class="streak-grid" id="streakGrid"></div>
 
     <div class="streak-detail" id="streakDetail">
@@ -393,18 +433,32 @@
       </div>
     </div>
 
-    <div class="money-hero">
-      <div>
-        <div class="money-hero-label">Total saved</div>
-        <div class="money-hero-total" id="moneyHeroTotal">€0.00</div>
+    <div class="rag-row">
+      <div class="checkin-status" id="checkinStatus" data-rag="red">
+        <div class="checkin-status-dot"></div>
+        <div class="checkin-status-info">
+          <div class="checkin-status-label">Last check-in</div>
+          <div class="checkin-status-value" id="checkinStatusValue">No check-ins yet</div>
+        </div>
+        <button class="checkin-status-cta" id="checkinStatusCta">Check in</button>
       </div>
-      <div class="money-hero-icon">💰</div>
+      <div class="task-score-tile" id="taskScoreTile" data-rag="red" title="Go to checklist">
+        <div class="task-score-label">Tasks today</div>
+        <div class="task-score-main">
+          <span class="task-score-num" id="taskScoreNum">0</span>
+          <span class="task-score-denom" id="taskScoreDenom">/ 0</span>
+        </div>
+        <div class="task-score-pct" id="taskScorePct">—</div>
+      </div>
     </div>
 
     <div class="collapsible" id="col-breakdown">
       <button class="collapsible-trigger" data-target="col-breakdown">
-        <span class="collapsible-trigger-label">Savings breakdown</span>
-        <span class="collapsible-chevron">▼</span>
+        <div style="display:flex; flex-direction:column; gap:2px;">
+          <span style="font-size:11px; text-transform:uppercase; letter-spacing:.14em; color:var(--text-mute); font-weight:600;">Total saved</span>
+          <span class="money-hero-total" id="moneyHeroTotal" style="font-family:'Cormorant Garamond',serif; font-size:34px; font-weight:500; color:var(--gold); letter-spacing:-.02em; line-height:1;">€0.00</span>
+        </div>
+        <span class="collapsible-chevron" style="margin-left:auto;">▼</span>
       </button>
       <div class="collapsible-body">
         <div class="money-breakdown" id="moneyBreakdown"></div>
@@ -429,55 +483,58 @@
 
   <!-- ===== LOG (merged check-in + cravings) ===== -->
   <section class="view" id="view-log">
-    <div class="card">
-      <div class="segmented">
-        <button class="segmented-btn active" data-subview="checkinSub">Check-in</button>
-        <button class="segmented-btn" data-subview="cravingSub">Craving</button>
-      </div>
 
-      <!-- Check-in sub-form -->
-      <div class="log-subview active" id="checkinSub">
-        <label>How are you feeling today?</label>
-        <div class="mood-scale" id="moodScale">
-          <button class="mood-btn" data-mood="1">😔</button>
-          <button class="mood-btn" data-mood="2">😕</button>
-          <button class="mood-btn" data-mood="3">😐</button>
-          <button class="mood-btn" data-mood="4">🙂</button>
-          <button class="mood-btn" data-mood="5">😊</button>
+    <div class="add-panel" id="logAddPanel">
+      <div class="add-panel-inner">
+        <div class="segmented">
+          <button class="segmented-btn active" data-subview="checkinSub">Check-in</button>
+          <button class="segmented-btn" data-subview="cravingSub">Craving</button>
         </div>
-        <label style="margin-top:10px">Notes (optional)</label>
-        <textarea id="checkinNotes" placeholder="Anything on your mind — wins, struggles, gratitude..."></textarea>
-        <div class="btn-row"><button class="btn" id="saveCheckin">Save check-in</button></div>
-      </div>
 
-      <!-- Craving sub-form -->
-      <div class="log-subview" id="cravingSub">
-        <label>Category</label>
-        <div class="quick-row" id="cravingCats">
-          <button class="quick-chip" data-cat="drugs">Drugs</button>
-          <button class="quick-chip" data-cat="alcohol">Alcohol</button>
-          <button class="quick-chip" data-cat="nicotine">Nicotine</button>
-        </div>
-        <label>Intensity (1 = mild, 5 = intense)</label>
-        <div class="intensity-row" id="intensityRow">
-          <button class="intensity-btn" data-int="1">1</button>
-          <button class="intensity-btn" data-int="2">2</button>
-          <button class="intensity-btn" data-int="3">3</button>
-          <button class="intensity-btn" data-int="4">4</button>
-          <button class="intensity-btn" data-int="5">5</button>
-        </div>
-        <label style="margin-top:10px">Trigger</label>
-        <div class="trigger-chips-wrap">
-          <div class="trigger-chips" id="triggerChips"></div>
-          <div class="trigger-chip-hint" id="triggerChipHint" style="display:none">Tap to select, or type a new one below</div>
-          <div class="trigger-new-row">
-            <input type="text" id="cravingTrigger" placeholder="New trigger…">
-            <button class="trigger-add-btn" id="triggerAddBtn">Add</button>
+        <!-- Check-in sub-form -->
+        <div class="log-subview active" id="checkinSub">
+          <label>How are you feeling today?</label>
+          <div class="mood-scale" id="moodScale">
+            <button class="mood-btn" data-mood="1">😔</button>
+            <button class="mood-btn" data-mood="2">😕</button>
+            <button class="mood-btn" data-mood="3">😐</button>
+            <button class="mood-btn" data-mood="4">🙂</button>
+            <button class="mood-btn" data-mood="5">😊</button>
           </div>
+          <label style="margin-top:10px">Notes (optional)</label>
+          <textarea id="checkinNotes" placeholder="Anything on your mind — wins, struggles, gratitude..."></textarea>
+          <div class="btn-row"><button class="btn" id="saveCheckin">Save check-in</button></div>
         </div>
-        <label style="margin-top:10px">Notes (optional)</label>
-        <textarea id="cravingNotes" placeholder="What helped? What did you do instead?"></textarea>
-        <div class="btn-row"><button class="btn" id="saveCraving">Log craving</button></div>
+
+        <!-- Craving sub-form -->
+        <div class="log-subview" id="cravingSub">
+          <label>Category</label>
+          <div class="quick-row" id="cravingCats">
+            <button class="quick-chip" data-cat="drugs">Drugs</button>
+            <button class="quick-chip" data-cat="alcohol">Alcohol</button>
+            <button class="quick-chip" data-cat="nicotine">Nicotine</button>
+          </div>
+          <label>Intensity (1 = mild, 5 = intense)</label>
+          <div class="intensity-row" id="intensityRow">
+            <button class="intensity-btn" data-int="1">1</button>
+            <button class="intensity-btn" data-int="2">2</button>
+            <button class="intensity-btn" data-int="3">3</button>
+            <button class="intensity-btn" data-int="4">4</button>
+            <button class="intensity-btn" data-int="5">5</button>
+          </div>
+          <label style="margin-top:10px">Trigger</label>
+          <div class="trigger-chips-wrap">
+            <div class="trigger-chips" id="triggerChips"></div>
+            <div class="trigger-chip-hint" id="triggerChipHint" style="display:none">Tap to select, or type a new one below</div>
+            <div class="trigger-new-row">
+              <input type="text" id="cravingTrigger" placeholder="New trigger…">
+              <button class="trigger-add-btn" id="triggerAddBtn">Add</button>
+            </div>
+          </div>
+          <label style="margin-top:10px">Notes (optional)</label>
+          <textarea id="cravingNotes" placeholder="What helped? What did you do instead?"></textarea>
+          <div class="btn-row"><button class="btn" id="saveCraving">Log craving</button></div>
+        </div>
       </div>
     </div>
 
@@ -485,44 +542,78 @@
       <h3>Recent entries</h3>
       <div class="log-list" id="combinedLogList"></div>
     </div>
+
+    <div class="collapsible" id="col-chart-mood">
+      <button class="collapsible-trigger" data-target="col-chart-mood">
+        <span class="collapsible-trigger-label">Mood — last 30 days</span>
+        <span class="collapsible-chevron">▼</span>
+      </button>
+      <div class="collapsible-body">
+        <div class="chart-wrap" style="margin-bottom:0"><canvas id="moodChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="collapsible" id="col-chart-cravings">
+      <button class="collapsible-trigger" data-target="col-chart-cravings">
+        <span class="collapsible-trigger-label">Cravings — last 30 days</span>
+        <span class="collapsible-chevron">▼</span>
+      </button>
+      <div class="collapsible-body">
+        <div class="chart-wrap" style="margin-bottom:0"><canvas id="cravingsChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="collapsible" id="col-chart-triggers">
+      <button class="collapsible-trigger" data-target="col-chart-triggers">
+        <span class="collapsible-trigger-label">Cravings by trigger</span>
+        <span class="collapsible-chevron">▼</span>
+      </button>
+      <div class="collapsible-body">
+        <div class="chart-wrap" style="margin-bottom:0"><canvas id="triggerChart"></canvas></div>
+      </div>
+    </div>
+
   </section>
 
   <!-- ===== CHECKLIST ===== -->
   <section class="view" id="view-checklist">
-    <div class="card">
-      <h2>Add task</h2>
-      <div class="checklist-add-row">
-        <div>
-          <label>Task name</label>
-          <input type="text" id="taskName" placeholder="e.g. Take morning medication">
-        </div>
-        <div class="checklist-grid-2">
+
+    <div class="add-panel" id="checklistAddPanel">
+      <div class="add-panel-inner">
+        <h2>Add task</h2>
+        <div class="checklist-add-row">
           <div>
-            <label>Category</label>
-            <select id="taskCategory">
-              <option value="hygiene">Hygiene</option>
-              <option value="chores">Chores</option>
-              <option value="admin">Admin</option>
-              <option value="health">Health</option>
-              <option value="other">Other</option>
-            </select>
+            <label>Task name</label>
+            <input type="text" id="taskName" placeholder="e.g. Take morning medication">
+          </div>
+          <div class="checklist-grid-2">
+            <div>
+              <label>Category</label>
+              <select id="taskCategory">
+                <option value="hygiene">Hygiene</option>
+                <option value="chores">Chores</option>
+                <option value="admin">Admin</option>
+                <option value="health">Health</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label>Recurrence</label>
+              <select id="taskRecurrence">
+                <option value="once">One-off</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
           </div>
           <div>
-            <label>Recurrence</label>
-            <select id="taskRecurrence">
-              <option value="once">One-off</option>
-              <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
-            </select>
+            <label>Due date</label>
+            <input type="date" id="taskDueDate">
           </div>
         </div>
-        <div>
-          <label>Due date</label>
-          <input type="date" id="taskDueDate">
-        </div>
+        <div class="btn-row"><button class="btn" id="addTaskBtn">Add task</button></div>
       </div>
-      <div class="btn-row"><button class="btn" id="addTaskBtn">Add task</button></div>
     </div>
 
     <div class="card">
@@ -554,18 +645,6 @@
     </div>
   </section>
 
-  <!-- ===== CHARTS ===== -->
-  <section class="view" id="view-charts">
-    <div class="card" style="padding:16px;">
-      <h3>Mood — last 30 days</h3>
-      <div class="chart-wrap"><canvas id="moodChart"></canvas></div>
-      <h3 style="margin-top:6px">Cravings — last 30 days</h3>
-      <div class="chart-wrap"><canvas id="cravingsChart"></canvas></div>
-      <h3 style="margin-top:6px">Cravings by trigger</h3>
-      <div class="chart-wrap"><canvas id="triggerChart"></canvas></div>
-    </div>
-  </section>
-
   <!-- ===== DOCUMENTS ===== -->
   <section class="view" id="view-documents">
     <div class="card">
@@ -583,6 +662,9 @@
   </section>
 
 </div>
+
+<!-- Floating Action Button -->
+<button class="fab" id="fab" aria-label="Add entry">+</button>
 
 <!-- Streak date modal -->
 <div class="modal-bg" id="modalBg">
@@ -709,7 +791,6 @@ function applyTheme() {
   document.documentElement.setAttribute('data-theme', state.theme);
   $('#themeToggle').textContent = state.theme==='dark' ? '☾' : '◐';
   document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.setAttribute('content', state.theme==='dark'?'#0a0e1a':'#f7f5f0'));
-  if (currentView==='charts') renderCharts();
 }
 $('#themeToggle').addEventListener('click', ()=>{ state.theme=state.theme==='dark'?'light':'dark'; save(); applyTheme(); });
 
@@ -720,15 +801,22 @@ $$('.tab').forEach(t => t.addEventListener('click', ()=>{
   $$('.view').forEach(x=>x.classList.remove('active'));
   t.classList.add('active'); currentView = t.dataset.view;
   $('#view-'+currentView).classList.add('active');
-  if (currentView==='charts')    renderCharts();
-  if (currentView==='log')       { renderTriggerChips(); renderCombinedLog(); }
+  if (currentView==='log')       { renderTriggerChips(); renderCombinedLog(); renderCharts(); }
   if (currentView==='checklist') renderTasks();
   if (currentView==='documents') renderDocuments();
+  updateFab();
 }));
 
 /* Collapsibles */
 $$('.collapsible-trigger').forEach(btn => {
-  btn.addEventListener('click', ()=>{ btn.closest('.collapsible').classList.toggle('open'); });
+  btn.addEventListener('click', ()=>{
+    const col = btn.closest('.collapsible');
+    col.classList.toggle('open');
+    // Re-render charts if a chart collapsible just opened — canvas needs visible dimensions
+    if (col.classList.contains('open') && ['col-chart-mood','col-chart-cravings','col-chart-triggers'].includes(col.id)) {
+      requestAnimationFrame(() => renderCharts());
+    }
+  });
 });
 
 /* Log segmented toggle */
@@ -900,7 +988,7 @@ $('#saveCheckin').addEventListener('click',()=>{
   state.checkins.unshift({id:uid(),ts:new Date().toISOString(),mood:selectedMood,notes:$('#checkinNotes').value.trim()});
   save(); $('#checkinNotes').value='';
   $$('#moodScale .mood-btn').forEach(x=>x.classList.remove('selected')); selectedMood=null;
-  renderCombinedLog(); renderRecent(); renderCheckinStatus(); toast('Check-in saved');
+  renderCombinedLog(); renderRecent(); renderCheckinStatus(); closeFabAfterSave(); toast('Check-in saved');
 });
 function moodEmoji(m) { return ['','😔','😕','😐','🙂','😊'][m]||''; }
 
@@ -968,7 +1056,7 @@ $('#saveCraving').addEventListener('click',()=>{
   $$('#intensityRow .intensity-btn').forEach(x=>x.classList.remove('selected'));
   cravingCat=null; cravingInt=null; selectedTrigger=null;
   renderTriggerChips(); renderTriggerManage(); renderCombinedLog(); renderRecent();
-  toast('Craving logged — you got through it');
+  closeFabAfterSave(); toast('Craving logged — you got through it');
 });
 
 /* ===== Charts ===== */
@@ -1059,7 +1147,7 @@ $('#addTaskBtn').addEventListener('click', () => {
   $('#taskCategory').value = 'hygiene';
   $('#taskRecurrence').value = 'once';
   renderTasks();
-  toast('Task added');
+  closeFabAfterSave(); toast('Task added');
 });
 
 function toggleTaskComplete(id) {
@@ -1082,9 +1170,12 @@ function toggleTaskComplete(id) {
     });
 
     if (task.recurrence !== 'once') {
-      // Advance the due date in place — no new card, no visible change until
-      // that future date actually arrives (rolloverRecurringTasks then resets it)
-      task.dueDate = advanceDueDate(task.dueDate < todayISO() ? todayISO() : task.dueDate, task.recurrence);
+      // Advance from the completion date, not the original due date.
+      // This prevents phantom missed-day accumulation: if you complete a daily
+      // task a day late, the next occurrence is due tomorrow from today, not
+      // tomorrow from yesterday.
+      const completionDateISO = task.lastCompletedAt.slice(0, 10);
+      task.dueDate = advanceDueDate(completionDateISO, task.recurrence);
     }
   } else {
     // Un-checking — revert completion and remove the matching log entry.
@@ -1098,7 +1189,7 @@ function toggleTaskComplete(id) {
     if (logIdx !== -1) state.taskCompletions.splice(logIdx, 1);
   }
   save();
-  renderTasks();
+  renderTasks(); renderTaskScore();
 }
 
 function renderTasks() {
@@ -1409,6 +1500,49 @@ function renderCheckinStatus() {
   valueEl.textContent = `${label} · ${fmtDate(latest.ts)}`;
   cta.textContent = rag === 'green' ? 'Checked in' : 'Check in now';
 }
+function renderTaskScore() {
+  const tile  = $('#taskScoreTile');
+  const num   = $('#taskScoreNum');
+  const denom = $('#taskScoreDenom');
+  const pct   = $('#taskScorePct');
+  const today = todayISO();
+
+  const todayTasks  = state.tasks.filter(t => t.dueDate && t.dueDate <= today);
+  const total       = todayTasks.length;
+
+  // Count completions from the persistent log that happened today
+  const completedToday = state.taskCompletions.filter(c => {
+    return c.completedAt && c.completedAt.slice(0,10) === today;
+  }).length;
+
+  // Cap completed count at total (edge case: manual data edits)
+  const done = Math.min(completedToday, total);
+
+  if (total === 0) {
+    tile.dataset.rag = 'green';
+    num.textContent  = '—';
+    denom.textContent = '';
+    pct.textContent  = 'No tasks due';
+    return;
+  }
+
+  const ratio = done / total;
+  tile.dataset.rag  = ratio >= 0.66 ? 'green' : ratio >= 0.33 ? 'amber' : 'red';
+  num.textContent   = done;
+  denom.textContent = '/ ' + total;
+  pct.textContent   = Math.round(ratio * 100) + '% complete';
+}
+
+$('#taskScoreTile').addEventListener('click', () => {
+  $$('.tab').forEach(x => x.classList.remove('active'));
+  $$('.view').forEach(x => x.classList.remove('active'));
+  document.querySelector('.tab[data-view="checklist"]').classList.add('active');
+  $('#view-checklist').classList.add('active');
+  currentView = 'checklist';
+  renderTasks();
+  updateFab();
+});
+
 $('#checkinStatusCta').addEventListener('click', () => {
   // Jump to Log tab, Check-in sub-view
   $$('.tab').forEach(x => x.classList.remove('active'));
@@ -1421,16 +1555,57 @@ $('#checkinStatusCta').addEventListener('click', () => {
   document.querySelector('.segmented-btn[data-subview="checkinSub"]').classList.add('active');
   $('#checkinSub').classList.add('active');
   renderTriggerChips(); renderCombinedLog();
+  updateFab();
+  // Auto-open the log panel since user tapped "Check in now"
+  fab.classList.add('open');
+  $('#logAddPanel').classList.add('open');
 });
+
+/* ===== FAB — floating action button ===== */
+const fab = $('#fab');
+const FAB_VIEWS = ['log', 'checklist'];
+
+function updateFab() {
+  if (FAB_VIEWS.includes(currentView)) {
+    fab.classList.add('visible');
+  } else {
+    fab.classList.remove('visible');
+    fab.classList.remove('open');
+    closeFabPanel();
+  }
+}
+
+function closeFabPanel() {
+  $('#logAddPanel') && $('#logAddPanel').classList.remove('open');
+  $('#checklistAddPanel') && $('#checklistAddPanel').classList.remove('open');
+  fab.classList.remove('open');
+}
+
+fab.addEventListener('click', () => {
+  const isOpen = fab.classList.contains('open');
+  if (isOpen) {
+    closeFabPanel();
+  } else {
+    fab.classList.add('open');
+    if (currentView === 'log') $('#logAddPanel').classList.add('open');
+    if (currentView === 'checklist') $('#checklistAddPanel').classList.add('open');
+  }
+});
+
+// Auto-close panel after successful save
+function closeFabAfterSave() {
+  setTimeout(() => { closeFabPanel(); }, 300);
+}
 
 /* Render all */
 function renderAll() {
-  renderStreakGrid(); renderMoney(); renderRecent(); renderCheckinStatus();
+  renderStreakGrid(); renderMoney(); renderRecent(); renderCheckinStatus(); renderTaskScore();
   renderTriggerChips(); renderCombinedLog(); renderTasks();
   if (currentView==='documents') renderDocuments();
+  if (currentView==='log') renderCharts();
 }
 applyTheme(); renderAll();
-setInterval(()=>{ if(currentView==='dashboard'){renderStreakGrid();renderMoney();renderCheckinStatus();} if(currentView==='checklist'){renderTasks();} },60000);
+setInterval(()=>{ if(currentView==='dashboard'){renderStreakGrid();renderMoney();renderCheckinStatus();renderTaskScore();} if(currentView==='checklist'){renderTasks();} },60000);
 </script>
 </body>
 </html>
