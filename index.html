@@ -1119,9 +1119,15 @@ function rolloverRecurringTasks() {
   let changed = false;
   state.tasks.forEach(t => {
     if (t.recurrence !== 'once' && t.completed && t.dueDate <= today) {
-      t.completed = false;
-      t.lastCompletedAt = null;
-      changed = true;
+      // Only reset if the completion happened on a previous day — not if the
+      // task was just completed today and happens to advance back to today
+      // (e.g. a daily task completed late that's still due today)
+      const completedDate = t.lastCompletedAt ? t.lastCompletedAt.slice(0, 10) : null;
+      if (completedDate && completedDate < today) {
+        t.completed = false;
+        t.lastCompletedAt = null;
+        changed = true;
+      }
     }
   });
   if (changed) save();
