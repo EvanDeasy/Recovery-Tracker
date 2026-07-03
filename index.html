@@ -120,6 +120,9 @@
   .rag-tile-detail { font-size: 11px; color: var(--rag-color, var(--text-mute)); font-weight: 600; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .rag-tile-cta { margin-top: 8px; background: var(--rag-color, var(--accent)); color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity .15s; align-self: flex-start; }
   .rag-tile-cta:hover { opacity: .88; }
+  .task-streak-badge { display: none; align-items: center; gap: 4px; margin-top: 6px; font-size: 11px; font-weight: 600; color: var(--gold); }
+  .task-streak-badge.visible { display: flex; }
+  .task-streak-badge .flame { font-size: 14px; }
   /* Legacy aliases — keep for JS that reads data-rag on checkinStatus */
   .checkin-status { display: contents; }
   @keyframes ragPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0); } 50% { box-shadow: 0 0 10px 1px rgba(192,57,43,0.2); } }
@@ -438,6 +441,10 @@
         </div>
         <div class="rag-tile-detail" id="checkinStatusDate"></div>
         <button class="rag-tile-cta" id="checkinStatusCta">Check in</button>
+        <div class="task-streak-badge" id="checkinStreakBadge">
+          <span class="flame">🔥</span>
+          <span id="checkinStreakCount">0</span> day streak
+        </div>
       </div>
       <div class="rag-tile" id="taskScoreTile" data-rag="red" style="cursor:pointer" title="Go to checklist">
         <div class="rag-tile-label">Tasks today</div>
@@ -446,6 +453,10 @@
           <span class="rag-tile-sub" id="taskScoreDenom"></span>
         </div>
         <div class="rag-tile-detail" id="taskScorePct">—</div>
+        <div class="task-streak-badge" id="taskStreakBadge">
+          <span class="flame">🔥</span>
+          <span id="taskStreakCount">0</span> day streak
+        </div>
       </div>
     </div>
 
@@ -535,11 +546,6 @@
       </div>
     </div>
 
-    <div class="card">
-      <h3>Recent entries</h3>
-      <div class="log-list" id="combinedLogList"></div>
-    </div>
-
     <div class="collapsible" id="col-chart-mood">
       <button class="collapsible-trigger" data-target="col-chart-mood">
         <span class="collapsible-trigger-label">Mood — last 30 days</span>
@@ -567,6 +573,17 @@
       </button>
       <div class="collapsible-body">
         <div class="chart-wrap" style="margin-bottom:0"><canvas id="triggerChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="collapsible" id="col-recent-entries">
+      <button class="collapsible-trigger" data-target="col-recent-entries">
+        <span class="collapsible-trigger-label">Recent entries</span>
+        <span class="collapsible-trigger-meta" id="recentEntriesMeta"></span>
+        <span class="collapsible-chevron">▼</span>
+      </button>
+      <div class="collapsible-body">
+        <div class="log-list" id="combinedLogList"></div>
       </div>
     </div>
 
@@ -738,6 +755,8 @@ const defaultState = {
   costs:     { drugs:{amount:0,unit:'day'}, alcohol:{amount:0,unit:'day'}, nicotine:{amount:0,unit:'day'} },
   checkins:  [], cravings:  [], triggers:  [], documents: [],
   tasks:     [],  // { id, name, category, recurrence, dueDate (ISO date), completed, lastCompletedAt }
+  taskStreakDays: [], // ISO date strings where all due tasks were completed same-day
+  checkinStreakDays: [], // ISO date strings where at least 1 check-in occurred
   taskCompletions: [], // { id, taskId, name, category, dueDate, completedAt } — snapshot log, survives card auto-removal
   theme: 'dark'
 };
@@ -754,7 +773,9 @@ function load() {
       triggers:  Array.isArray(p.triggers)  ? p.triggers  : [],
       documents: Array.isArray(p.documents) ? p.documents : [],
       tasks:     Array.isArray(p.tasks)     ? p.tasks     : [],
-      taskCompletions: Array.isArray(p.taskCompletions) ? p.taskCompletions : []
+      taskCompletions: Array.isArray(p.taskCompletions) ? p.taskCompletions : [],
+      taskStreakDays:  Array.isArray(p.taskStreakDays)  ? p.taskStreakDays  : [],
+      checkinStreakDays: Array.isArray(p.checkinStreakDays) ? p.checkinStreakDays : []
     };
   } catch { return structuredClone(defaultState); }
 }
@@ -931,6 +952,8 @@ function renderCombinedLog() {
   ].sort((a,b)=>new Date(b.ts)-new Date(a.ts)).slice(0,40);
   const el = $('#combinedLogList');
   if (!merged.length) { el.innerHTML = '<div class="empty">Nothing logged yet</div>'; return; }
+  const metaEl = $('#recentEntriesMeta');
+  if (metaEl) metaEl.textContent = merged.length ? `${merged.length} entries` : '';
   el.innerHTML = merged.map(m => {
     if (m.type === 'checkin') {
       return `<div class="log-entry">
@@ -985,7 +1008,7 @@ $('#saveCheckin').addEventListener('click',()=>{
   state.checkins.unshift({id:uid(),ts:new Date().toISOString(),mood:selectedMood,notes:$('#checkinNotes').value.trim()});
   save(); $('#checkinNotes').value='';
   $$('#moodScale .mood-btn').forEach(x=>x.classList.remove('selected')); selectedMood=null;
-  renderCombinedLog(); renderRecent(); renderCheckinStatus(); closeFabAfterSave(); toast('Check-in saved');
+  recordCheckinStreak(); renderCombinedLog(); renderRecent(); renderCheckinStatus(); closeFabAfterSave(); toast('Check-in saved');
 });
 function moodEmoji(m) { return ['','😔','😕','😐','🙂','😊'][m]||''; }
 
@@ -1197,6 +1220,7 @@ function toggleTaskComplete(id) {
     if (logIdx !== -1) state.taskCompletions.splice(logIdx, 1);
   }
   save();
+  checkAndRecordTaskStreak();
   renderTasks(); renderTaskScore();
 }
 
@@ -1330,12 +1354,10 @@ function renderDocuments() {
       </div>
       <div class="doc-actions">
         <button class="doc-btn" data-view-doc="${doc.id}">View</button>
-        <button class="doc-btn" data-dl-doc="${doc.id}">Save</button>
         <button class="doc-btn danger" data-del-doc="${doc.id}">Remove</button>
       </div>
     </div>`).join('');
   grid.querySelectorAll('[data-view-doc]').forEach(b=>b.addEventListener('click',()=>openPdf(b.dataset.viewDoc)));
-  grid.querySelectorAll('[data-dl-doc]').forEach(b=>b.addEventListener('click',()=>dlDoc(b.dataset.dlDoc)));
   grid.querySelectorAll('[data-del-doc]').forEach(b=>b.addEventListener('click',()=>{
     const doc=state.documents.find(d=>d.id===b.dataset.delDoc); if(!doc)return;
     if(confirm(`Remove "${doc.name}"?`)) { state.documents=state.documents.filter(d=>d.id!==b.dataset.delDoc); save(); renderDocuments(); toast('Removed'); }
@@ -1463,7 +1485,7 @@ $('#importFile').addEventListener('change',e=>{
     try {
       const data=JSON.parse(ev.target.result);
       if(!data.starts||!data.checkins||!data.cravings) throw new Error('Invalid file');
-      state={...defaultState,...data,triggers:data.triggers||[],documents:data.documents||[],tasks:data.tasks||[],taskCompletions:data.taskCompletions||[]};
+      state={...defaultState,...data,triggers:data.triggers||[],documents:data.documents||[],tasks:data.tasks||[],taskCompletions:data.taskCompletions||[],taskStreakDays:data.taskStreakDays||[],checkinStreakDays:data.checkinStreakDays||[]};
       save(); renderAll(); $('#settingsModalBg').classList.remove('open'); toast('Imported');
     } catch(err) { alert('Could not import: '+err.message); }
   };
@@ -1480,6 +1502,26 @@ $('#resetBtn').addEventListener('click',()=>{
 function escapeHtml(s) { return String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
 
 /* Check-in status tile (RAG) */
+function recordCheckinStreak() {
+  const today = todayISO();
+  if (state.checkinStreakDays.includes(today)) return;
+  const hasCheckinToday = state.checkins.some(c => c.ts && c.ts.slice(0,10) === today);
+  if (hasCheckinToday) { state.checkinStreakDays.push(today); save(); }
+}
+
+function calcCheckinStreak() {
+  const days = new Set(state.checkinStreakDays);
+  let streak = 0;
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  while (true) {
+    const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    if (days.has(iso)) { streak++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+  return streak;
+}
+
 function renderCheckinStatus() {
   const el      = $('#checkinStatus');
   const bigEl   = $('#checkinStatusValue');
@@ -1509,7 +1551,74 @@ function renderCheckinStatus() {
   bigEl.textContent  = bigLabel;
   dateEl.textContent = fmtDate(latest.ts);
   cta.textContent    = rag === 'green' ? '✓ Checked in' : 'Check in now';
+
+  const cStreak = calcCheckinStreak();
+  const cBadge  = $('#checkinStreakBadge');
+  const cCount  = $('#checkinStreakCount');
+  if (cStreak > 0) { cBadge.classList.add('visible'); cCount.textContent = cStreak; }
+  else { cBadge.classList.remove('visible'); }
 }
+/* ===== Task streak ===== */
+function checkAndRecordTaskStreak() {
+  const today = todayISO();
+
+  // Already recorded today
+  if (state.taskStreakDays.includes(today)) return;
+
+  // Find all tasks that were due today (dueDate === today OR were overdue and
+  // completed today — captured via taskCompletions with dueDate <= today)
+  const dueTodayCompletions = state.taskCompletions.filter(c =>
+    c.completedAt && c.completedAt.slice(0, 10) === today
+  );
+
+  // Tasks still open and due today (not yet completed)
+  const openToday = state.tasks.filter(t =>
+    !t.completed && t.dueDate && t.dueDate <= today
+  );
+
+  // If there were any tasks due today and none are still open, record the day
+  if (dueTodayCompletions.length > 0 && openToday.length === 0) {
+    state.taskStreakDays.push(today);
+    save();
+  }
+}
+
+function calcTaskStreak() {
+  // Count consecutive days going back from yesterday where all tasks were done
+  // (today is still in progress, so we don't count it in the streak number)
+  const days = new Set(state.taskStreakDays);
+  let streak = 0;
+  const d = new Date();
+  d.setDate(d.getDate() - 1); // start from yesterday
+
+  while (true) {
+    const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    if (days.has(iso)) {
+      streak++;
+      d.setDate(d.getDate() - 1);
+    } else {
+      // Days with no tasks due don't break the streak — skip them
+      // But we only skip if there were genuinely no tasks existing yet
+      // (i.e. before the user started using the app). Use taskCompletions
+      // to detect if any tasks existed on that day.
+      const hadTasks = state.taskCompletions.some(c => {
+        const cd = c.completedAt ? c.completedAt.slice(0,10) : null;
+        return cd === iso;
+      }) || state.tasks.some(t => t.dueDate === iso);
+
+      if (!hadTasks) {
+        // No tasks existed — neutral day, keep walking back up to 30 days
+        if (streak === 0 && d > new Date(Date.now() - 30 * 86400000)) {
+          d.setDate(d.getDate() - 1);
+          continue;
+        }
+      }
+      break;
+    }
+  }
+  return streak;
+}
+
 function renderTaskScore() {
   const tile  = $('#taskScoreTile');
   const num   = $('#taskScoreNum');
@@ -1543,6 +1652,17 @@ function renderTaskScore() {
   num.textContent   = done;
   denom.textContent = '/ ' + total;
   pct.textContent   = Math.round(ratio * 100) + '% complete';
+
+  // Streak badge
+  const streak = calcTaskStreak();
+  const badge  = $('#taskStreakBadge');
+  const sCount = $('#taskStreakCount');
+  if (streak > 0) {
+    badge.classList.add('visible');
+    sCount.textContent = streak;
+  } else {
+    badge.classList.remove('visible');
+  }
 }
 
 $('#taskScoreTile').addEventListener('click', () => {
