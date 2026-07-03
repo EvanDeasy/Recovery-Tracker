@@ -138,9 +138,7 @@
   }
   .streak-card-compact:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
   .streak-card-compact::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--card-color, var(--accent)); }
-  .streak-card-compact[data-cat="drugs"]    { --card-color: #7a5cb5; }
-  .streak-card-compact[data-cat="alcohol"]  { --card-color: var(--warm); }
-  .streak-card-compact[data-cat="nicotine"] { --card-color: var(--accent); }
+  /* card colours now set via inline style in renderStreakGrid */
   .scc-icon  { font-size: 16px; opacity: .55; margin-bottom: 4px; }
   .scc-label { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: var(--text-mute); font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .scc-count { font-family: 'Cormorant Garamond',Georgia,serif; font-size: 36px; font-weight: 500; line-height: 1; letter-spacing: -.03em; color: var(--card-color); }
@@ -151,8 +149,7 @@
   .streak-detail { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; display: none; animation: fadeIn .2s ease; }
   .streak-detail.open { display: block; }
   /* Sobriety clock */
-  .scc-clock { font-family: 'Cormorant Garamond',Georgia,serif; font-size: 22px; font-weight: 500; line-height: 1; letter-spacing: -.02em; color: var(--card-color); }
-  .scc-clock-days { font-size: 11px; color: var(--text-mute); margin-top: 2px; }
+  .scc-clock { font-family: 'Cormorant Garamond',Georgia,serif; font-size: 22px; font-weight: 500; line-height: 1; letter-spacing: -.01em; color: var(--card-color); }
   /* Milestone badges */
   .sd-milestones { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
   .sd-milestones-label { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: var(--text-mute); font-weight: 600; margin-bottom: 10px; }
@@ -366,6 +363,17 @@
   .trigger-manage-chip button { background: transparent; border: none; color: var(--text-mute); cursor: pointer; font-size: 13px; line-height: 1; padding: 0; }
   .trigger-manage-chip button:hover { color: var(--warm); }
   .trigger-manage-empty { font-size: 12px; color: var(--text-mute); font-style: italic; }
+  /* Tracker management in settings */
+  .tracker-list { display: grid; gap: 8px; margin-bottom: 12px; }
+  .tracker-row { display: flex; align-items: center; gap: 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; }
+  .tracker-row-icon { font-size: 20px; flex-shrink: 0; }
+  .tracker-row-label { flex: 1; font-size: 14px; font-weight: 500; }
+  .tracker-row-del { background: transparent; border: none; color: var(--text-mute); font-size: 16px; cursor: pointer; padding: 0 4px; flex-shrink: 0; }
+  .tracker-row-del:hover { color: var(--warm); }
+  .tracker-add-row { display: grid; grid-template-columns: 44px 1fr; gap: 8px; margin-top: 4px; }
+  .tracker-icon-input { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 20px; text-align: center; padding: 8px 4px; width: 100%; cursor: pointer; }
+  .tracker-label-input { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: inherit; font-size: 16px; padding: 8px 12px; width: 100%; }
+  .tracker-add-btn-row { display: flex; gap: 8px; margin-top: 8px; }
 
   .toast { position: fixed; bottom: calc(24px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%) translateY(120px); background: var(--text); color: var(--bg); padding: 10px 20px; border-radius: 30px; font-size: 14px; font-weight: 500; transition: transform .3s ease; z-index: 300; box-shadow: var(--shadow); pointer-events: none; }
   .toast.show { transform: translateX(-50%) translateY(0); }
@@ -545,11 +553,7 @@
         <!-- Craving sub-form -->
         <div class="log-subview" id="cravingSub">
           <label>Category</label>
-          <div class="quick-row" id="cravingCats">
-            <button class="quick-chip" data-cat="drugs">Drugs</button>
-            <button class="quick-chip" data-cat="alcohol">Alcohol</button>
-            <button class="quick-chip" data-cat="nicotine">Nicotine</button>
-          </div>
+          <div class="quick-row" id="cravingCats"></div>
           <label>Intensity (1 = mild, 5 = intense)</label>
           <div class="intensity-row" id="intensityRow">
             <button class="intensity-btn" data-int="1">1</button>
@@ -726,6 +730,19 @@
   <div class="modal">
     <h3>Settings</h3>
     <div class="modal-section">
+      <div class="modal-section-label">Sobriety trackers</div>
+      <p>Add what you're tracking — up to 4. Each gets its own hero card on the dashboard.</p>
+      <div class="tracker-list" id="trackerList"></div>
+      <div class="tracker-add-row">
+        <input type="text" class="tracker-icon-input" id="trackerIconInput" placeholder="🌿" maxlength="2">
+        <input type="text" class="tracker-label-input" id="trackerLabelInput" placeholder="e.g. Cannabis, Gambling, Sugar…">
+      </div>
+      <div class="tracker-add-btn-row">
+        <button class="btn" id="addTrackerBtn">Add tracker</button>
+      </div>
+    </div>
+
+    <div class="modal-section">
       <div class="modal-section-label">Trigger library</div>
       <p>Remove triggers you no longer need.</p>
       <div class="trigger-manage-list" id="triggerManageList"></div>
@@ -770,17 +787,16 @@
 
 <script>
 const KEY = 'recovery_v1';
-const CATS = [
-  { id:'drugs',    label:'Drugs',    icon:'🌿' },
-  { id:'alcohol',  label:'Alcohol',  icon:'🥃' },
-  { id:'nicotine', label:'Nicotine', icon:'🚬' }
-];
+// getCats() is now dynamic — reads from state.trackers
+// Kept as a getter so all existing getCats() references work unchanged
+const getCats = () => state.trackers;
 const TASK_CATS = { hygiene:'Hygiene', chores:'Chores', admin:'Admin', health:'Health', other:'Other' };
 const RECUR_LABELS = { once:'One-off', daily:'Daily', weekly:'Weekly', monthly:'Monthly' };
 
 const defaultState = {
-  starts:    { drugs:null, alcohol:null, nicotine:null },
-  costs:     { drugs:{amount:0,unit:'day'}, alcohol:{amount:0,unit:'day'}, nicotine:{amount:0,unit:'day'} },
+  trackers:  [], // { id, label, icon } — user-defined, max 4
+  starts:    {},
+  costs:     {},
   checkins:  [], cravings:  [], triggers:  [], documents: [],
   tasks:     [],  // { id, name, category, recurrence, dueDate (ISO date), completed, lastCompletedAt }
   taskStreakDays: [], // ISO date strings where all due tasks were completed same-day
@@ -796,8 +812,9 @@ function load() {
     if (!raw) return structuredClone(defaultState);
     const p = JSON.parse(raw);
     return { ...structuredClone(defaultState), ...p,
-      starts:    { ...defaultState.starts,  ...(p.starts  ||{}) },
-      costs:     { ...defaultState.costs,   ...(p.costs   ||{}) },
+      trackers:  Array.isArray(p.trackers)  ? p.trackers  : [],
+      starts:    { ...(p.starts  ||{}) },
+      costs:     { ...(p.costs   ||{}) },
       triggers:  Array.isArray(p.triggers)  ? p.triggers  : [],
       documents: Array.isArray(p.documents) ? p.documents : [],
       tasks:     Array.isArray(p.tasks)     ? p.tasks     : [],
@@ -847,7 +864,7 @@ $$('.tab').forEach(t => t.addEventListener('click', ()=>{
   $$('.view').forEach(x=>x.classList.remove('active'));
   t.classList.add('active'); currentView = t.dataset.view;
   $('#view-'+currentView).classList.add('active');
-  if (currentView==='log')       { renderTriggerChips(); renderCombinedLog(); renderCharts(); }
+  if (currentView==='log')       { renderCravingCats(); renderTriggerChips(); renderCombinedLog(); renderCharts(); }
   if (currentView==='checklist') renderTasks();
   if (currentView==='documents') renderDocuments();
   updateFab();
@@ -913,25 +930,23 @@ function renderMilestones(catId) {
 
 /* ===== Live sobriety clock ===== */
 function formatClock(startISO) {
-  const ms   = Date.now() - new Date(startISO).getTime();
-  if (ms < 0) return '00:00:00';
-  const tot  = Math.floor(ms / 1000);
-  const h    = Math.floor(tot / 3600);
-  const m    = Math.floor((tot % 3600) / 60);
-  const s    = tot % 60;
-  const pad  = n => String(n).padStart(2, '0');
-  return `${pad(h % 24)}:${pad(m)}:${pad(s)}`;
+  const ms  = Date.now() - new Date(startISO).getTime();
+  if (ms < 0) return '00:00:00:00';
+  const tot = Math.floor(ms / 1000);
+  const d   = Math.floor(tot / 86400);
+  const h   = Math.floor((tot % 86400) / 3600);
+  const m   = Math.floor((tot % 3600) / 60);
+  const s   = tot % 60;
+  const pad = n => String(n).padStart(2, '0');
+  return `${pad(d)}:${pad(h)}:${pad(m)}:${pad(s)}`;
 }
 
 function tickClocks() {
-  CATS.forEach(c => {
+  getCats().forEach(c => {
     const start = state.starts[c.id];
     const clockEl = document.querySelector(`[data-clock="${c.id}"]`);
-    const daysEl  = document.querySelector(`[data-clock-days="${c.id}"]`);
     if (!clockEl || !start) return;
     clockEl.textContent = formatClock(start);
-    const d = durationParts(start);
-    daysEl.textContent  = d.days > 0 ? `${d.days}d clean` : 'Today';
   });
 }
 
@@ -940,11 +955,14 @@ setInterval(tickClocks, 1000);
 
 function renderStreakGrid() {
   const grid = $('#streakGrid'); grid.innerHTML = '';
-  CATS.forEach(c => {
+  const STREAK_PALETTE = ['#7a5cb5','#e07a4a','#6ba87f','#d4af6a'];
+  getCats().forEach((c, idx) => {
     const start = state.starts[c.id];
     const d = durationParts(start);
     const card = document.createElement('div');
-    card.className = 'streak-card-compact'; card.dataset.cat = c.id;
+    card.className = 'streak-card-compact';
+    card.dataset.cat = c.id;
+    card.style.setProperty('--card-color', STREAK_PALETTE[idx % STREAK_PALETTE.length]);
     if (!start) {
       card.innerHTML = `
         <div class="scc-icon">${c.icon}</div>
@@ -958,8 +976,7 @@ function renderStreakGrid() {
       card.innerHTML = `
         <div class="scc-icon">${c.icon}</div>
         <div class="scc-label">${c.label}</div>
-        <div class="scc-clock" data-clock="${c.id}">--:--:--</div>
-        <div class="scc-clock-days" data-clock-days="${c.id}">${d.days}d</div>`;
+        <div class="scc-clock" data-clock="${c.id}">00:00:00:00</div>`;
       card.addEventListener('click', () => toggleStreakDetail(c.id));
     }
     grid.appendChild(card);
@@ -969,7 +986,7 @@ function toggleStreakDetail(catId) {
   const panel = $('#streakDetail');
   if (activeDetailCat === catId && panel.classList.contains('open')) { panel.classList.remove('open'); activeDetailCat=null; return; }
   activeDetailCat = catId;
-  const c = CATS.find(x => x.id===catId);
+  const c = getCats().find(x => x.id===catId);
   const start = state.starts[catId];
   const d = durationParts(start);
   $('#sdTitle').textContent = `${c.icon} ${c.label}`;
@@ -990,9 +1007,9 @@ $('#sdReset').addEventListener('click', ()=>{
 /* Money */
 function calcMoney() {
   const out = { total:0, items:[] };
-  CATS.forEach(c => {
-    const start=state.starts[c.id], cost=state.costs[c.id];
-    if (!start||!cost.amount) { out.items.push({cat:c,saved:0}); return; }
+  getCats().forEach(c => {
+    const start=state.starts[c.id], cost=state.costs[c.id]||{amount:0,unit:'day'};
+    if (!start||!cost||!cost.amount) { out.items.push({cat:c,saved:0}); return; }
     const days=(Date.now()-new Date(start).getTime())/86400000;
     const perDay=cost.unit==='week'?cost.amount/7:cost.unit==='month'?cost.amount/30.437:cost.amount;
     const saved=Math.max(0,days*perDay);
@@ -1004,7 +1021,7 @@ function renderMoney() {
   const m = calcMoney();
   $('#moneyHeroTotal').textContent = fmtMoney(m.total);
   $('#moneyBreakdown').innerHTML = m.items.map(i=>`<div class="money-item"><div class="lbl">${i.cat.label}</div><div class="val">${fmtMoney(i.saved)}</div></div>`).join('');
-  $('#costRows').innerHTML = CATS.map(c=>`
+  $('#costRows').innerHTML = getCats().map(c=>`
     <div class="money-row">
       <span class="name">${c.label}</span>
       <input type="number" min="0" step="0.01" data-cost="${c.id}" value="${state.costs[c.id].amount||''}" placeholder="€ amount">
@@ -1029,7 +1046,7 @@ function renderRecent() {
   if (!merged.length) { el.innerHTML='<div class="empty">Nothing logged yet</div>'; return; }
   el.innerHTML = merged.map(m=>{
     if (m.type==='checkin') return `<div class="log-entry"><div class="meta"><span>${fmtDate(m.ts)} · check-in ${moodEmoji(m.data.mood)}</span></div>${m.data.notes?`<div class="body">${escapeHtml(m.data.notes.slice(0,120))}</div>`:''}</div>`;
-    const cat=CATS.find(x=>x.id===m.data.cat);
+    const cat=getCats().find(x=>x.id===m.data.cat);
     return `<div class="log-entry craving"><div class="meta"><span>${fmtDate(m.ts)} · ${cat?cat.label:''} · ${m.data.intensity}/5</span></div>${m.data.trigger?`<div class="tags"><span class="tag">${escapeHtml(m.data.trigger)}</span></div>`:''}</div>`;
   }).join('');
 }
@@ -1051,7 +1068,7 @@ function renderCombinedLog() {
         ${m.data.notes ? `<div class="body">${escapeHtml(m.data.notes)}</div>` : ''}
       </div>`;
     }
-    const cat = CATS.find(x => x.id === m.data.cat);
+    const cat = getCats().find(x => x.id === m.data.cat);
     return `<div class="log-entry craving">
       <div class="meta"><span>${fmtDate(m.ts)} · ${cat?cat.label:m.data.cat} · ${m.data.intensity}/5</span><button class="delete-x" data-del-crave="${m.data.id}">×</button></div>
       ${m.data.trigger ? `<div class="tags"><span class="tag">${escapeHtml(m.data.trigger)}</span></div>` : ''}
@@ -1070,7 +1087,7 @@ function renderCombinedLog() {
 let modalCat = null;
 function openModal(cat) {
   modalCat=cat;
-  $('#modalTitle').textContent=`Set start date — ${CATS.find(c=>c.id===cat).label}`;
+  $('#modalTitle').textContent=`Set start date — ${getCats().find(c=>c.id===cat).label}`;
   const cur=state.starts[cat];
   $('#modalDate').value=cur?toLocalInput(cur):toLocalInput(new Date().toISOString());
   $('#modalBg').classList.add('open');
@@ -1149,9 +1166,16 @@ function renderTriggerManage() {
 
 /* Cravings */
 let cravingCat=null, cravingInt=null;
-$$('#cravingCats .quick-chip').forEach(b=>b.addEventListener('click',()=>{
-  $$('#cravingCats .quick-chip').forEach(x=>x.classList.remove('active')); b.classList.add('active'); cravingCat=b.dataset.cat;
-}));
+function renderCravingCats() {
+  const row = $('#cravingCats');
+  row.innerHTML = getCats().map(c =>
+    `<button class="quick-chip${cravingCat===c.id?' active':''}" data-cat="${c.id}">${c.icon} ${c.label}</button>`
+  ).join('');
+  row.querySelectorAll('.quick-chip').forEach(b => b.addEventListener('click', () => {
+    cravingCat = b.dataset.cat;
+    renderCravingCats();
+  }));
+}
 $$('#intensityRow .intensity-btn').forEach(b=>b.addEventListener('click',()=>{
   $$('#intensityRow .intensity-btn').forEach(x=>x.classList.remove('selected')); b.classList.add('selected'); cravingInt=parseInt(b.dataset.int);
 }));
@@ -1165,7 +1189,7 @@ $('#saveCraving').addEventListener('click',()=>{
   $$('#cravingCats .quick-chip').forEach(x=>x.classList.remove('active'));
   $$('#intensityRow .intensity-btn').forEach(x=>x.classList.remove('selected'));
   cravingCat=null; cravingInt=null; selectedTrigger=null;
-  renderTriggerChips(); renderTriggerManage(); renderCombinedLog(); renderRecent();
+  renderCravingCats(); renderTriggerChips(); renderTriggerManage(); renderCombinedLog(); renderRecent();
   closeFabAfterSave(); toast('Craving logged — you got through it');
 });
 
@@ -1190,7 +1214,8 @@ function renderCharts() {
   state.checkins.forEach(ci=>{ const k=dayKey(ci.ts); if(!mbd[k])mbd[k]=[]; mbd[k].push(ci.mood); });
   const ms=days.map(d=>{ const a=mbd[dayKey(d)]; return a?a.reduce((x,y)=>x+y,0)/a.length:null; });
   charts.mood=new Chart($('#moodChart'),{type:'line',data:{labels,datasets:[{label:'Mood',data:ms,borderColor:c.accent,backgroundColor:c.accent+'33',tension:.35,spanGaps:true,pointRadius:3,pointHoverRadius:5,fill:true}]},options:chartOpts(c,{y:{min:1,max:5,ticks:{stepSize:1}}})});
-  const cs2=CATS.map(cat=>({label:cat.label,data:days.map(d=>state.cravings.filter(cv=>cv.cat===cat.id&&dayKey(cv.ts)===dayKey(d)).length),backgroundColor:cat.id==='drugs'?'#7a5cb5':cat.id==='alcohol'?c.warm:c.accent}));
+  const CHART_PALETTE = ['#7a5cb5', '#e07a4a', '#6ba87f', '#d4af6a'];
+  const cs2=getCats().map((cat,i)=>({label:cat.label,data:days.map(d=>state.cravings.filter(cv=>cv.cat===cat.id&&dayKey(cv.ts)===dayKey(d)).length),backgroundColor:CHART_PALETTE[i % CHART_PALETTE.length]}));
   charts.crav=new Chart($('#cravingsChart'),{type:'bar',data:{labels,datasets:cs2},options:chartOpts(c,{x:{stacked:true},y:{stacked:true,beginAtZero:true,ticks:{stepSize:1}}})});
   const tc={};
   state.cravings.forEach(cv=>{ if(!cv.trigger)return; const t=cv.trigger.trim(); if(t)tc[t]=(tc[t]||0)+1; });
@@ -1559,7 +1584,59 @@ $('#pdfNext').addEventListener('click', async () => { if (pdfDoc && pdfCurPage <
 function dlDoc(id) { const d=state.documents.find(x=>x.id===id); if(!d)return; const a=document.createElement('a'); a.href=d.data; a.download=d.name; a.click(); }
 
 /* Settings */
-$('#settingsBtn').addEventListener('click',()=>{ renderTriggerManage(); $('#settingsModalBg').classList.add('open'); });
+/* ===== Tracker management ===== */
+const TRACKER_ICONS = ['🌿','🥃','🚬','💊','🎰','🍺','🍷','🍫','☕','🍕','🛒','📱','🎮'];
+
+function renderTrackerList() {
+  const list = $('#trackerList');
+  const cats = getCats();
+  if (!cats.length) {
+    list.innerHTML = '<p style="font-size:13px;color:var(--text-mute);font-style:italic;">No trackers yet — add one below.</p>';
+    return;
+  }
+  list.innerHTML = cats.map(c => `
+    <div class="tracker-row">
+      <span class="tracker-row-icon">${c.icon}</span>
+      <span class="tracker-row-label">${escapeHtml(c.label)}</span>
+      <button class="tracker-row-del" data-del-tracker="${c.id}" title="Remove">×</button>
+    </div>`).join('');
+  list.querySelectorAll('[data-del-tracker]').forEach(b => b.addEventListener('click', () => {
+    const id = b.dataset.delTracker;
+    const t  = state.trackers.find(x => x.id === id);
+    if (!t) return;
+    if (!confirm(`Remove "${t.label}" tracker? Its streak data will also be deleted.`)) return;
+    state.trackers = state.trackers.filter(x => x.id !== id);
+    delete state.starts[id];
+    delete state.costs[id];
+    save();
+    renderTrackerList();
+    renderStreakGrid();
+    renderMoney();
+    renderCravingCats();
+    toast(`"${t.label}" removed`);
+  }));
+}
+
+$('#addTrackerBtn').addEventListener('click', () => {
+  const label = $('#trackerLabelInput').value.trim();
+  if (!label) { toast('Enter a name for the tracker'); return; }
+  if (getCats().length >= 4) { toast('Maximum 4 trackers'); return; }
+  const icon = $('#trackerIconInput').value.trim() || '⭐';
+  const id   = 'tracker_' + uid();
+  state.trackers.push({ id, label, icon });
+  state.starts[id] = null;
+  state.costs[id]  = { amount: 0, unit: 'day' };
+  save();
+  $('#trackerLabelInput').value = '';
+  $('#trackerIconInput').value  = '';
+  renderTrackerList();
+  renderStreakGrid();
+  renderMoney();
+  renderCravingCats();
+  toast(`"${label}" tracker added`);
+});
+
+$('#settingsBtn').addEventListener('click',()=>{ renderTrackerList(); renderTriggerManage(); $('#settingsModalBg').classList.add('open'); });
 $('#settingsClose').addEventListener('click',()=>$('#settingsModalBg').classList.remove('open'));
 $('#settingsModalBg').addEventListener('click',e=>{ if(e.target.id==='settingsModalBg')$('#settingsModalBg').classList.remove('open'); });
 $('#exportBtn').addEventListener('click',()=>{
@@ -1575,7 +1652,7 @@ $('#importFile').addEventListener('change',e=>{
     try {
       const data=JSON.parse(ev.target.result);
       if(!data.starts||!data.checkins||!data.cravings) throw new Error('Invalid file');
-      state={...defaultState,...data,triggers:data.triggers||[],documents:data.documents||[],tasks:data.tasks||[],taskCompletions:data.taskCompletions||[],taskStreakDays:data.taskStreakDays||[],checkinStreakDays:data.checkinStreakDays||[]};
+      state={...defaultState,...data,trackers:data.trackers||[],triggers:data.triggers||[],documents:data.documents||[],tasks:data.tasks||[],taskCompletions:data.taskCompletions||[],taskStreakDays:data.taskStreakDays||[],checkinStreakDays:data.checkinStreakDays||[]};
       save(); renderAll(); $('#settingsModalBg').classList.remove('open'); toast('Imported');
     } catch(err) { alert('Could not import: '+err.message); }
   };
@@ -1627,11 +1704,14 @@ function renderCheckinStatus() {
   }
 
   const latest     = state.checkins[0];
-  const hoursSince = (Date.now() - new Date(latest.ts).getTime()) / 3600000;
-  const rag        = hoursSince < 24 ? 'green' : hoursSince < 48 ? 'amber' : 'red';
-  el.dataset.rag   = rag;
+  const today          = todayISO();
+  const latestDate     = latest.ts.slice(0, 10);
+  const daysDiff       = Math.floor((Date.now() - new Date(latestDate + 'T00:00:00').getTime()) / 86400000);
+  const rag            = latestDate === today ? 'green' : daysDiff === 1 ? 'amber' : 'red';
+  el.dataset.rag       = rag;
 
-  // Big label: short and legible — hours or days
+  // Big label: short and legible
+  const hoursSince = (Date.now() - new Date(latest.ts).getTime()) / 3600000;
   const h = Math.floor(hoursSince);
   const bigLabel = h < 1    ? 'Now'
     : h < 24   ? `${h}h`
@@ -1822,12 +1902,13 @@ function closeFabAfterSave() {
 /* Render all */
 function renderAll() {
   renderStreakGrid(); renderMoney(); renderRecent(); renderCheckinStatus(); renderTaskScore();
-  renderTriggerChips(); renderCombinedLog(); renderTasks();
+  renderCravingCats(); renderTriggerChips(); renderCombinedLog(); renderTasks();
   if (currentView==='documents') renderDocuments();
   if (currentView==='log') renderCharts();
 }
 applyTheme(); renderAll(); tickClocks();
 setInterval(()=>{ if(currentView==='dashboard'){renderStreakGrid();renderMoney();renderCheckinStatus();renderTaskScore();} if(currentView==='checklist'){renderTasks();} },60000);
+
 </script>
 </body>
 </html>
