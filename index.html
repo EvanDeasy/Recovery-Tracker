@@ -150,6 +150,30 @@
 
   .streak-detail { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; display: none; animation: fadeIn .2s ease; }
   .streak-detail.open { display: block; }
+  /* Sobriety clock */
+  .scc-clock { font-family: 'Cormorant Garamond',Georgia,serif; font-size: 28px; font-weight: 500; line-height: 1; letter-spacing: -.02em; color: var(--card-color); }
+  .scc-clock-days { font-size: 11px; color: var(--text-mute); margin-top: 2px; }
+  /* Milestone badges */
+  .sd-milestones { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .sd-milestones-label { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: var(--text-mute); font-weight: 600; margin-bottom: 10px; }
+  .milestone-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .milestone-badge {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 8px 10px; min-width: 58px; text-align: center;
+    transition: all .2s;
+  }
+  .milestone-badge.earned {
+    background: var(--accent-soft); border-color: var(--accent);
+  }
+  .milestone-badge.next {
+    border-color: var(--gold); border-style: dashed;
+  }
+  .milestone-badge .mb-icon { font-size: 18px; }
+  .milestone-badge .mb-label { font-size: 9px; text-transform: uppercase; letter-spacing: .08em; color: var(--text-mute); font-weight: 600; }
+  .milestone-badge.earned .mb-label { color: var(--accent); }
+  .milestone-badge.next .mb-label { color: var(--gold); }
+  .milestone-badge .mb-progress { font-size: 9px; color: var(--text-mute); margin-top: 1px; }
   .sd-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .sd-title { font-size: 13px; font-weight: 600; color: var(--text); }
   .sd-since { font-size: 12px; color: var(--text-mute); }
@@ -430,6 +454,10 @@
       <div class="sd-actions">
         <button class="sd-btn" id="sdEdit">Edit date</button>
         <button class="sd-btn danger" id="sdReset">Reset streak</button>
+      </div>
+      <div class="sd-milestones" id="sdMilestones">
+        <div class="sd-milestones-label">Milestones</div>
+        <div class="milestone-grid" id="milestoneGrid"></div>
       </div>
     </div>
 
@@ -849,6 +877,67 @@ $$('.segmented-btn').forEach(btn => {
 
 /* ===== DASHBOARD: compact streak cards ===== */
 let activeDetailCat = null;
+/* ===== Milestones ===== */
+const MILESTONES = [
+  { days: 1,    label: '1 Day',    icon: '🌱' },
+  { days: 3,    label: '3 Days',   icon: '✨' },
+  { days: 7,    label: '1 Week',   icon: '⭐' },
+  { days: 14,   label: '2 Weeks',  icon: '🌟' },
+  { days: 30,   label: '1 Month',  icon: '🥉' },
+  { days: 60,   label: '2 Months', icon: '🥈' },
+  { days: 90,   label: '3 Months', icon: '🥇' },
+  { days: 180,  label: '6 Months', icon: '💎' },
+  { days: 365,  label: '1 Year',   icon: '🏆' },
+  { days: 730,  label: '2 Years',  icon: '👑' },
+  { days: 1825, label: '5 Years',  icon: '🌈' },
+];
+
+function renderMilestones(catId) {
+  const start = state.starts[catId];
+  const grid  = $('#milestoneGrid');
+  if (!start) { grid.innerHTML = '<span style="font-size:13px;color:var(--text-mute);font-style:italic;">Set a start date to track milestones.</span>'; return; }
+  const days = durationParts(start).total;
+  // Find the next unearned milestone
+  const nextIdx = MILESTONES.findIndex(m => m.days > days);
+  grid.innerHTML = MILESTONES.map((m, i) => {
+    const earned = days >= m.days;
+    const isNext = i === nextIdx;
+    const daysLeft = Math.ceil(m.days - days);
+    return `<div class="milestone-badge ${earned ? 'earned' : isNext ? 'next' : ''}">
+      <span class="mb-icon">${m.icon}</span>
+      <span class="mb-label">${m.label}</span>
+      ${isNext ? `<span class="mb-progress">${daysLeft}d left</span>` : ''}
+    </div>`;
+  }).join('');
+}
+
+/* ===== Live sobriety clock ===== */
+function formatClock(startISO) {
+  const ms   = Date.now() - new Date(startISO).getTime();
+  if (ms < 0) return '00:00:00';
+  const tot  = Math.floor(ms / 1000);
+  const h    = Math.floor(tot / 3600);
+  const m    = Math.floor((tot % 3600) / 60);
+  const s    = tot % 60;
+  const pad  = n => String(n).padStart(2, '0');
+  return `${pad(h % 24)}:${pad(m)}:${pad(s)}`;
+}
+
+function tickClocks() {
+  CATS.forEach(c => {
+    const start = state.starts[c.id];
+    const clockEl = document.querySelector(`[data-clock="${c.id}"]`);
+    const daysEl  = document.querySelector(`[data-clock-days="${c.id}"]`);
+    if (!clockEl || !start) return;
+    clockEl.textContent = formatClock(start);
+    const d = durationParts(start);
+    daysEl.textContent  = d.days > 0 ? `${d.days}d clean` : 'Today';
+  });
+}
+
+// Start the clock tick — every second
+setInterval(tickClocks, 1000);
+
 function renderStreakGrid() {
   const grid = $('#streakGrid'); grid.innerHTML = '';
   CATS.forEach(c => {
@@ -869,8 +958,8 @@ function renderStreakGrid() {
       card.innerHTML = `
         <div class="scc-icon">${c.icon}</div>
         <div class="scc-label">${c.label}</div>
-        <div class="scc-count">${big}</div>
-        <div class="scc-unit">${unit} clean</div>`;
+        <div class="scc-clock" data-clock="${c.id}">--:--:--</div>
+        <div class="scc-clock-days" data-clock-days="${c.id}">${d.days}d</div>`;
       card.addEventListener('click', () => toggleStreakDetail(c.id));
     }
     grid.appendChild(card);
@@ -885,6 +974,7 @@ function toggleStreakDetail(catId) {
   const d = durationParts(start);
   $('#sdTitle').textContent = `${c.icon} ${c.label}`;
   $('#sdSince').textContent = start ? `Since ${fmtDate(start)} · ${d.days}d ${d.hours}h` : '';
+  renderMilestones(catId);
   panel.classList.add('open');
 }
 $('#sdClose').addEventListener('click', ()=>{ $('#streakDetail').classList.remove('open'); activeDetailCat=null; });
@@ -1736,7 +1826,7 @@ function renderAll() {
   if (currentView==='documents') renderDocuments();
   if (currentView==='log') renderCharts();
 }
-applyTheme(); renderAll();
+applyTheme(); renderAll(); tickClocks();
 setInterval(()=>{ if(currentView==='dashboard'){renderStreakGrid();renderMoney();renderCheckinStatus();renderTaskScore();} if(currentView==='checklist'){renderTasks();} },60000);
 </script>
 </body>
