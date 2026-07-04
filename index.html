@@ -1216,13 +1216,27 @@ function renderCharts() {
   charts.mood=new Chart($('#moodChart'),{type:'line',data:{labels,datasets:[{label:'Mood',data:ms,borderColor:c.accent,backgroundColor:c.accent+'33',tension:.35,spanGaps:true,pointRadius:3,pointHoverRadius:5,fill:true}]},options:chartOpts(c,{y:{min:1,max:5,ticks:{stepSize:1}}})});
   try {
     const CHART_PALETTE = ['#7a5cb5', '#e07a4a', '#6ba87f', '#d4af6a'];
-    // Build category list from actual craving data — falls back gracefully
-    // if stored cat IDs don't match current trackers (e.g. pre-migration data)
-    const trackerMap = Object.fromEntries(getCats().map(c => [c.id, c.label]));
-    const allCatIds = [...new Set(state.cravings.map(cv => cv.cat).filter(Boolean))];
-    const cs2 = allCatIds.map((id, i) => ({
-      label: trackerMap[id] || id, // use tracker label if known, else raw id
-      data: days.map(d => state.cravings.filter(cv => cv.cat === id && dayKey(cv.ts) === dayKey(d)).length),
+    // Map cat IDs to display labels — match by id OR by label (case-insensitive)
+    // so old hardcoded values like 'drugs' merge with tracker labelled 'Drugs'
+    const cats = getCats();
+    const resolveLabel = id => {
+      const byId    = cats.find(c => c.id === id);
+      if (byId) return byId.label;
+      const byLabel = cats.find(c => c.label.toLowerCase() === id.toLowerCase());
+      if (byLabel) return byLabel.label;
+      return id; // unknown — use raw value
+    };
+    // Group cravings by resolved label so old + new data merge into one series
+    const labelBuckets = {};
+    state.cravings.forEach(cv => {
+      if (!cv.cat) return;
+      const lbl = resolveLabel(cv.cat);
+      if (!labelBuckets[lbl]) labelBuckets[lbl] = [];
+      labelBuckets[lbl].push(cv);
+    });
+    const cs2 = Object.entries(labelBuckets).map(([lbl, entries], i) => ({
+      label: lbl,
+      data: days.map(d => entries.filter(cv => dayKey(cv.ts) === dayKey(d)).length),
       backgroundColor: CHART_PALETTE[i % CHART_PALETTE.length]
     }));
     if (cs2.length) charts.crav=new Chart($('#cravingsChart'),{type:'bar',data:{labels,datasets:cs2},options:chartOpts(c,{x:{stacked:true},y:{stacked:true,beginAtZero:true,ticks:{stepSize:1}}})});
