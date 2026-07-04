@@ -1214,13 +1214,29 @@ function renderCharts() {
   state.checkins.forEach(ci=>{ const k=dayKey(ci.ts); if(!mbd[k])mbd[k]=[]; mbd[k].push(ci.mood); });
   const ms=days.map(d=>{ const a=mbd[dayKey(d)]; return a?a.reduce((x,y)=>x+y,0)/a.length:null; });
   charts.mood=new Chart($('#moodChart'),{type:'line',data:{labels,datasets:[{label:'Mood',data:ms,borderColor:c.accent,backgroundColor:c.accent+'33',tension:.35,spanGaps:true,pointRadius:3,pointHoverRadius:5,fill:true}]},options:chartOpts(c,{y:{min:1,max:5,ticks:{stepSize:1}}})});
-  const CHART_PALETTE = ['#7a5cb5', '#e07a4a', '#6ba87f', '#d4af6a'];
-  const cs2=getCats().map((cat,i)=>({label:cat.label,data:days.map(d=>state.cravings.filter(cv=>cv.cat===cat.id&&dayKey(cv.ts)===dayKey(d)).length),backgroundColor:CHART_PALETTE[i % CHART_PALETTE.length]}));
-  charts.crav=new Chart($('#cravingsChart'),{type:'bar',data:{labels,datasets:cs2},options:chartOpts(c,{x:{stacked:true},y:{stacked:true,beginAtZero:true,ticks:{stepSize:1}}})});
-  const tc={};
-  state.cravings.forEach(cv=>{ if(!cv.trigger)return; const t=cv.trigger.trim(); if(t)tc[t]=(tc[t]||0)+1; });
-  const te=Object.entries(tc).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  charts.trig=new Chart($('#triggerChart'),{type:'bar',data:{labels:te.map(e=>e[0]),datasets:[{label:'Count',data:te.map(e=>e[1]),backgroundColor:c.gold,borderRadius:4}]},options:{...chartOpts(c,{y:{beginAtZero:true,ticks:{stepSize:1}}}),indexAxis:'y'}});
+  try {
+    const CHART_PALETTE = ['#7a5cb5', '#e07a4a', '#6ba87f', '#d4af6a'];
+    // Build category list from actual craving data — falls back gracefully
+    // if stored cat IDs don't match current trackers (e.g. pre-migration data)
+    const trackerMap = Object.fromEntries(getCats().map(c => [c.id, c.label]));
+    const allCatIds = [...new Set(state.cravings.map(cv => cv.cat).filter(Boolean))];
+    const cs2 = allCatIds.map((id, i) => ({
+      label: trackerMap[id] || id, // use tracker label if known, else raw id
+      data: days.map(d => state.cravings.filter(cv => cv.cat === id && dayKey(cv.ts) === dayKey(d)).length),
+      backgroundColor: CHART_PALETTE[i % CHART_PALETTE.length]
+    }));
+    if (cs2.length) charts.crav=new Chart($('#cravingsChart'),{type:'bar',data:{labels,datasets:cs2},options:chartOpts(c,{x:{stacked:true},y:{stacked:true,beginAtZero:true,ticks:{stepSize:1}}})});
+  } catch(e){ console.warn('Cravings chart error:', e); }
+  try {
+    const tc={};
+    state.cravings.forEach(cv=>{ if(!cv.trigger)return; const t=cv.trigger.trim(); if(t)tc[t]=(tc[t]||0)+1; });
+    const te=Object.entries(tc).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    if (te.length) {
+      charts.trig=new Chart($('#triggerChart'),{type:'bar',data:{labels:te.map(e=>e[0]),datasets:[{label:'Count',data:te.map(e=>e[1]),backgroundColor:c.gold,borderRadius:4}]},options:{...chartOpts(c,{y:{beginAtZero:true,ticks:{stepSize:1}}}),indexAxis:'y'}});
+    } else {
+      const ctx=$('#triggerChart'); if(ctx){const p=ctx.parentElement; p.innerHTML='<div class="empty">No trigger data yet</div>';}
+    }
+  } catch(e){ console.warn('Trigger chart error:', e); }
 }
 function chartOpts(c,scales={}) {
   return {responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:c.text,font:{size:11}}}},scales:{x:{ticks:{color:c.text,font:{size:10}},grid:{color:c.grid},...(scales.x||{})},y:{ticks:{color:c.text,font:{size:11}},grid:{color:c.grid},...(scales.y||{})}}};
@@ -1347,7 +1363,14 @@ function renderTasks() {
   // "Your tasks" only ever shows today's tasks + anything overdue.
   // Recurring tasks completed today have a future due date now, so they
   // naturally fall out of this view until their day arrives.
-  const visible = state.tasks.filter(t => t.dueDate && t.dueDate <= today);
+  const visible = state.tasks.filter(t => {
+    if (!t.dueDate || t.dueDate > today) return false;
+    // Completed one-off tasks: hide the day after completion
+    if (t.recurrence === 'once' && t.completed && t.lastCompletedAt) {
+      return t.lastCompletedAt.slice(0, 10) === today; // still show today, gone tomorrow
+    }
+    return true;
+  });
 
   if (!visible.length) { list.innerHTML = '<div class="empty">Nothing due today</div>'; renderDailySummary(); return; }
 
