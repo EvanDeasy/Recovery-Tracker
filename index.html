@@ -149,7 +149,7 @@
   .streak-detail { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; display: none; animation: fadeIn .2s ease; }
   .streak-detail.open { display: block; }
   /* Sobriety clock */
-  .scc-clock { font-family: 'Cormorant Garamond',Georgia,serif; font-size: 16px; font-weight: 500; line-height: 1; letter-spacing: -.01em; color: var(--card-color); }
+  .scc-clock { font-family: 'Cormorant Garamond',Georgia,serif; font-size: 22px; font-weight: 500; line-height: 1; letter-spacing: -.01em; color: var(--card-color); }
   /* Milestone badges */
   .sd-milestones { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
   .sd-milestones-label { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: var(--text-mute); font-weight: 600; margin-bottom: 10px; }
@@ -1204,7 +1204,11 @@ function last30Days() {
   for (let i=29;i>=0;i--) { const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-i); days.push(d); }
   return days;
 }
-function dayKey(d) { return new Date(d).toISOString().slice(0,10); }
+function dayKey(d) {
+  const dt = new Date(d);
+  const pad = n => String(n).padStart(2,'0');
+  return `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}`;
+}
 function renderCharts() {
   const c=chartColors();
   Object.values(charts).forEach(ch=>ch&&ch.destroy()); charts={};
