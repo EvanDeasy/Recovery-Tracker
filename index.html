@@ -108,21 +108,21 @@
   /* RAG tile row — 2-col on mobile */
   .rag-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
   /* Unified RAG tile — both checkin and task score share this base */
-  .rag-tile { display: flex; flex-direction: column; justify-content: space-between; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 12px; position: relative; overflow: hidden; min-height: 110px; }
+  .rag-tile { display: flex; flex-direction: column; justify-content: space-between; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px 9px; position: relative; overflow: hidden; min-height: 86px; }
   .rag-tile::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--rag-color, var(--text-mute)); }
   .rag-tile[data-rag="green"] { --rag-color: #2d9e54; }
   .rag-tile[data-rag="amber"] { --rag-color: #d99a1f; }
   .rag-tile[data-rag="red"]   { --rag-color: var(--danger); animation: ragPulse 2s ease-in-out infinite; }
-  .rag-tile-label { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: var(--text-mute); font-weight: 600; margin-bottom: 4px; }
+  .rag-tile-label { font-size: 9px; text-transform: uppercase; letter-spacing: .1em; color: var(--text-mute); font-weight: 600; margin-bottom: 3px; }
   .rag-tile-main { display: flex; align-items: baseline; gap: 4px; }
-  .rag-tile-big { font-family: 'Cormorant Garamond',serif; font-size: 34px; font-weight: 500; line-height: 1; color: var(--rag-color, var(--text-mute)); letter-spacing: -.02em; }
+  .rag-tile-big { font-family: 'Cormorant Garamond',serif; font-size: 26px; font-weight: 500; line-height: 1; color: var(--rag-color, var(--text-mute)); letter-spacing: -.02em; }
   .rag-tile-sub { font-size: 12px; color: var(--text-mute); }
-  .rag-tile-detail { font-size: 11px; color: var(--rag-color, var(--text-mute)); font-weight: 600; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .rag-tile-cta { margin-top: 8px; background: var(--rag-color, var(--accent)); color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity .15s; align-self: flex-start; }
+  .rag-tile-detail { font-size: 10px; color: var(--rag-color, var(--text-mute)); font-weight: 600; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rag-tile-cta { margin-top: 5px; background: var(--rag-color, var(--accent)); color: #fff; border: none; padding: 4px 8px; border-radius: 5px; font-size: 10px; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity .15s; align-self: flex-start; }
   .rag-tile-cta:hover { opacity: .88; }
-  .task-streak-badge { display: none; align-items: center; gap: 4px; margin-top: 6px; font-size: 11px; font-weight: 600; color: var(--gold); }
+  .task-streak-badge { display: none; align-items: center; gap: 3px; margin-top: 4px; font-size: 10px; font-weight: 600; color: var(--gold); }
   .task-streak-badge.visible { display: flex; }
-  .task-streak-badge .flame { font-size: 14px; }
+  .task-streak-badge .flame { font-size: 12px; }
   /* Legacy aliases — keep for JS that reads data-rag on checkinStatus */
   .checkin-status { display: contents; }
   @keyframes ragPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0); } 50% { box-shadow: 0 0 10px 1px rgba(192,57,43,0.2); } }
@@ -265,10 +265,11 @@
   .balance-seg-btn[data-balance="demanding"].active   { color: var(--warm); }
 
   /* See-saw balance card */
-  .seesaw-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 16px 14px; margin-bottom: 10px; }
-  .seesaw-label { font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: var(--text-mute); font-weight: 600; margin-bottom: 14px; }
-  .seesaw-stage { position: relative; height: 118px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 4px; }
-  .seesaw-beam-wrap { position: absolute; bottom: 46px; left: 50%; transform: translateX(-50%); width: 88%; height: 0; }
+  .seesaw-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px 10px; margin-bottom: 10px; }
+  .seesaw-header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+  .seesaw-label { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: var(--text-mute); font-weight: 600; text-align: center; flex: 1; }
+  .seesaw-stage { position: relative; height: 90px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 8px; }
+  .seesaw-beam-wrap { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); width: 84%; height: 0; }
   .seesaw-beam {
     position: relative; width: 100%; height: 8px;
     background: linear-gradient(90deg, #2d9e54 0%, var(--border) 50%, var(--warm) 100%);
@@ -281,12 +282,12 @@
   .seesaw-pan-count { font-family: 'Cormorant Garamond',serif; font-size: 24px; font-weight: 500; line-height: 1; }
   .seesaw-pan.left  .seesaw-pan-count { color: #2d9e54; }
   .seesaw-pan.right .seesaw-pan-count { color: var(--warm); }
-  .seesaw-legend { display: flex; justify-content: space-between; padding: 0 4%; margin-top: 2px; margin-bottom: 12px; }
+
   .seesaw-legend-item { font-size: 9px; text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
   .seesaw-legend-item.left  { color: #2d9e54; }
   .seesaw-legend-item.right { color: var(--warm); }
-  .seesaw-fulcrum { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-bottom: 26px solid var(--border); }
-  .seesaw-caption { font-size: 12px; color: var(--text-dim); text-align: center; line-height: 1.4; padding-top: 6px; border-top: 1px dashed var(--border); }
+  .seesaw-fulcrum { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 22px solid var(--border); }
+  .seesaw-caption { font-size: 11px; color: var(--text-dim); text-align: center; line-height: 1.35; padding-top: 5px; border-top: 1px dashed var(--border); }
   .seesaw-caption.balanced  { color: #2d9e54; }
   .seesaw-caption.demanding { color: var(--warm); }
 
@@ -532,28 +533,6 @@
       </div>
     </div>
 
-    <div class="seesaw-card" id="seesawCard">
-      <div class="seesaw-label">Today's balance</div>
-      <div class="seesaw-stage">
-        <div class="seesaw-beam-wrap">
-          <div class="seesaw-beam" id="seesawBeam">
-            <div class="seesaw-pan left" id="seesawPanLeft">
-              <span class="seesaw-pan-count" id="seesawLeftCount">0</span>
-            </div>
-            <div class="seesaw-pan right" id="seesawPanRight">
-              <span class="seesaw-pan-count" id="seesawRightCount">0</span>
-            </div>
-          </div>
-        </div>
-        <div class="seesaw-fulcrum"></div>
-      </div>
-      <div class="seesaw-legend">
-        <span class="seesaw-legend-item left">Restorative</span>
-        <span class="seesaw-legend-item right">Demanding</span>
-      </div>
-      <div class="seesaw-caption" id="seesawCaption">No tasks completed yet today</div>
-    </div>
-
     <div class="collapsible" id="col-breakdown">
       <button class="collapsible-trigger" data-target="col-breakdown">
         <div style="display:flex; flex-direction:column; gap:2px;">
@@ -571,16 +550,29 @@
       </div>
     </div>
 
-    <div class="collapsible" id="col-activity">
-      <button class="collapsible-trigger" data-target="col-activity">
-        <span class="collapsible-trigger-label">Recent activity</span>
-        <span class="collapsible-trigger-meta" id="activityMeta"></span>
-        <span class="collapsible-chevron">▼</span>
-      </button>
-      <div class="collapsible-body">
-        <div class="log-list" id="recentActivity"></div>
+    <div class="seesaw-card" id="seesawCard">
+      <div class="seesaw-header">
+        <span class="seesaw-legend-item left">Restorative</span>
+        <span class="seesaw-label">Today's balance</span>
+        <span class="seesaw-legend-item right">Demanding</span>
       </div>
+      <div class="seesaw-stage">
+        <div class="seesaw-beam-wrap">
+          <div class="seesaw-beam" id="seesawBeam">
+            <div class="seesaw-pan left" id="seesawPanLeft">
+              <span class="seesaw-pan-count" id="seesawLeftCount">0</span>
+            </div>
+            <div class="seesaw-pan right" id="seesawPanRight">
+              <span class="seesaw-pan-count" id="seesawRightCount">0</span>
+            </div>
+          </div>
+        </div>
+        <div class="seesaw-fulcrum"></div>
+      </div>
+      <div class="seesaw-caption" id="seesawCaption">No tasks completed yet today</div>
     </div>
+
+
   </section>
 
   <!-- ===== LOG (merged check-in + cravings) ===== -->
@@ -1137,12 +1129,14 @@ function renderMoney() {
 
 /* Recent activity (dashboard) */
 function renderRecent() {
+  const el = $('#recentActivity');
+  if (!el) return; // dashboard recent activity removed
   const merged = [
     ...state.checkins.map(c=>({ts:c.ts,type:'checkin',data:c})),
     ...state.cravings.map(c=>({ts:c.ts,type:'craving',data:c}))
   ].sort((a,b)=>new Date(b.ts)-new Date(a.ts)).slice(0,6);
-  $('#activityMeta').textContent = merged.length ? `${merged.length} recent` : '';
-  const el=$('#recentActivity');
+  const metaEl = $('#activityMeta');
+  if (metaEl) metaEl.textContent = merged.length ? `${merged.length} recent` : '';
   if (!merged.length) { el.innerHTML='<div class="empty">Nothing logged yet</div>'; return; }
   el.innerHTML = merged.map(m=>{
     if (m.type==='checkin') return `<div class="log-entry"><div class="meta"><span>${fmtDate(m.ts)} · check-in ${moodEmoji(m.data.mood)}</span></div>${m.data.notes?`<div class="body">${escapeHtml(m.data.notes)}</div>`:''}</div>`;
