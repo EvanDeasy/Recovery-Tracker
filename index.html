@@ -149,7 +149,7 @@
   .streak-detail { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; display: none; animation: fadeIn .2s ease; }
   .streak-detail.open { display: block; }
   /* Sobriety clock */
-  .scc-clock { font-family: 'Cormorant Garamond',Georgia,serif; font-size: 22px; font-weight: 500; line-height: 1; letter-spacing: -.01em; color: var(--card-color); }
+  .scc-clock { font-family: 'Cormorant Garamond',Georgia,serif; font-size: 16px; font-weight: 500; line-height: 1; letter-spacing: -.01em; color: var(--card-color); }
   /* Milestone badges */
   .sd-milestones { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
   .sd-milestones-label { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: var(--text-mute); font-weight: 600; margin-bottom: 10px; }
@@ -267,22 +267,25 @@
   /* See-saw balance card */
   .seesaw-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 16px 14px; margin-bottom: 10px; }
   .seesaw-label { font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: var(--text-mute); font-weight: 600; margin-bottom: 14px; }
-  .seesaw-stage { position: relative; height: 92px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 10px; }
-  .seesaw-beam-wrap { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); width: 88%; height: 0; }
+  .seesaw-stage { position: relative; height: 118px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 4px; }
+  .seesaw-beam-wrap { position: absolute; bottom: 46px; left: 50%; transform: translateX(-50%); width: 88%; height: 0; }
   .seesaw-beam {
     position: relative; width: 100%; height: 8px;
     background: linear-gradient(90deg, #2d9e54 0%, var(--border) 50%, var(--warm) 100%);
     border-radius: 4px; transform-origin: center center;
     transition: transform .6s cubic-bezier(.34,1.2,.64,1);
   }
-  .seesaw-pan { position: absolute; top: -30px; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: transform .6s cubic-bezier(.34,1.2,.64,1); }
+  .seesaw-pan { position: absolute; top: -26px; display: flex; align-items: center; justify-content: center; transition: transform .6s cubic-bezier(.34,1.2,.64,1); }
   .seesaw-pan.left  { left: 2%; }
   .seesaw-pan.right { right: 2%; }
   .seesaw-pan-count { font-family: 'Cormorant Garamond',serif; font-size: 24px; font-weight: 500; line-height: 1; }
   .seesaw-pan.left  .seesaw-pan-count { color: #2d9e54; }
   .seesaw-pan.right .seesaw-pan-count { color: var(--warm); }
-  .seesaw-pan-label { font-size: 9px; text-transform: uppercase; letter-spacing: .07em; color: var(--text-mute); white-space: nowrap; }
-  .seesaw-fulcrum { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-bottom: 26px solid var(--border); }
+  .seesaw-legend { display: flex; justify-content: space-between; padding: 0 4%; margin-top: 2px; margin-bottom: 12px; }
+  .seesaw-legend-item { font-size: 9px; text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
+  .seesaw-legend-item.left  { color: #2d9e54; }
+  .seesaw-legend-item.right { color: var(--warm); }
+  .seesaw-fulcrum { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-bottom: 26px solid var(--border); }
   .seesaw-caption { font-size: 12px; color: var(--text-dim); text-align: center; line-height: 1.4; padding-top: 6px; border-top: 1px dashed var(--border); }
   .seesaw-caption.balanced  { color: #2d9e54; }
   .seesaw-caption.demanding { color: var(--warm); }
@@ -536,15 +539,17 @@
           <div class="seesaw-beam" id="seesawBeam">
             <div class="seesaw-pan left" id="seesawPanLeft">
               <span class="seesaw-pan-count" id="seesawLeftCount">0</span>
-              <span class="seesaw-pan-label">Restorative</span>
             </div>
             <div class="seesaw-pan right" id="seesawPanRight">
               <span class="seesaw-pan-count" id="seesawRightCount">0</span>
-              <span class="seesaw-pan-label">Demanding</span>
             </div>
           </div>
         </div>
         <div class="seesaw-fulcrum"></div>
+      </div>
+      <div class="seesaw-legend">
+        <span class="seesaw-legend-item left">Restorative</span>
+        <span class="seesaw-legend-item right">Demanding</span>
       </div>
       <div class="seesaw-caption" id="seesawCaption">No tasks completed yet today</div>
     </div>
@@ -871,7 +876,7 @@ const CATEGORY_BALANCE = {
   admin:    'demanding',
   leisure:  'restorative',
   selfcare: 'restorative',
-  health:   'neutral',
+  health:   'restorative',
   hygiene:  'neutral',
   other:    'neutral'
 };
