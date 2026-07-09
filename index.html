@@ -149,7 +149,7 @@
   .streak-detail { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; display: none; animation: fadeIn .2s ease; }
   .streak-detail.open { display: block; }
   /* Sobriety clock */
-  .scc-clock { font-family: 'Cormorant Garamond',Georgia,serif; font-size: 16px; font-weight: 500; line-height: 1; letter-spacing: -.01em; color: var(--card-color); }
+  .scc-clock { font-family: 'Cormorant Garamond',Georgia,serif; font-size: 22px; font-weight: 500; line-height: 1; letter-spacing: -.01em; color: var(--card-color); }
   /* Milestone badges */
   .sd-milestones { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
   .sd-milestones-label { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: var(--text-mute); font-weight: 600; margin-bottom: 10px; }
@@ -257,6 +257,39 @@
   .checklist-add-row { display: grid; gap: 10px; margin-bottom: 4px; }
   .checklist-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .task-list { display: grid; gap: 8px; margin-top: 4px; }
+  /* Balance segmented control */
+  .balance-seg { display: flex; gap: 4px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 3px; }
+  .balance-seg-btn { flex: 1; padding: 8px 4px; background: transparent; border: none; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 12px; font-weight: 500; color: var(--text-dim); transition: all .2s; }
+  .balance-seg-btn.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+  .balance-seg-btn[data-balance="restorative"].active { color: #2d9e54; }
+  .balance-seg-btn[data-balance="demanding"].active   { color: var(--warm); }
+
+  /* See-saw balance card */
+  .seesaw-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 16px 14px; margin-bottom: 10px; }
+  .seesaw-label { font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: var(--text-mute); font-weight: 600; margin-bottom: 14px; }
+  .seesaw-stage { position: relative; height: 92px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 10px; }
+  .seesaw-beam-wrap { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); width: 88%; height: 0; }
+  .seesaw-beam {
+    position: relative; width: 100%; height: 8px;
+    background: linear-gradient(90deg, #2d9e54 0%, var(--border) 50%, var(--warm) 100%);
+    border-radius: 4px; transform-origin: center center;
+    transition: transform .6s cubic-bezier(.34,1.2,.64,1);
+  }
+  .seesaw-pan { position: absolute; top: -30px; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: transform .6s cubic-bezier(.34,1.2,.64,1); }
+  .seesaw-pan.left  { left: 2%; }
+  .seesaw-pan.right { right: 2%; }
+  .seesaw-pan-count { font-family: 'Cormorant Garamond',serif; font-size: 24px; font-weight: 500; line-height: 1; }
+  .seesaw-pan.left  .seesaw-pan-count { color: #2d9e54; }
+  .seesaw-pan.right .seesaw-pan-count { color: var(--warm); }
+  .seesaw-pan-label { font-size: 9px; text-transform: uppercase; letter-spacing: .07em; color: var(--text-mute); white-space: nowrap; }
+  .seesaw-fulcrum { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-bottom: 26px solid var(--border); }
+  .seesaw-caption { font-size: 12px; color: var(--text-dim); text-align: center; line-height: 1.4; padding-top: 6px; border-top: 1px dashed var(--border); }
+  .seesaw-caption.balanced  { color: #2d9e54; }
+  .seesaw-caption.demanding { color: var(--warm); }
+
+  .period-header { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--text-dim); font-weight: 600; margin-top: 12px; margin-bottom: 2px; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+  .period-header:first-child { margin-top: 0; }
+  .summary-period-row td { font-size: 10px !important; text-transform: uppercase; letter-spacing: .1em; color: var(--text-dim); font-weight: 600; background: var(--surface-2); padding: 6px 10px !important; }
 
   /* Daily summary table */
   .summary-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -496,6 +529,26 @@
       </div>
     </div>
 
+    <div class="seesaw-card" id="seesawCard">
+      <div class="seesaw-label">Today's balance</div>
+      <div class="seesaw-stage">
+        <div class="seesaw-beam-wrap">
+          <div class="seesaw-beam" id="seesawBeam">
+            <div class="seesaw-pan left" id="seesawPanLeft">
+              <span class="seesaw-pan-count" id="seesawLeftCount">0</span>
+              <span class="seesaw-pan-label">Restorative</span>
+            </div>
+            <div class="seesaw-pan right" id="seesawPanRight">
+              <span class="seesaw-pan-count" id="seesawRightCount">0</span>
+              <span class="seesaw-pan-label">Demanding</span>
+            </div>
+          </div>
+        </div>
+        <div class="seesaw-fulcrum"></div>
+      </div>
+      <div class="seesaw-caption" id="seesawCaption">No tasks completed yet today</div>
+    </div>
+
     <div class="collapsible" id="col-breakdown">
       <button class="collapsible-trigger" data-target="col-breakdown">
         <div style="display:flex; flex-direction:column; gap:2px;">
@@ -640,6 +693,8 @@
                 <option value="chores">Chores</option>
                 <option value="admin">Admin</option>
                 <option value="health">Health</option>
+                <option value="leisure">Leisure</option>
+                <option value="selfcare">Self care</option>
                 <option value="other">Other</option>
               </select>
             </div>
@@ -653,9 +708,28 @@
               </select>
             </div>
           </div>
+          <div class="checklist-grid-2">
+            <div>
+              <label>Due date</label>
+              <input type="date" id="taskDueDate">
+            </div>
+            <div>
+              <label>Period</label>
+              <select id="taskPeriod">
+                <option value="any">Any time</option>
+                <option value="morning">Morning</option>
+                <option value="afternoon">Afternoon</option>
+                <option value="night">Night</option>
+              </select>
+            </div>
+          </div>
           <div>
-            <label>Due date</label>
-            <input type="date" id="taskDueDate">
+            <label>Energy balance</label>
+            <div class="balance-seg" id="taskBalanceSeg">
+              <button type="button" class="balance-seg-btn" data-balance="restorative">Restorative</button>
+              <button type="button" class="balance-seg-btn active" data-balance="neutral">Neutral</button>
+              <button type="button" class="balance-seg-btn" data-balance="demanding">Demanding</button>
+            </div>
           </div>
         </div>
         <div class="btn-row"><button class="btn" id="addTaskBtn">Add task</button></div>
@@ -790,8 +864,26 @@ const KEY = 'recovery_v1';
 // getCats() is now dynamic — reads from state.trackers
 // Kept as a getter so all existing getCats() references work unchanged
 const getCats = () => state.trackers;
-const TASK_CATS = { hygiene:'Hygiene', chores:'Chores', admin:'Admin', health:'Health', other:'Other' };
+const TASK_CATS = { hygiene:'Hygiene', chores:'Chores', admin:'Admin', health:'Health', leisure:'Leisure', selfcare:'Self care', other:'Other' };
+// Default balance per category — user can override per task
+const CATEGORY_BALANCE = {
+  chores:   'demanding',
+  admin:    'demanding',
+  leisure:  'restorative',
+  selfcare: 'restorative',
+  health:   'neutral',
+  hygiene:  'neutral',
+  other:    'neutral'
+};
+const BALANCE_LABELS = { restorative:'Restorative', demanding:'Demanding', neutral:'Neutral' };
 const RECUR_LABELS = { once:'One-off', daily:'Daily', weekly:'Weekly', monthly:'Monthly' };
+const PERIODS = [
+  { id:'morning',   label:'Morning',   icon:'🌅' },
+  { id:'afternoon', label:'Afternoon', icon:'☀️' },
+  { id:'night',     label:'Night',     icon:'🌙' },
+  { id:'any',       label:'Any time',  icon:'🕐' }
+];
+const PERIOD_LABELS = { morning:'Morning', afternoon:'Afternoon', night:'Night', any:'Any time' };
 
 const defaultState = {
   trackers:  [], // { id, label, icon } — user-defined, max 4
@@ -817,7 +909,10 @@ function load() {
       costs:     { ...(p.costs   ||{}) },
       triggers:  Array.isArray(p.triggers)  ? p.triggers  : [],
       documents: Array.isArray(p.documents) ? p.documents : [],
-      tasks:     Array.isArray(p.tasks)     ? p.tasks     : [],
+      tasks:     Array.isArray(p.tasks) ? p.tasks.map(t => ({
+        ...t,
+        balance: t.balance || CATEGORY_BALANCE[t.category] || 'neutral'
+      })) : [],
       taskCompletions: Array.isArray(p.taskCompletions) ? p.taskCompletions : [],
       taskStreakDays:  Array.isArray(p.taskStreakDays)  ? p.taskStreakDays  : [],
       checkinStreakDays: Array.isArray(p.checkinStreakDays) ? p.checkinStreakDays : []
@@ -1045,7 +1140,7 @@ function renderRecent() {
   const el=$('#recentActivity');
   if (!merged.length) { el.innerHTML='<div class="empty">Nothing logged yet</div>'; return; }
   el.innerHTML = merged.map(m=>{
-    if (m.type==='checkin') return `<div class="log-entry"><div class="meta"><span>${fmtDate(m.ts)} · check-in ${moodEmoji(m.data.mood)}</span></div>${m.data.notes?`<div class="body">${escapeHtml(m.data.notes.slice(0,120))}</div>`:''}</div>`;
+    if (m.type==='checkin') return `<div class="log-entry"><div class="meta"><span>${fmtDate(m.ts)} · check-in ${moodEmoji(m.data.mood)}</span></div>${m.data.notes?`<div class="body">${escapeHtml(m.data.notes)}</div>`:''}</div>`;
     const cat=getCats().find(x=>x.id===m.data.cat);
     return `<div class="log-entry craving"><div class="meta"><span>${fmtDate(m.ts)} · ${cat?cat.label:''} · ${m.data.intensity}/5</span></div>${m.data.trigger?`<div class="tags"><span class="tag">${escapeHtml(m.data.trigger)}</span></div>`:''}</div>`;
   }).join('');
@@ -1305,15 +1400,36 @@ function rolloverRecurringTasks() {
   if (changed) save();
 }
 
+/* ===== Task balance control ===== */
+let taskBalance = 'neutral';
+
+function setBalanceSeg(val) {
+  taskBalance = val;
+  document.querySelectorAll('#taskBalanceSeg .balance-seg-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.balance === val)
+  );
+}
+
+document.querySelectorAll('#taskBalanceSeg .balance-seg-btn').forEach(b =>
+  b.addEventListener('click', () => setBalanceSeg(b.dataset.balance))
+);
+
+// Auto-update balance when category changes
+$('#taskCategory').addEventListener('change', e => {
+  setBalanceSeg(CATEGORY_BALANCE[e.target.value] || 'neutral');
+});
+
 $('#addTaskBtn').addEventListener('click', () => {
   const name = $('#taskName').value.trim();
   if (!name) { toast('Enter a task name'); return; }
   const category    = $('#taskCategory').value;
   const recurrence  = $('#taskRecurrence').value;
   const dueDate     = $('#taskDueDate').value || todayISO();
+  const period      = $('#taskPeriod').value || 'any';
+  const balance     = taskBalance || CATEGORY_BALANCE[category] || 'neutral';
 
   state.tasks.unshift({
-    id: uid(), name, category, recurrence, dueDate,
+    id: uid(), name, category, recurrence, dueDate, period, balance,
     completed: false, lastCompletedAt: null
   });
   save();
@@ -1321,6 +1437,8 @@ $('#addTaskBtn').addEventListener('click', () => {
   $('#taskDueDate').value = todayISO();
   $('#taskCategory').value = 'hygiene';
   $('#taskRecurrence').value = 'once';
+  $('#taskPeriod').value = 'any';
+  setBalanceSeg('neutral');
   renderTasks(); renderTaskScore();
   closeFabAfterSave(); toast('Task added');
 });
@@ -1341,6 +1459,8 @@ function toggleTaskComplete(id) {
       name: task.name,
       category: task.category,
       dueDate: task.dueDate,
+      period: task.period || 'any',
+      balance: task.balance || CATEGORY_BALANCE[task.category] || 'neutral',
       completedAt: task.lastCompletedAt
     });
 
@@ -1370,7 +1490,7 @@ function toggleTaskComplete(id) {
   }
   save();
   checkAndRecordTaskStreak();
-  renderTasks(); renderTaskScore();
+  renderTasks(); renderTaskScore(); renderSeesaw();
 }
 
 function renderTasks() {
@@ -1392,14 +1512,14 @@ function renderTasks() {
 
   if (!visible.length) { list.innerHTML = '<div class="empty">Nothing due today</div>'; renderDailySummary(); return; }
 
-  const sorted = [...visible].sort((a, b) => {
+  const sortFn = (a, b) => {
     if (a.completed !== b.completed) return a.completed ? 1 : -1;
     const aOver = isOverdue(a), bOver = isOverdue(b);
     if (aOver !== bOver) return aOver ? -1 : 1;
     return (a.dueDate || '').localeCompare(b.dueDate || '');
-  });
+  };
 
-  list.innerHTML = sorted.map(t => {
+  const taskCardHtml = t => {
     const overdue = isOverdue(t);
     const dueLabel = t.dueDate ? fmtDateOnly(t.dueDate + 'T00:00:00') : '';
     return `
@@ -1415,7 +1535,17 @@ function renderTasks() {
         </div>
         <button class="task-delete" data-del-task="${t.id}">×</button>
       </div>`;
-  }).join('');
+  };
+
+  // Group tasks by period, in defined order
+  let html = '';
+  PERIODS.forEach(p => {
+    const inPeriod = visible.filter(t => (t.period || 'any') === p.id).sort(sortFn);
+    if (!inPeriod.length) return;
+    html += `<div class="period-header">${p.icon} ${p.label}</div>`;
+    html += inPeriod.map(taskCardHtml).join('');
+  });
+  list.innerHTML = html;
 
   list.querySelectorAll('[data-toggle-task]').forEach(b => b.addEventListener('click', () => toggleTaskComplete(b.dataset.toggleTask)));
   list.querySelectorAll('[data-del-task]').forEach(b => b.addEventListener('click', () => {
@@ -1445,6 +1575,7 @@ function renderDailySummary() {
     name: t.name,
     category: t.category,
     dueDate: t.dueDate,
+    period: t.period || 'any',
     completed: false,
     overdue: isOverdue(t)
   }));
@@ -1460,6 +1591,7 @@ function renderDailySummary() {
     name: c.name,
     category: c.category,
     dueDate: c.dueDate,
+    period: c.period || 'any',
     completed: true,
     overdue: false
   }));
@@ -1473,13 +1605,13 @@ function renderDailySummary() {
     return;
   }
 
-  const sorted = relevant.sort((a, b) => {
+  const sortFn = (a, b) => {
     if (a.overdue !== b.overdue) return a.overdue ? -1 : 1;
     if (a.completed !== b.completed) return a.completed ? 1 : -1;
     return (a.dueDate || '').localeCompare(b.dueDate || '');
-  });
+  };
 
-  body.innerHTML = sorted.map(t => {
+  const rowHtml = t => {
     const statusClass = t.completed ? 'done' : t.overdue ? 'overdue' : 'pending';
     const statusLabel = t.completed ? 'Done' : t.overdue ? 'Overdue' : 'Pending';
     const dueLabel = t.dueDate ? fmtDateOnly(t.dueDate + 'T00:00:00') : '—';
@@ -1490,7 +1622,17 @@ function renderDailySummary() {
         <td>${TASK_CATS[t.category] || t.category}</td>
         <td class="due-cell">${dueLabel}</td>
       </tr>`;
-  }).join('');
+  };
+
+  // Group summary rows by period with sub-heading rows
+  let html = '';
+  PERIODS.forEach(p => {
+    const inPeriod = relevant.filter(t => (t.period || 'any') === p.id).sort(sortFn);
+    if (!inPeriod.length) return;
+    html += `<tr class="summary-period-row"><td colspan="4">${p.icon} ${p.label}</td></tr>`;
+    html += inPeriod.map(rowHtml).join('');
+  });
+  body.innerHTML = html;
 }
 
 /* ===== Documents ===== */
@@ -1769,6 +1911,61 @@ function renderCheckinStatus() {
   if (cStreak > 0) { cBadge.classList.add('visible'); cCount.textContent = cStreak; }
   else { cBadge.classList.remove('visible'); }
 }
+/* ===== See-saw balance ===== */
+function renderSeesaw() {
+  const today = todayISO();
+  const beam    = $('#seesawBeam');
+  const leftEl  = $('#seesawLeftCount');
+  const rightEl = $('#seesawRightCount');
+  const caption = $('#seesawCaption');
+  if (!beam) return;
+
+  // Count today's completions by balance type
+  const doneToday = state.taskCompletions.filter(c =>
+    c.completedAt && c.completedAt.slice(0,10) === today
+  );
+  const restorative = doneToday.filter(c => (c.balance || 'neutral') === 'restorative').length;
+  const demanding   = doneToday.filter(c => (c.balance || 'neutral') === 'demanding').length;
+
+  leftEl.textContent  = restorative;
+  rightEl.textContent = demanding;
+
+  const total = restorative + demanding;
+  if (total === 0) {
+    beam.style.transform = 'rotate(0deg)';
+    caption.className = 'seesaw-caption';
+    caption.textContent = 'No tasks completed yet today';
+    return;
+  }
+
+  // Tilt: positive angle = right side (demanding) down
+  // Ratio -1..1 mapped to a max ±14deg so it never looks broken
+  const ratio = (demanding - restorative) / total;
+  const angle = ratio * 14;
+  beam.style.transform = `rotate(${angle}deg)`;
+
+  // Counter-rotate the pans so the numbers stay upright
+  $('#seesawPanLeft').style.transform  = `rotate(${-angle}deg)`;
+  $('#seesawPanRight').style.transform = `rotate(${-angle}deg)`;
+
+  // Caption
+  const absRatio = Math.abs(ratio);
+  if (absRatio < 0.2) {
+    caption.className = 'seesaw-caption balanced';
+    caption.textContent = 'Nicely balanced today';
+  } else if (ratio > 0) {
+    caption.className = 'seesaw-caption demanding';
+    caption.textContent = absRatio > 0.6
+      ? 'Leaning hard into doing — you\'ve earned some rest'
+      : 'Leaning toward doing — consider some recovery time';
+  } else {
+    caption.className = 'seesaw-caption balanced';
+    caption.textContent = absRatio > 0.6
+      ? 'A restful day — good for you'
+      : 'Leaning toward rest';
+  }
+}
+
 /* ===== Task streak ===== */
 function checkAndRecordTaskStreak() {
   const today = todayISO();
@@ -1942,13 +2139,13 @@ function closeFabAfterSave() {
 
 /* Render all */
 function renderAll() {
-  renderStreakGrid(); renderMoney(); renderRecent(); renderCheckinStatus(); renderTaskScore();
+  renderStreakGrid(); renderMoney(); renderRecent(); renderCheckinStatus(); renderTaskScore(); renderSeesaw();
   renderCravingCats(); renderTriggerChips(); renderCombinedLog(); renderTasks();
   if (currentView==='documents') renderDocuments();
   if (currentView==='log') renderCharts();
 }
 applyTheme(); renderAll(); tickClocks();
-setInterval(()=>{ if(currentView==='dashboard'){renderStreakGrid();renderMoney();renderCheckinStatus();renderTaskScore();} if(currentView==='checklist'){renderTasks();} },60000);
+setInterval(()=>{ if(currentView==='dashboard'){renderStreakGrid();renderMoney();renderCheckinStatus();renderTaskScore();renderSeesaw();} if(currentView==='checklist'){renderTasks();} },60000);
 
 </script>
 </body>
