@@ -266,6 +266,17 @@
 
   /* See-saw balance card */
   .seesaw-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px 10px; margin-bottom: 10px; }
+  .savings-trigger { position: relative; justify-content: flex-start; padding: 14px 40px 14px 16px; gap: 14px; }
+  .savings-head { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; flex-shrink: 0; }
+  .savings-label { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: var(--text-mute); font-weight: 600; }
+  .money-hero-total { font-family: 'Cormorant Garamond',serif; font-size: 32px; font-weight: 500; color: var(--gold); letter-spacing: -.02em; line-height: 1; }
+  .savings-rates { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; margin-left: auto; padding-left: 12px; border-left: 1px dashed var(--border); }
+  .savings-rate-row { display: flex; align-items: baseline; gap: 3px; white-space: nowrap; }
+  .srr-val { font-family: 'Cormorant Garamond',serif; font-size: 17px; font-weight: 500; color: var(--text); line-height: 1; }
+  .srr-unit { font-size: 10px; color: var(--text-mute); letter-spacing: .05em; }
+  .savings-chevron { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); }
+  .collapsible.open .savings-chevron { transform: translateY(-50%) rotate(180deg); }
+
   .seesaw-header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
   .seesaw-label { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: var(--text-mute); font-weight: 600; text-align: center; flex: 1; }
   .seesaw-stage { position: relative; height: 90px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 8px; }
@@ -534,12 +545,16 @@
     </div>
 
     <div class="collapsible" id="col-breakdown">
-      <button class="collapsible-trigger" data-target="col-breakdown">
-        <div style="display:flex; flex-direction:column; gap:2px;">
-          <span style="font-size:11px; text-transform:uppercase; letter-spacing:.14em; color:var(--text-mute); font-weight:600;">Total saved</span>
-          <span class="money-hero-total" id="moneyHeroTotal" style="font-family:'Cormorant Garamond',serif; font-size:34px; font-weight:500; color:var(--gold); letter-spacing:-.02em; line-height:1;">€0.00</span>
+      <button class="collapsible-trigger savings-trigger" data-target="col-breakdown">
+        <div class="savings-head">
+          <span class="savings-label">Total saved</span>
+          <span class="money-hero-total" id="moneyHeroTotal">€0.00</span>
         </div>
-        <span class="collapsible-chevron" style="margin-left:auto;">▼</span>
+        <div class="savings-rates" id="savingsRates">
+          <div class="savings-rate-row"><span class="srr-val" id="savingsPerWeek">—</span><span class="srr-unit">/week</span></div>
+          <div class="savings-rate-row"><span class="srr-val" id="savingsPerYear">—</span><span class="srr-unit">/year</span></div>
+        </div>
+        <span class="collapsible-chevron savings-chevron">▼</span>
       </button>
       <div class="collapsible-body">
         <div class="money-breakdown" id="moneyBreakdown"></div>
@@ -1112,6 +1127,29 @@ function calcMoney() {
 function renderMoney() {
   const m = calcMoney();
   $('#moneyHeroTotal').textContent = fmtMoney(m.total);
+
+  // Neutral scale anchors — current run rate projected forward.
+  // Only counts trackers that are active (have a start date) and have a cost set.
+  let perDay = 0;
+  getCats().forEach(c => {
+    const start = state.starts[c.id];
+    const cost  = state.costs[c.id];
+    if (!start || !cost || !cost.amount) return;
+    perDay += cost.unit === 'week'  ? cost.amount / 7
+            : cost.unit === 'month' ? cost.amount / 30.437
+            : cost.amount;
+  });
+  const wkEl = $('#savingsPerWeek');
+  const yrEl = $('#savingsPerYear');
+  if (wkEl && yrEl) {
+    if (perDay > 0) {
+      wkEl.textContent = fmtMoney(perDay * 7);
+      yrEl.textContent = fmtMoney(perDay * 365);
+    } else {
+      wkEl.textContent = '—';
+      yrEl.textContent = '—';
+    }
+  }
   $('#moneyBreakdown').innerHTML = m.items.map(i=>`<div class="money-item"><div class="lbl">${i.cat.label}</div><div class="val">${fmtMoney(i.saved)}</div></div>`).join('');
   $('#costRows').innerHTML = getCats().map(c=>`
     <div class="money-row">
