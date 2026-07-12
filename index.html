@@ -676,6 +676,16 @@
       </div>
     </div>
 
+    <div class="collapsible" id="col-chart-taskcat">
+      <button class="collapsible-trigger" data-target="col-chart-taskcat">
+        <span class="collapsible-trigger-label">Tasks by category — last 30 days</span>
+        <span class="collapsible-chevron">▼</span>
+      </button>
+      <div class="collapsible-body">
+        <div class="chart-wrap" style="margin-bottom:0"><canvas id="taskCatChart"></canvas></div>
+      </div>
+    </div>
+
     <div class="collapsible" id="col-recent-entries">
       <button class="collapsible-trigger" data-target="col-recent-entries">
         <span class="collapsible-trigger-label">Recent entries</span>
@@ -994,7 +1004,7 @@ $$('.collapsible-trigger').forEach(btn => {
     const col = btn.closest('.collapsible');
     col.classList.toggle('open');
     // Re-render charts if a chart collapsible just opened — canvas needs visible dimensions
-    if (col.classList.contains('open') && ['col-chart-mood','col-chart-cravings','col-chart-triggers'].includes(col.id)) {
+    if (col.classList.contains('open') && ['col-chart-mood','col-chart-cravings','col-chart-triggers','col-chart-taskcat'].includes(col.id)) {
       requestAnimationFrame(() => renderCharts());
     }
   });
@@ -1398,6 +1408,30 @@ function renderCharts() {
       const ctx=$('#triggerChart'); if(ctx){const p=ctx.parentElement; p.innerHTML='<div class="empty">No trigger data yet</div>';}
     }
   } catch(e){ console.warn('Trigger chart error:', e); }
+
+  try {
+    // Completions per day, stacked by category, over the last 30 days
+    const catPalette = ['#7a5cb5','#e07a4a','#6ba87f','#d4af6a','#c77db5','#5a9bc4','#b58a5a'];
+    const cats = Object.keys(TASK_CATS);
+    const dsets = cats.map((catId, i) => ({
+      label: TASK_CATS[catId],
+      data: days.map(d => state.taskCompletions.filter(tc =>
+        tc.completedAt && dayKey(tc.completedAt) === dayKey(d) && tc.category === catId
+      ).length),
+      backgroundColor: catPalette[i % catPalette.length],
+      borderRadius: 2
+    })).filter(ds => ds.data.some(v => v > 0)); // drop categories with no completions
+
+    if (dsets.length) {
+      charts.taskcat = new Chart($('#taskCatChart'), {
+        type:'bar',
+        data:{ labels, datasets: dsets },
+        options: chartOpts(c, { x:{stacked:true}, y:{stacked:true, beginAtZero:true, ticks:{stepSize:1}} })
+      });
+    } else {
+      const ctx=$('#taskCatChart'); if(ctx){const p=ctx.parentElement; p.innerHTML='<div class="empty">No completed tasks yet</div>';}
+    }
+  } catch(e){ console.warn('Task category chart error:', e); }
 }
 function chartOpts(c,scales={}) {
   return {responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:c.text,font:{size:11}}}},scales:{x:{ticks:{color:c.text,font:{size:10}},grid:{color:c.grid},...(scales.x||{})},y:{ticks:{color:c.text,font:{size:11}},grid:{color:c.grid},...(scales.y||{})}}};
