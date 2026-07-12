@@ -302,6 +302,9 @@
   .seesaw-caption.balanced  { color: #2d9e54; }
   .seesaw-caption.demanding { color: var(--warm); }
 
+  .forgot-card { border-color: var(--gold); }
+  .forgot-sub { font-size: 12px; color: var(--text-mute); margin: 2px 0 10px; line-height: 1.4; }
+  .forgot-item .task-meta-due { color: var(--gold); }
   .period-header { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--text-dim); font-weight: 600; margin-top: 12px; margin-bottom: 2px; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
   .period-header:first-child { margin-top: 0; }
   .summary-period-row td { font-size: 10px !important; text-transform: uppercase; letter-spacing: .1em; color: var(--text-dim); font-weight: 600; background: var(--surface-2); padding: 6px 10px !important; }
@@ -748,6 +751,12 @@
       </div>
     </div>
 
+    <div class="card forgot-card" id="forgotCard" style="display:none;">
+      <h3>Did you forget to log this?</h3>
+      <p class="forgot-sub">Daily tasks from yesterday you didn't tick off. Tap to log them for yesterday.</p>
+      <div class="task-list" id="forgotList"></div>
+    </div>
+
     <div class="card">
       <h3>Your tasks</h3>
       <div class="task-list" id="taskList"></div>
@@ -904,6 +913,7 @@ const defaultState = {
   checkins:  [], cravings:  [], triggers:  [], documents: [],
   tasks:     [],  // { id, name, category, recurrence, dueDate (ISO date), completed, lastCompletedAt }
   taskStreakDays: [], // ISO date strings where all due tasks were completed same-day
+  taskMisses: [], // { date, taskId } — daily tasks genuinely not done (dismissed or expired)
   checkinStreakDays: [], // ISO date strings where at least 1 check-in occurred
   taskCompletions: [], // { id, taskId, name, category, dueDate, completedAt } — snapshot log, survives card auto-removal
   theme: 'dark'
@@ -927,6 +937,7 @@ function load() {
       })) : [],
       taskCompletions: Array.isArray(p.taskCompletions) ? p.taskCompletions : [],
       taskStreakDays:  Array.isArray(p.taskStreakDays)  ? p.taskStreakDays  : [],
+      taskMisses:      Array.isArray(p.taskMisses)      ? p.taskMisses      : [],
       checkinStreakDays: Array.isArray(p.checkinStreakDays) ? p.checkinStreakDays : []
     };
   } catch { return structuredClone(defaultState); }
@@ -1403,6 +1414,7 @@ $('#taskDueDate').value = todayISO();
 function isOverdue(task) {
   if (task.completed) return false;
   if (!task.dueDate) return false;
+  if (task.recurrence === 'daily') return false; // dailies roll forward, never overdue
   return task.dueDate < todayISO();
 }
 
@@ -1420,12 +1432,12 @@ function advanceDueDate(dueDateISO, recurrence) {
 // early, so "Your tasks" never shows tomorrow's task today.
 function rolloverRecurringTasks() {
   const today = todayISO();
+  const yesterday = (() => { const d = new Date(); d.setDate(d.getDate()-1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; })();
   let changed = false;
+
   state.tasks.forEach(t => {
+    // Reset completed recurring tasks whose advanced due date has arrived
     if (t.recurrence !== 'once' && t.completed && t.dueDate <= today) {
-      // Only reset if the completion happened on a previous day — not if the
-      // task was just completed today and happens to advance back to today
-      // (e.g. a daily task completed late that's still due today)
       const completedDate = t.lastCompletedAt ? t.lastCompletedAt.slice(0, 10) : null;
       if (completedDate && completedDate < today) {
         t.completed = false;
@@ -1433,7 +1445,25 @@ function rolloverRecurringTasks() {
         changed = true;
       }
     }
+
+    // Daily tasks that went uncompleted and are now in the past: roll the due
+    // date forward to today (a fresh card), and remember the missed date so the
+    // "Did you forget to log this?" section can offer a backfill for yesterday.
+    if (t.recurrence === 'daily' && !t.completed && t.dueDate && t.dueDate < today) {
+      // Only surface a forgot-prompt if the missed day was yesterday specifically
+      if (t.dueDate === yesterday) {
+        t.missedDate = yesterday;
+      } else {
+        // older miss — roll forward silently and record it as a genuine miss
+        // (the chance to backfill has passed), so the streak treats it as broken
+        state.taskMisses.push({ date: t.dueDate, taskId: t.id });
+        t.missedDate = null;
+      }
+      t.dueDate = today;
+      changed = true;
+    }
   });
+
   if (changed) save();
 }
 
@@ -1487,6 +1517,7 @@ function toggleTaskComplete(id) {
   if (!task.completed) {
     task.completed = true;
     task.lastCompletedAt = new Date().toISOString();
+    task.missedDate = null; // completing clears any lingering forgot-prompt
 
     // Snapshot the completion so the daily summary keeps a record even after
     // a recurring task's due date rolls forward and it drops off "Your tasks"
@@ -1530,8 +1561,78 @@ function toggleTaskComplete(id) {
   renderTasks(); renderTaskScore(); renderSeesaw();
 }
 
+function renderForgotSection() {
+  const card = $('#forgotCard');
+  const list = $('#forgotList');
+  if (!card || !list) return;
+
+  // Daily tasks flagged as missed yesterday (set during rollover)
+  const forgotten = state.tasks.filter(t => t.recurrence === 'daily' && t.missedDate);
+
+  if (!forgotten.length) { card.style.display = 'none'; list.innerHTML = ''; return; }
+
+  card.style.display = '';
+  list.innerHTML = forgotten.map(t => {
+    const dueLabel = fmtDateOnly(t.missedDate + 'T00:00:00');
+    return `
+      <div class="task-item forgot-item">
+        <button class="task-check" data-forgot-task="${t.id}"></button>
+        <div class="task-info">
+          <div class="task-name">${escapeHtml(t.name)}</div>
+          <div class="task-meta">
+            <span class="task-cat-tag">${TASK_CATS[t.category] || t.category}</span>
+            <span class="task-meta-due">Was due ${dueLabel}</span>
+          </div>
+        </div>
+        <button class="task-delete" data-dismiss-forgot="${t.id}" title="Didn't do it">×</button>
+      </div>`;
+  }).join('');
+
+  list.querySelectorAll('[data-forgot-task]').forEach(b => b.addEventListener('click', () => backfillForgotten(b.dataset.forgotTask)));
+  list.querySelectorAll('[data-dismiss-forgot]').forEach(b => b.addEventListener('click', () => dismissForgotten(b.dataset.dismissForgot)));
+}
+
+function backfillForgotten(id) {
+  const task = state.tasks.find(t => t.id === id);
+  if (!task || !task.missedDate) return;
+  const missed = task.missedDate;
+  // Log a completion dated to the missed day (noon, to avoid TZ edge cases)
+  state.taskCompletions.unshift({
+    id: uid(),
+    taskId: task.id,
+    name: task.name,
+    category: task.category,
+    dueDate: missed,
+    period: task.period || 'any',
+    balance: task.balance || CATEGORY_BALANCE[task.category] || 'neutral',
+    completedAt: missed + 'T12:00:00'
+  });
+  task.missedDate = null; // clear the prompt; today's card stays as-is
+  save();
+  // Re-evaluate the backfilled day — if it's now fully complete, restore
+  // that day to the streak so a genuine "did it but forgot to log" bridges the gap
+  evaluateStreakForDay(missed);
+  checkAndRecordTaskStreak();
+  renderTasks(); renderTaskScore(); renderSeesaw();
+  toast('Logged for yesterday');
+}
+
+function dismissForgotten(id) {
+  const task = state.tasks.find(t => t.id === id);
+  if (!task) return;
+  // Record a genuine miss for that day so the streak can't be restored for it
+  if (task.missedDate) {
+    state.taskMisses.push({ date: task.missedDate, taskId: task.id });
+  }
+  task.missedDate = null;
+  save();
+  renderForgotSection();
+  renderTasks();
+}
+
 function renderTasks() {
   rolloverRecurringTasks();
+  renderForgotSection();
   const list = $('#taskList');
   const today = todayISO();
 
@@ -1872,7 +1973,7 @@ $('#importFile').addEventListener('change',e=>{
     try {
       const data=JSON.parse(ev.target.result);
       if(!data.starts||!data.checkins||!data.cravings) throw new Error('Invalid file');
-      state={...defaultState,...data,trackers:data.trackers||[],triggers:data.triggers||[],documents:data.documents||[],tasks:data.tasks||[],taskCompletions:data.taskCompletions||[],taskStreakDays:data.taskStreakDays||[],checkinStreakDays:data.checkinStreakDays||[]};
+      state={...defaultState,...data,trackers:data.trackers||[],triggers:data.triggers||[],documents:data.documents||[],tasks:data.tasks||[],taskCompletions:data.taskCompletions||[],taskStreakDays:data.taskStreakDays||[],taskMisses:data.taskMisses||[],checkinStreakDays:data.checkinStreakDays||[]};
       save(); renderAll(); $('#settingsModalBg').classList.remove('open'); toast('Imported');
     } catch(err) { alert('Could not import: '+err.message); }
   };
@@ -2026,6 +2127,32 @@ function checkAndRecordTaskStreak() {
     state.taskStreakDays.push(today);
     save();
   }
+}
+
+// Re-evaluate a past day after a backfill: if every task that was due that day
+// is now logged as completed on that day (and nothing remains unlogged/missed
+// for that day), record it as a streak day so the streak bridges the gap.
+function evaluateStreakForDay(dateISO) {
+  if (state.taskStreakDays.includes(dateISO)) return;
+
+  // Completions logged for that day
+  const doneThatDay = state.taskCompletions.filter(c =>
+    c.completedAt && c.completedAt.slice(0, 10) === dateISO
+  );
+  if (!doneThatDay.length) return; // nothing was due/done that day
+
+  // Any daily still flagged as missed for that day = day not fully done
+  const stillMissed = state.tasks.some(t =>
+    t.recurrence === 'daily' && t.missedDate === dateISO
+  );
+  if (stillMissed) return;
+
+  // Any recorded genuine miss (dismissed or expired) for that day = streak broken
+  const hadGenuineMiss = state.taskMisses.some(m => m.date === dateISO);
+  if (hadGenuineMiss) return;
+
+  state.taskStreakDays.push(dateISO);
+  save();
 }
 
 function calcTaskStreak() {
