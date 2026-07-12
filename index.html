@@ -302,6 +302,9 @@
   .seesaw-caption.balanced  { color: #2d9e54; }
   .seesaw-caption.demanding { color: var(--warm); }
 
+  .chart-toggle { display: flex; gap: 4px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 3px; margin-bottom: 12px; width: fit-content; }
+  .chart-toggle-btn { padding: 6px 14px; background: transparent; border: none; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 12px; font-weight: 500; color: var(--text-dim); transition: all .2s; }
+  .chart-toggle-btn.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
   .forgot-card { border-color: var(--gold); }
   .forgot-sub { font-size: 12px; color: var(--text-mute); margin: 2px 0 10px; line-height: 1.4; }
   .forgot-item .task-meta-due { color: var(--gold); }
@@ -682,6 +685,10 @@
         <span class="collapsible-chevron">▼</span>
       </button>
       <div class="collapsible-body">
+        <div class="chart-toggle" id="taskChartToggle">
+          <button class="chart-toggle-btn active" data-mode="category">By category</button>
+          <button class="chart-toggle-btn" data-mode="balance">By energy</button>
+        </div>
         <div class="chart-wrap" style="margin-bottom:0"><canvas id="taskCatChart"></canvas></div>
       </div>
     </div>
@@ -999,6 +1006,15 @@ $$('.tab').forEach(t => t.addEventListener('click', ()=>{
 }));
 
 /* Collapsibles */
+document.querySelectorAll('#taskChartToggle .chart-toggle-btn').forEach(b => b.addEventListener('click', () => {
+  taskChartMode = b.dataset.mode;
+  document.querySelectorAll('#taskChartToggle .chart-toggle-btn').forEach(x => x.classList.toggle('active', x === b));
+  // reset any empty-state placeholder back to a canvas before re-rendering
+  const wrap = $('#taskCatChart') ? $('#taskCatChart').parentElement : null;
+  if (wrap && !$('#taskCatChart')) wrap.innerHTML = '<canvas id="taskCatChart"></canvas>';
+  renderCharts();
+}));
+
 $$('.collapsible-trigger').forEach(btn => {
   btn.addEventListener('click', ()=>{
     const col = btn.closest('.collapsible');
@@ -1348,6 +1364,7 @@ $('#saveCraving').addEventListener('click',()=>{
 
 /* ===== Charts ===== */
 let charts={};
+let taskChartMode = 'category';
 function chartColors() {
   const cs=getComputedStyle(document.documentElement);
   return {text:cs.getPropertyValue('--text-dim').trim(),grid:cs.getPropertyValue('--border').trim(),accent:cs.getPropertyValue('--accent').trim(),warm:cs.getPropertyValue('--warm').trim(),gold:cs.getPropertyValue('--gold').trim()};
@@ -1410,17 +1427,40 @@ function renderCharts() {
   } catch(e){ console.warn('Trigger chart error:', e); }
 
   try {
-    // Completions per day, stacked by category, over the last 30 days
-    const catPalette = ['#7a5cb5','#e07a4a','#6ba87f','#d4af6a','#c77db5','#5a9bc4','#b58a5a'];
-    const cats = Object.keys(TASK_CATS);
-    const dsets = cats.map((catId, i) => ({
-      label: TASK_CATS[catId],
-      data: days.map(d => state.taskCompletions.filter(tc =>
-        tc.completedAt && dayKey(tc.completedAt) === dayKey(d) && tc.category === catId
-      ).length),
-      backgroundColor: catPalette[i % catPalette.length],
-      borderRadius: 2
-    })).filter(ds => ds.data.some(v => v > 0)); // drop categories with no completions
+    // Restore canvas if a previous render replaced it with an empty-state message
+    const tcWrap = document.querySelector('#col-chart-taskcat .chart-wrap');
+    if (tcWrap && !$('#taskCatChart')) tcWrap.innerHTML = '<canvas id="taskCatChart"></canvas>';
+
+    let dsets;
+    if (taskChartMode === 'balance') {
+      // Group by energy balance: restorative / neutral / demanding
+      const balGroups = [
+        { key:'restorative', label:'Restorative', color:'#2d9e54' },
+        { key:'neutral',     label:'Neutral',     color:'#6b7280' },
+        { key:'demanding',   label:'Demanding',   color:'#e07a4a' }
+      ];
+      dsets = balGroups.map(g => ({
+        label: g.label,
+        data: days.map(d => state.taskCompletions.filter(tc =>
+          tc.completedAt && dayKey(tc.completedAt) === dayKey(d) &&
+          (tc.balance || CATEGORY_BALANCE[tc.category] || 'neutral') === g.key
+        ).length),
+        backgroundColor: g.color,
+        borderRadius: 2
+      })).filter(ds => ds.data.some(v => v > 0));
+    } else {
+      // Group by category
+      const catPalette = ['#7a5cb5','#e07a4a','#6ba87f','#d4af6a','#c77db5','#5a9bc4','#b58a5a'];
+      const cats = Object.keys(TASK_CATS);
+      dsets = cats.map((catId, i) => ({
+        label: TASK_CATS[catId],
+        data: days.map(d => state.taskCompletions.filter(tc =>
+          tc.completedAt && dayKey(tc.completedAt) === dayKey(d) && tc.category === catId
+        ).length),
+        backgroundColor: catPalette[i % catPalette.length],
+        borderRadius: 2
+      })).filter(ds => ds.data.some(v => v > 0));
+    }
 
     if (dsets.length) {
       charts.taskcat = new Chart($('#taskCatChart'), {
